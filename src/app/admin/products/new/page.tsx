@@ -5,35 +5,15 @@ import { ProductForm } from "@/components/admin/ProductForm";
 import { useRouter } from "next/navigation";
 import { useCategories } from "@/hooks/useCategories";
 import { useCreateProduct } from "@/hooks/useProducts";
-import { CreateProductWithVariants } from "@/types/productWithVariants";
+import { CreateProduct } from "@/lib/validation/products.schema";
 
 export default function NewProductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { data: categories } = useCategories();
 
-  // const handleSubmit = async (data: any) => {
-  //   setLoading(true);
-  //   try {
-  //     const res = await fetch("/api/products", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(data),
-  //     });
-
-  //     if (!res.ok) throw new Error("Failed to create product");
-
-  //     router.push("/admin/products");
-  //     router.refresh();
-  //   } catch (error) {
-  //     console.error("Error creating product:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const createProduct = useCreateProduct();
-  const handleSubmit = async (data: CreateProductWithVariants) => {
+  const handleSubmit = async (data: CreateProduct) => {
     console.log("Submitting data:", data);
     await createProduct.mutateAsync(data);
     router.push("/admin/products");

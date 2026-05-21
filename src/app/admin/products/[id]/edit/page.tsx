@@ -1,28 +1,22 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { useParams, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useCategories } from "@/hooks/useCategories";
 import { useProduct, useUpdateProduct } from "@/hooks/useProducts";
-// import { CreateProduct } from "@/lib/validation/products.schema";
-import { CreateProductWithVariants } from "@/types/productWithVariants";
+import { UpdateProduct } from "@/lib/validation/products.schema";
 
 export default function EditProductPage() {
   const params = useParams();
   const router = useRouter();
   const productId = params.id as string;
-  // const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
   const { data: categories } = useCategories();
-  // const { data: product } = useProduct(productId);
 
   const { data: product, isLoading: productLoading } = useProduct(productId);
 
   const updateProduct = useUpdateProduct();
-  const handleSubmit = async (data: CreateProductWithVariants) => {
+  const handleSubmit = async (data: UpdateProduct) => {
     console.log("Submitting data:", data);
     await updateProduct.mutateAsync({ id: productId, data });
     router.push("/admin/products");

@@ -7,30 +7,6 @@ import {
 import { ProductWithRelations } from "@/lib/data";
 import api from "@/lib/axios";
 
-// export function useProductUnique(categorySlug?: string, search?: string) {
-//   return useQuery<ProductWithRelations[]>({
-//     queryKey: ["products", { category: categorySlug, search }],
-//     queryFn: async () => {
-//       const params = new URLSearchParams();
-//       if (categorySlug) params.append("category", categorySlug);
-//       if (search) params.append("search", search);
-
-//       const queryString = params.toString();
-//       const url = queryString
-//         ? `/api/products?${queryString}`
-//         : "/api/products";
-
-//       const response = await fetch(url);
-//       if (!response.ok) {
-//         throw new Error("Network response was not ok");
-//       }
-//       return response.json();
-//     },
-//     staleTime: 5 * 60 * 1000, // 5 minutes
-//     gcTime: 30 * 60 * 1000, // 30 minutes
-//   });
-// }
-
 export function useProductUnique(categorySlug?: string, search?: string) {
   return useQuery<ProductWithRelations[]>({
     queryKey: ["products", { category: categorySlug, search }],
@@ -57,26 +33,6 @@ export function useProducts() {
   });
 }
 
-// export function useCategory(id: string) {
-//   return useQuery<CategoryResponse>({
-//     queryKey: ["categories", id],
-//     enabled: !!id, // Hanya jalan kalau ada id
-//     queryFn: () => api.get(`/api/products`).then((res) => res.data),
-//   });
-// }
-
-// export function useProduct(id: string) {
-//   return useQuery<ProductResponse>({
-//     queryKey: ["products", id],
-//     queryFn: async () => {
-//       const res = await fetch(`/api/products/${id}`);
-//       if (!res.ok) throw new Error("Failed to fetch product");
-//       return res.json();
-//     },
-//     enabled: !!id, // Hanya jalan kalau ada id
-//   });
-// }
-
 export function useProduct(id: string) {
   return useQuery<ProductResponse>({
     queryKey: ["products", id],
@@ -90,18 +46,7 @@ export function useCreateProduct() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: CreateProduct) =>
-      // console.log(data, "data");
-      // const res = await fetch("/api/products", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(data),
-      // });
-
-      // if (!res.ok) throw new Error("Failed to create product");
-      // return res.json();
-
       api.post("/products", data).then((res) => res.data),
-
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });

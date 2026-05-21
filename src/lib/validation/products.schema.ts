@@ -111,9 +111,12 @@ export const CreateProductSchema = z.object({
 });
 
 // UPDATE schema
-export const UpdateProductSchema = CreateProductSchema.partial().extend({
-  id: z.string().min(1, "Product ID required"),
-});
+export const UpdateProductSchema = z
+  .object({
+    id: z.union([z.string()]),
+    ...ProductBaseSchema,
+  })
+  .partial();
 
 // RESPONSE schema
 export const ProductResponseSchema = z.object({
