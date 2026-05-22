@@ -7,47 +7,78 @@ import { Plus, Package, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useDeleteProduct, useProducts } from "@/hooks/useProducts";
+import { useDeleteUser } from "@/hooks/useUsers";
 
 export default function ProductsPage() {
   const router = useRouter();
-  const [products, setProducts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [products, setProducts] = useState<any[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  async function fetchProducts() {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/products");
-      const data = await res.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  // async function fetchProducts() {
+  //   setIsLoading(true);
+  //   try {
+  //     const res = await fetch("/api/products");
+  //     const data = await res.json();
+  //     setProducts(data);
+  //   } catch (error) {
+  //     console.error("Failed to fetch products:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, []);
 
+  const { data: products, isLoading } = useProducts();
+
+  // const handleDelete = async () => {
+  //   if (!deleteId) return;
+  //   setIsDeleting(true);
+  //   try {
+  //     const res = await fetch(`/api/products/${deleteId}`, {
+  //       method: "DELETE",
+  //     });
+  //     if (res.ok) {
+  //       setProducts(products.filter((p) => p.id !== deleteId));
+  //       setDeleteId(null);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to delete product:", error);
+  //   } finally {
+  //     setIsDeleting(false);
+  //   }
+  // };
+
+  const deleteProduct = useDeleteProduct();
   const handleDelete = async () => {
     if (!deleteId) return;
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/products/${deleteId}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setProducts(products.filter((p) => p.id !== deleteId));
+
+    deleteProduct.mutate(deleteId, {
+      onSuccess: (data) => {
         setDeleteId(null);
-      }
-    } catch (error) {
-      console.error("Failed to delete product:", error);
-    } finally {
-      setIsDeleting(false);
-    }
+        // Success toast
+        alert("Product deleted successfully");
+      },
+      onError: (error: any) => {
+        // Cek apakah error karena product memiliki orders
+        if (
+          error.response?.status === 409 ||
+          error.message?.includes("CANNOT_DELETE")
+        ) {
+          alert(
+            "Cannot delete product! This product has existing orders in history. " +
+              "Deleting it would corrupt order records.",
+          );
+        } else {
+          alert("Failed to delete product");
+        }
+      },
+    });
   };
 
   const columns = [
