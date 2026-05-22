@@ -6,54 +6,55 @@ import { DeleteModal } from "@/components/admin/DeleteModal";
 import { Plus, Tag } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCategories, useDeleteCategory } from "@/hooks/useCategories";
+import { CategoryResponse } from "@/lib/validation/category.schema";
 
 export default function CategoriesPage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<any[]>([]);
+  // const [dataCategories, setCategories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  // const [isDeleting, setIsDeleting] = useState(false);
 
-  async function fetchCategories() {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/categories");
-      const data = await res.json();
-      setCategories(data);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  // async function fetchCategories() {
+  //   setIsLoading(true);
+  //   try {
+  //     const res = await fetch("/api/categories");
+  //     const data = await res.json();
+  //     console.log(data, "aaaaaaaa");
+  //     // setCategories(data);
+  //   } catch (error) {
+  //     console.error("Failed to fetch categories:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+  // useEffect(() => {
+  //   fetchCategories();
+  // }, []);
 
+  const { data: categories, isLoading: categoryLoading } = useCategories();
+
+  console.log(categories, "ucok");
+
+  const deleteCategory = useDeleteCategory();
+  const isDeleting = deleteCategory.isPending;
   const handleDelete = async () => {
     if (!deleteId) return;
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/categories/${deleteId}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setCategories(categories.filter((c) => c.id !== deleteId));
+    deleteCategory.mutate(deleteId, {
+      onSuccess: () => {
         setDeleteId(null);
-      }
-    } catch (error) {
-      console.error("Failed to delete category:", error);
-    } finally {
-      setIsDeleting(false);
-    }
+        // fetchCategories(); // atau invalidate query
+      },
+    });
   };
 
   const columns = [
     {
       key: "name",
       label: "Category Name",
-      render: (name: string, item: any) => (
+      render: (name: string, item: CategoryResponse) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <Tag className="w-5 h-5" />
@@ -79,7 +80,7 @@ export default function CategoriesPage() {
     {
       key: "_count",
       label: "Products",
-      render: (count: any) => (
+      render: (count: { products?: number }) => (
         <span className="font-bold text-slate-900 dark:text-white">
           {count?.products || 0} items
         </span>
@@ -110,7 +111,7 @@ export default function CategoriesPage() {
       <DataTable
         columns={columns}
         data={categories}
-        isLoading={isLoading}
+        isLoading={categoryLoading}
         onEdit={(item) => router.push(`/admin/categories/${item.id}/edit`)}
         onDelete={(item) => setDeleteId(item.id)}
         searchPlaceholder="Filter categories by name..."
