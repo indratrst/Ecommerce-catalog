@@ -5,11 +5,12 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { Loader2, Plus, ArrowLeft, Trash2, Box, Info } from "lucide-react";
 import Link from "next/link";
 import { ImageUpload } from "./ImageUpload";
-import { ProductBaseSchema } from "@/types";
+// import { ProductBaseSchema } from "@/types";
 import { CategoryResponse } from "@/lib/validation/category.schema";
 import type { FieldErrors } from "react-hook-form";
 import {
   CreateProduct,
+  CreateProductSchema,
   ProductVariant,
 } from "@/lib/validation/products.schema";
 import { useEffect } from "react";
@@ -45,8 +46,8 @@ export function ProductForm({
     formState: { errors },
   } = useForm<CreateProduct>({
     resolver: standardSchemaResolver(
-      ProductBaseSchema,
-    ) as import("react-hook-form").Resolver<ProductBaseSchema>,
+      CreateProductSchema,
+    ) as import("react-hook-form").Resolver<CreateProduct>,
     defaultValues: {
       title: initialData?.title || "",
       price: initialData?.price || 0,
