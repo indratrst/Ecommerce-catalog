@@ -5,11 +5,16 @@ import { DataTable } from "@/components/admin/DataTable";
 import { DeleteModal } from "@/components/admin/DeleteModal";
 import { UserForm } from "@/components/admin/UserForm";
 import { Plus, Shield, ShieldCheck, ShieldAlert, X } from "lucide-react";
-import { useCreateUser, useUpdateUser, useUsers } from "@/hooks/useUsers";
+import {
+  useCreateUser,
+  useDeleteUser,
+  useUpdateUser,
+  useUsers,
+} from "@/hooks/useUsers";
 import { CreateUser, UpdateUser } from "@/lib/validation/users.schema";
 
 export default function UsersPage() {
-  const { data: users = [], isLoading, refetch } = useUsers();
+  const { data: users = [], isLoading } = useUsers();
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -55,23 +60,26 @@ export default function UsersPage() {
   //   }
   // };
 
+  const deleteUser = useDeleteUser();
+
   const handleDelete = async () => {
     if (!deleteId) return;
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/users/${deleteId}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        // Refetch data setelah delete
-        await refetch();
+    // setIsDeleting(true);
+    // try {
+    //   const res = await fetch(`/api/users/${deleteId}`, {
+    //     method: "DELETE",
+    //   });
+    //   if (res.ok) {
+    //     // Refetch data setelah delete
+    //     await refetch();
+    //     setDeleteId(null);
+    //   }
+    deleteUser.mutate(deleteId, {
+      onSuccess: () => {
         setDeleteId(null);
-      }
-    } catch (error) {
-      console.error("Failed to delete user:", error);
-    } finally {
-      setIsDeleting(false);
-    }
+        // fetchCategories(); // atau invalidate query
+      },
+    });
   };
 
   const handleSubmit = async (data: CreateUser | UpdateUser) => {
