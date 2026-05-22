@@ -1,4 +1,3 @@
-// hooks/useCategories.ts
 import api from "@/lib/axios";
 import {
   CategoryResponse,
@@ -62,6 +61,21 @@ export function useUpdateCategory() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["categories", variables.id] });
+    },
+  });
+}
+
+// Mutation hook - delete category
+export function useDeleteCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await api.delete(`/categories/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 }
