@@ -14,7 +14,7 @@ export async function GET(
       include: {
         category: true,
         variants: {
-          where: { isActive: true }, // 🔥 WAJIB
+          where: { isActive: true },
         },
       },
     });
@@ -50,6 +50,15 @@ export async function PUT(
     const body = await request.json();
     const { title, price, description, image, categoryId, variants } = body;
 
+    console.log("Received variants:", JSON.stringify(variants, null, 2));
+
+    // Sebelum proses, log semua variant yang masuk
+    for (const v of variants) {
+      console.log(
+        `Variant: id=${v.id}, isActive=${v.isActive}, isDeleted=${v.isDeleted}`,
+      );
+    }
+
     // 🔥 VALIDASI DUPLIKAT SIZE + COLOR
     const combinationSet = new Set();
 
@@ -79,6 +88,8 @@ export async function PUT(
       const incomingIds = variants
         .filter((v: any) => v.id)
         .map((v: any) => v.id);
+
+      console.log("incomingIds:", incomingIds);
 
       for (const v of variants) {
         // 🔥 HANDLE DELETE
@@ -176,6 +187,42 @@ export async function DELETE(
     }
 
     const { id } = await params;
+    // Cek apakah product memiliki order items
+    const productWithOrders = await prisma.product.findFirst({
+      where: {
+        id,
+        variants: {
+          some: {
+            orderItems: {
+              some: {},
+            },
+          },
+        },
+      },
+      include: {
+        variants: {
+          include: {
+            orderItems: {
+              take: 1, // cukup cek 1 saja
+            },
+          },
+        },
+      },
+    });
+
+    if (
+      productWithOrders &&
+      productWithOrders.variants.some((v) => v.orderItems.length > 0)
+    ) {
+      return NextResponse.json(
+        {
+          error: "CANNOT_DELETE",
+          message:
+            "Cannot delete product because it has existing orders in history. Deleting would corrupt order records.",
+        },
+        { status: 409 }, // Conflict status code
+      );
+    }
 
     await prisma.product.delete({
       where: { id },
