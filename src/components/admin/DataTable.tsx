@@ -9,8 +9,9 @@ import {
   MoreVertical,
   Edit,
   Trash2,
-  ChevronDown
+  ChevronDown,
 } from "lucide-react";
+import { CategoryResponse } from "@/lib/validation/category.schema";
 
 interface Column {
   key: string;
@@ -21,7 +22,7 @@ interface Column {
 
 interface DataTableProps {
   columns: Column[];
-  data: any[];
+  data: CategoryResponse[];
   onEdit?: (item: any) => void;
   onDelete?: (item: any) => void;
   isLoading?: boolean;
@@ -34,25 +35,25 @@ export function DataTable({
   onEdit,
   onDelete,
   isLoading,
-  searchPlaceholder = "Search records..."
+  searchPlaceholder = "Search records...",
 }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
   // Filter and sort data
-  const filteredData = data.filter((item) =>
+  const filteredData = data?.filter((item) =>
     Object.values(item).some((val) =>
-      String(val).toLowerCase().includes(searchTerm.toLowerCase())
-    )
+      String(val).toLowerCase().includes(searchTerm.toLowerCase()),
+    ),
   );
 
-  const sortedData = [...filteredData].sort((a, b) => {
+  const sortedData = [...(filteredData || [])].sort((a, b) => {
     if (!sortKey) return 0;
-    const aVal = a[sortKey];
-    const bVal = b[sortKey];
+    const aVal = a[sortKey as keyof CategoryResponse];
+    const bVal = b[sortKey as keyof CategoryResponse];
 
     if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
     if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
@@ -62,7 +63,7 @@ export function DataTable({
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const paginatedData = sortedData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const handleSort = (key: string) => {
@@ -123,7 +124,9 @@ export function DataTable({
                       <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded w-full"></div>
                     </td>
                   ))}
-                  <td className="px-6 py-4"><div className="h-4 bg-slate-100 dark:bg-slate-800 rounded w-10 ml-auto"></div></td>
+                  <td className="px-6 py-4">
+                    <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded w-10 ml-auto"></div>
+                  </td>
                 </tr>
               ))
             ) : paginatedData.length > 0 ? (
@@ -133,8 +136,13 @@ export function DataTable({
                   className=" hover:bg-slate-50/50 dark:hover:bg-slate-800 dark:text-white group"
                 >
                   {columns.map((col) => (
-                    <td key={col.key} className="px-6 py-4 text-sm dark:text-white">
-                      {col.render ? col.render(item[col.key], item) : item[col.key]}
+                    <td
+                      key={col.key}
+                      className="px-6 py-4 text-sm dark:text-white"
+                    >
+                      {col.render
+                        ? col.render(item[col.key], item)
+                        : item[col.key]}
                     </td>
                   ))}
                   {(onEdit || onDelete) && (
@@ -165,7 +173,10 @@ export function DataTable({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length + 1} className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                <td
+                  colSpan={columns.length + 1}
+                  className="px-6 py-12 text-center text-slate-500 dark:text-slate-400"
+                >
                   <div className="flex flex-col items-center gap-2">
                     <Search className="w-8 h-8 opacity-20" />
                     <p className="dark:text-white">No records found</p>
@@ -180,11 +191,23 @@ export function DataTable({
       {/* Pagination */}
       <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-xs text-slate-500 dark:text-slate-200">
-          Showing <span className="font-semibold text-slate-700 dark:text-white">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-semibold text-slate-700 dark:text-white">{Math.min(currentPage * itemsPerPage, sortedData.length)}</span> of <span className="font-semibold text-slate-700 dark:text-white">{sortedData.length}</span> results
+          Showing{" "}
+          <span className="font-semibold text-slate-700 dark:text-white">
+            {(currentPage - 1) * itemsPerPage + 1}
+          </span>{" "}
+          to{" "}
+          <span className="font-semibold text-slate-700 dark:text-white">
+            {Math.min(currentPage * itemsPerPage, sortedData.length)}
+          </span>{" "}
+          of{" "}
+          <span className="font-semibold text-slate-700 dark:text-white">
+            {sortedData.length}
+          </span>{" "}
+          results
         </p>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg disabled:opacity-30 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
@@ -195,17 +218,20 @@ export function DataTable({
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`w-8 h-8 text-xs font-bold rounded-lg transition-all ${currentPage === i + 1
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                  : "hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400"
-                  }`}
+                className={`w-8 h-8 text-xs font-bold rounded-lg transition-all ${
+                  currentPage === i + 1
+                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                    : "hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400"
+                }`}
               >
                 {i + 1}
               </button>
             ))}
           </div>
           <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
             className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg disabled:opacity-30 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
