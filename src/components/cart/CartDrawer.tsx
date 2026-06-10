@@ -124,16 +124,13 @@ export function CartDrawer() {
                           >
                             {item.product.title}
                           </h3>
-                          {item.variant?.size && item.variant?.stock && (
-                            <>
-                              <p className="text-xs text-muted-foreground uppercase tracking-widest py-1">
-                                Size: {item.variant.size}
-                              </p>
-                              <p className="text-xs text-muted-foreground uppercase tracking-widest">
-                                Stock: {item.variant.stock}
-                              </p>
-                            </>
-                          )}
+
+                          <p className="text-xs text-muted-foreground uppercase tracking-widest py-1">
+                            Size: {item.variant.size}
+                          </p>
+                          {/* <p className="text-xs text-muted-foreground uppercase tracking-widest">
+                            Stock: {item.variant.stock}
+                          </p> */}
                           <p
                             className="mt-1 text-sm font-medium"
                             style={{ color: "var(--muted)" }}
