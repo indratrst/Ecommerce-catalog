@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 import { StorefrontUI } from "@/components/layout/StorefrontUI";
 
 export const metadata: Metadata = {
-  title: "Wellborn Store Mockup",
+  title: "Store Mockup",
   description: "Ecommerce catalog and cart UI mockup",
 };
 
