@@ -9,11 +9,17 @@ import { useEffect, useState } from "react";
 import { Product } from "@/types";
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const { cart = [], removeFromCart, updateQuantity, cartTotal } = useCart();
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
 
   // Fetch recommendations from API, excluding items in cart
+
   useEffect(() => {
+    if (!cart || cart.length === 0) {
+      // Boleh fetch products tanpa filter cart
+      fetchRecommendations();
+      return;
+    }
     async function fetchRecommendations() {
       try {
         const res = await fetch("/api/products");
@@ -21,31 +27,8 @@ export default function CartPage() {
           const allProducts = await res.json();
           const cartIds = cart.map((item) => String(item.product.id));
           const filtered = allProducts
-            .filter((p: { id: string }) => !cartIds.includes(String(p.id)))
-            .slice(0, 4)
-            .map(
-              (p: {
-                id: string;
-                title: string;
-                price: number;
-                description: string;
-                category: { name: string };
-                image: string | null;
-                ratingRate: number | null;
-                ratingCount: number | null;
-              }) => ({
-                id: p.id,
-                title: p.title,
-                price: p.price,
-                description: p.description,
-                category: p.category?.name || "",
-                image: p.image ?? undefined,
-                rating: {
-                  rate: p.ratingRate ?? 0,
-                  count: p.ratingCount ?? 0,
-                },
-              }),
-            );
+            .filter((p: Product) => !cartIds.includes(String(p.id)))
+            .slice(0, 4);
           setRecommendedProducts(filtered);
         }
       } catch (error) {
