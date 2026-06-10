@@ -128,28 +128,28 @@ export function Header() {
                 style={{ color: "var(--foreground)" }}
               >
                 <Link
-                  href="/#new-arrivals"
+                  href={`/products`}
                   className="font-medium transition-colors hover:text-foreground"
                   style={{ color: "var(--muted)" }}
                 >
                   New Arrivals
                 </Link>
                 <Link
-                  href="/category/clothing"
+                  href={`/products?category=clothing`}
                   className="font-medium transition-colors hover:text-foreground"
                   style={{ color: "var(--muted)" }}
                 >
                   Clothing
                 </Link>
                 <Link
-                  href="/category/accessories"
+                  href={`/products?category=accessories`}
                   className="font-medium transition-colors hover:text-foreground"
                   style={{ color: "var(--muted)" }}
                 >
                   Accessories
                 </Link>
                 <Link
-                  href="/category/special-edition"
+                  href={`/products?category=special-edition`}
                   className="font-medium transition-colors hover:text-foreground"
                   style={{ color: "var(--muted)" }}
                 >
@@ -296,7 +296,7 @@ export function Header() {
                           borderColor: "var(--surface-border)",
                         }}
                       >
-                        See all results for "{searchQuery}"{" "}
+                        See all results for &quot;{searchQuery}&quot;{" "}
                         <ArrowRight className="h-4 w-4" />
                       </Link>
                     )}
