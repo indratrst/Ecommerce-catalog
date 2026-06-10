@@ -11,7 +11,11 @@ const sortOptions = [
   { value: "price-desc", label: "Price: High to Low" },
 ];
 
-export function ProductGrid({ products }: { products: ProductWithRelations[] }) {
+export function ProductGrid({
+  products,
+}: {
+  products: ProductWithRelations[];
+}) {
   const [sortOption, setSortOption] = useState("default");
 
   // Map DB products to the shape ProductCard expects
@@ -21,8 +25,13 @@ export function ProductGrid({ products }: { products: ProductWithRelations[] }) 
       title: p.title,
       price: p.price,
       description: p.description,
-      category: p.category.name,
+
+      category: p.category,
+
       image: p.image ?? undefined,
+
+      variants: p.variants ?? [],
+
       rating: {
         rate: p.ratingRate ?? 0,
         count: p.ratingCount ?? 0,
@@ -49,7 +58,7 @@ export function ProductGrid({ products }: { products: ProductWithRelations[] }) 
     <>
       <div className="mb-8 p-4 shadow-sm transition-colors duration-200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 ">
-          <p className="text-sm uppercase tracking-widest text-slate-600 dark:text-slate-300">
+          <p className="text-sm uppercase tracking-widest font-semibold">
             Sort Product
           </p>
           <div>
