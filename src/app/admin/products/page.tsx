@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DataTable } from "@/components/admin/DataTable";
 import { DeleteModal } from "@/components/admin/DeleteModal";
 import { Plus, Package, ExternalLink } from "lucide-react";
@@ -8,11 +8,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useDeleteProduct, useProducts } from "@/hooks/useProducts";
-import { useDeleteUser } from "@/hooks/useUsers";
 import {
   ProductResponse,
   VariantResponse,
 } from "@/lib/validation/products.schema";
+import { ErrorSchema } from "@/types";
 
 type ProductWithCategory = ProductResponse & {
   category?: {
@@ -23,59 +23,22 @@ type ProductWithCategory = ProductResponse & {
 
 export default function ProductsPage() {
   const router = useRouter();
-  // const [products, setProducts] = useState<any[]>([]);
-  // const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // async function fetchProducts() {
-  //   setIsLoading(true);
-  //   try {
-  //     const res = await fetch("/api/products");
-  //     const data = await res.json();
-  //     setProducts(data);
-  //   } catch (error) {
-  //     console.error("Failed to fetch products:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, []);
-
   const { data: products, isLoading } = useProducts();
-
-  // const handleDelete = async () => {
-  //   if (!deleteId) return;
-  //   setIsDeleting(true);
-  //   try {
-  //     const res = await fetch(`/api/products/${deleteId}`, {
-  //       method: "DELETE",
-  //     });
-  //     if (res.ok) {
-  //       setProducts(products.filter((p) => p.id !== deleteId));
-  //       setDeleteId(null);
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to delete product:", error);
-  //   } finally {
-  //     setIsDeleting(false);
-  //   }
-  // };
 
   const deleteProduct = useDeleteProduct();
   const handleDelete = async () => {
     if (!deleteId) return;
 
     deleteProduct.mutate(deleteId, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         setDeleteId(null);
         // Success toast
         alert("Product deleted successfully");
       },
-      onError: (error: any) => {
+      onError: (error: ErrorSchema) => {
         // Cek apakah error karena product memiliki orders
         if (
           error.response?.status === 409 ||
@@ -113,7 +76,7 @@ export default function ProductsPage() {
             )}
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-slate-900 dark:text-white truncate max-w-[200px]">
+            <p className="font-bold text-slate-900 dark:text-white truncate max-w-50">
               {item.title}
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
