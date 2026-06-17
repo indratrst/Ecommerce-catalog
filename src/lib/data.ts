@@ -53,13 +53,25 @@ export async function getProducts(categorySlug?: string, search?: string) {
 }
 
 export async function getProductById(id: string) {
-  return prisma.product.findUnique({
+  const product = await prisma.product.findUnique({
     where: { id },
     include: {
       category: true,
       variants: true,
     },
   });
+
+  if (!product) return null;
+
+  // ✅ Transform di sini
+  return {
+    ...product,
+    image: product.image ?? "",
+    variants: product.variants.map((v) => ({
+      ...v,
+      color: v.color ?? "",
+    })),
+  };
 }
 
 export async function getCategories() {

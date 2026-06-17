@@ -9,6 +9,17 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useDeleteProduct, useProducts } from "@/hooks/useProducts";
 import { useDeleteUser } from "@/hooks/useUsers";
+import {
+  ProductResponse,
+  VariantResponse,
+} from "@/lib/validation/products.schema";
+
+type ProductWithCategory = ProductResponse & {
+  category?: {
+    id: string;
+    name: string;
+  };
+};
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -85,14 +96,14 @@ export default function ProductsPage() {
     {
       key: "image",
       label: "Product",
-      render: (image: string, item: any) => (
+      render: (image: string, item: ProductWithCategory) => (
         <div className="flex items-center gap-3">
           <div className="relative w-12 h-12 rounded-xl bg-slate-100 overflow-hidden shrink-0">
             {image ? (
               <Image
                 src={image}
-                alt={item.title}
                 fill
+                alt={item.title}
                 className="object-cover"
               />
             ) : (
@@ -125,7 +136,7 @@ export default function ProductsPage() {
     {
       key: "variants",
       label: "Stock",
-      render: (variants: any[]) => {
+      render: (variants: VariantResponse[]) => {
         const totalStock = variants.reduce((acc, v) => acc + v.stock, 0);
         return (
           <div className="flex flex-col gap-1">

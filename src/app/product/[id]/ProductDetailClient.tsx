@@ -2,35 +2,38 @@
 
 import { useCart } from "@/contexts/CartContext";
 import { Minus, Plus, ShoppingBag, ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { Product } from "@/types";
-
-interface Variant {
-  id: string;
-  size: string;
-  color: string | null;
-  stock: number;
-}
-
-interface ProductDetailClientProps {
-  product: Product;
-  totalStock: number;
-  variants: Variant[];
-}
+import {
+  ProductResponse,
+  VariantResponse,
+} from "@/lib/validation/products.schema";
+import Image from "next/image";
+type ProductWithCategory = ProductResponse & {
+  category?: {
+    id: string;
+    name: string;
+  };
+};
 
 export default function ProductDetailClient({
   product,
   totalStock,
   variants,
-}: ProductDetailClientProps) {
+}: {
+  product: ProductWithCategory;
+  totalStock: number;
+  variants: VariantResponse[];
+}) {
   const { cart, addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(
     variants.length > 0 ? variants[0].size : null,
   );
 
-  const selectedVariant = variants.find((v) => v.size === selectedSize);
+  const selectedVariant = variants.find(
+    (v: VariantResponse) => v.size === selectedSize && v.isActive,
+  );
   const currentStock = selectedVariant ? selectedVariant.stock : totalStock;
   // Cari item di cart dengan productId + variantId yang sama
   const cartItem = cart.find(
@@ -86,10 +89,12 @@ export default function ProductDetailClient({
           style={{ background: "var(--surface)" }}
         >
           {product.image ? (
-            <img
+            <Image
               src={product.image}
               alt={product.title}
               className="w-full h-full object-cover object-center"
+              width={500}
+              height={500}
             />
           ) : (
             <div
@@ -108,7 +113,7 @@ export default function ProductDetailClient({
               className="text-xs font-bold tracking-widest uppercase"
               style={{ color: "var(--muted)" }}
             >
-              {product.category}
+              {product?.category?.name}
             </span>
           </div>
 
@@ -153,7 +158,7 @@ export default function ProductDetailClient({
                 Size
               </p>
               <div className="flex flex-wrap gap-2">
-                {variants.map((variant) => (
+                {variants.map((variant: VariantResponse) => (
                   <button
                     key={variant.id}
                     onClick={() => setSelectedSize(variant.size)}
@@ -204,7 +209,7 @@ export default function ProductDetailClient({
                 <Minus className="h-5 w-5" />
               </button>
               <span
-                className="px-6 py-3 font-bold text-center border-x-2 min-w-[60px]"
+                className="px-6 py-3 font-bold text-center border-x-2 min-w-15"
                 style={{ borderColor: "var(--foreground)" }}
               >
                 {quantity}

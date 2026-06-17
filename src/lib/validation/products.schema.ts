@@ -123,8 +123,8 @@ export const ProductResponseSchema = z.object({
   id: z.string(),
   ...ProductBaseSchema,
   variants: z.array(VariantResponseSchema),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
 // ===== TYPE INFERS =====

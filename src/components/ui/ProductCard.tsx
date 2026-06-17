@@ -1,81 +1,101 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart, ShoppingBag } from "lucide-react";
-import { Product } from "@/types";
-import { useEffect, useState } from "react";
+import { ShoppingBag } from "lucide-react";
+import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
+import {
+  ProductResponse,
+  VariantResponse,
+} from "@/lib/validation/products.schema";
 
-type Variant = {
-  id: string;
-  size: string;
-  stock?: number;
+// type Variant = {
+//   id: string;
+//   size: string;
+//   stock: number;
+//   isActive?: boolean;
+// };
+
+// type Product = {
+//   id: string;
+//   title: string;
+//   image?: string | null;
+//   category?: { name: string } | null;
+//   price: number;
+//   variants: Variant[];
+// };
+
+// interface ProductCardProps {
+//   product: Product;
+// }
+
+type ProductWithCategory = ProductResponse & {
+  category?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
 };
 
-type Product = {
-  id: string;
-  title: string;
-  image?: string | null;
-  category?: string | null;
-  price: number;
-  variants?: Variant[] | null;
-};
-
-interface ProductCardProps {
-  product: Product;
-}
-
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product }: { product: ProductWithCategory }) {
   const [selectedSize, setSelectedSize] = useState<string | null>(
     product.variants?.[0]?.size ?? null,
   );
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const { cart, addToCart } = useCart();
+  const totalStock = product.variants.reduce(
+    (sum: number, v: VariantResponse) => sum + v.stock,
+    0,
+  );
+  const selectedVariant = product.variants?.find(
+    (v: VariantResponse) => v.size === selectedSize && v.isActive,
+  );
 
-  useEffect(() => {
-    // if (product.variants && product.variants.length > 0) {
-    //   const firstInStock = product.variants.find((v) => v.stock > 0);
-    //   setSelectedSize(firstInStock ? firstInStock.size : null);
-    // }
+  console.log(selectedVariant);
+  const currentStock = selectedVariant ? selectedVariant.stock : totalStock;
+  const cartItem = cart.find(
+    (item) =>
+      item.product.id === product.id &&
+      item.productVariantId === selectedVariant?.id,
+  );
+  const cartQuantity = cartItem ? cartItem.quantity : 0;
+  const remainingStock = currentStock - cartQuantity;
+  // useEffect(() => {
+  //   // if (product.variants && product.variants.length > 0) {
+  //   //   const firstInStock = product.variants.find((v) => v.stock > 0);
+  //   //   setSelectedSize(firstInStock ? firstInStock.size : null);
+  //   // }
 
-    console.log(product);
-  }, [product.variants]);
+  //   console.log(product);
+  // }, [product, product.variants]);
 
   const handleAddToCart = () => {
-    // Cek apakah produk memiliki variants dan perlu memilih ukuran
-    if (product.variants && product.variants.length > 0 && !selectedSize) {
-      console.warn("Please select a size");
+    if (remainingStock <= 0) {
+      alert("Stok habis di keranjang");
       return;
     }
-
-    setIsAddingToCart(true);
-
-    // Dapatkan variant yang dipilih
-    const selectedVariant = product.variants?.find(
-      (v) => v.size === selectedSize,
-    );
-
-    // Siapkan data variant untuk cart
-    const cartVariant = selectedVariant
-      ? {
-          id: selectedVariant.id,
-          size: selectedVariant.size,
-        }
-      : undefined;
-
-    // Panggil fungsi addToCart dari context
+    const safeQuantity = Math.min(quantity, remainingStock);
+    setQuantity(1);
     addToCart(
       product,
-      1, // quantity
-      cartVariant,
+      safeQuantity,
+      selectedVariant ?? undefined,
+      currentStock,
     );
+  };
 
-    // Reset loading state setelah delay
-    setTimeout(() => {
-      setIsAddingToCart(false);
-    }, 500);
+  const getStockColor = (currentStock: number) => {
+    if (currentStock === 0) return "text-red-500";
+    if (currentStock < 5) return "text-orange-500";
+    return "text-black";
+  };
+
+  const getStockMessage = (currentStock: number) => {
+    if (currentStock === 0) return "Out of Stock";
+    if (currentStock === 1) return `Only 1 left!`;
+    if (currentStock < 5) return `Only ${currentStock} left!`; // Optional: untuk currentStock 2-4
+    return `${currentStock} in stock`;
   };
 
   return (
@@ -109,7 +129,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* IMAGE AREA */}
         <div className="relative overflow-hidden">
           <Link href={`/product/${product.id}`}>
-            <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
+            <div className="relative aspect-4/5 overflow-hidden bg-neutral-100">
               {product.image ? (
                 <motion.img
                   src={product.image}
@@ -136,7 +156,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 className="
                   absolute
                   inset-0
-                  bg-gradient-to-t
+                  bg-linear-to-t
                   from-black/15
                   via-transparent
                   to-transparent
@@ -170,31 +190,32 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* CONTENT */}
-        <div className="space-y-3 p-5">
+        <div className="space-y-3 py-5 px-5">
           {/* category */}
-          <span
-            className="
-              text-xs
-              font-medium
+          <Link href={`/products?category=${product.category?.slug}`}>
+            <span
+              className="
               uppercase
               tracking-wider
-              text-neutral-400
+              border border-black text-black text-xs font-medium px-2 py-1 rounded
+              hover:bg-black hover:text-white transition-colors
             "
-          >
-            {product.category?.name}
-          </span>
-
+            >
+              {product.category?.name}
+            </span>
+          </Link>
           {/* title */}
           <Link href={`/product/${product.id}`}>
             <h3
               className="
                 line-clamp-2
-                text-[15px]
+                text-[16px]
                 font-semibold
                 leading-snug
                 text-neutral-900
                 transition-colors
                 hover:text-neutral-600
+                mt-3
               "
             >
               {product.title}
@@ -241,12 +262,12 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
           <div className="flex gap-2 mt-4">
-            {product.variants
+            {product?.variants
               .filter(
-                (variant: { stock: number; isActive: boolean }) =>
+                (variant: VariantResponse) =>
                   variant.stock > 0 && variant.isActive,
               )
-              .map((variant) => (
+              .map((variant: VariantResponse) => (
                 <button
                   key={variant.id}
                   onClick={() => setSelectedSize(variant.size)}
@@ -270,26 +291,28 @@ export function ProductCard({ product }: ProductCardProps) {
                 </button>
               ))}
           </div>
+
+          <p
+            className={`text-sm font-bold uppercase tracking-widest ${getStockColor(currentStock)}`}
+          >
+            {getStockMessage(currentStock)}
+          </p>
           {/* ADD TO CART BUTTON (moved to bottom) */}
           <button
             onClick={handleAddToCart}
-            disabled={isAddingToCart}
-            className="
-              mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-lg
-              bg-neutral-900 text-sm font-medium text-white transition-all
-              hover:bg-neutral-800 active:scale-95
-              dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-200
-              disabled:opacity-70 disabled:cursor-not-allowed
-            "
+            disabled={currentStock === 0 || cartQuantity === currentStock}
+            className={`w-full py-4 px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors rounded-4xl ${
+              currentStock === 0
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-black text-white hover:bg-gray-800"
+            }`}
           >
-            {isAddingToCart ? (
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-neutral-900" />
-            ) : (
-              <>
-                <ShoppingBag size={16} />
-                Add to Cart
-              </>
-            )}
+            <ShoppingBag className="h-6 w-6" />
+            {currentStock === 0
+              ? "Out of Stock"
+              : cartQuantity === currentStock
+                ? "Max Stock Reached"
+                : "Add to Cart"}
           </button>
         </div>
       </motion.div>
