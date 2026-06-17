@@ -16,6 +16,7 @@ import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 import { useDebounce } from "@/hooks/useDebounce";
 import { isMockMode, setMockMode } from "@/services/rajaongkir/mock";
+import Image from "next/image";
 
 export function Header() {
   const { cart, setIsCartOpen } = useCart();
@@ -329,9 +330,11 @@ export function Header() {
                             style={{ background: "var(--surface)" }}
                           >
                             {product.image ? (
-                              <img
+                              <Image
                                 src={product.image}
                                 alt={product.title}
+                                height={400}
+                                width={400}
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                               />
                             ) : (
