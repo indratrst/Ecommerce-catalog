@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DataTable } from "@/components/admin/DataTable";
 import { DeleteModal } from "@/components/admin/DeleteModal";
 import { Plus, Tag } from "lucide-react";
@@ -11,7 +11,6 @@ import { CategoryResponse } from "@/lib/validation/category.schema";
 
 export default function CategoriesPage() {
   const router = useRouter();
-  // const [dataCategories, setCategories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   // const [isDeleting, setIsDeleting] = useState(false);
@@ -35,8 +34,6 @@ export default function CategoriesPage() {
   // }, []);
 
   const { data: categories, isLoading: categoryLoading } = useCategories();
-
-  console.log(categories, "ucok");
 
   const deleteCategory = useDeleteCategory();
   const isDeleting = deleteCategory.isPending;
