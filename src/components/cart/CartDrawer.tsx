@@ -2,10 +2,10 @@
 
 import { useCart } from "@/contexts/CartContext";
 import { getCartItemKey } from "@/store/useCartStore";
-import { X, Plus, Minus, Trash2, ShoppingBag, PlusCircle } from "lucide-react";
+import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Product } from "@/types";
+import { useEffect } from "react";
 // import { getItemStock } from "@/lib/cart";
 
 export function CartDrawer() {
@@ -15,7 +15,6 @@ export function CartDrawer() {
     setIsCartOpen,
     removeFromCart,
     updateQuantity,
-    addToCart,
     cartTotal,
   } = useCart();
 
@@ -34,7 +33,7 @@ export function CartDrawer() {
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [isCartOpen]);
+  }, [cart, isCartOpen]);
 
   if (!isCartOpen) return null;
 
@@ -98,13 +97,15 @@ export function CartDrawer() {
                     style={{ borderColor: "var(--surface-border)" }}
                   >
                     <div
-                      className="h-24 w-20 flex-shrink-0 overflow-hidden"
+                      className="h-24 w-20 shrink-0 overflow-hidden"
                       style={{ background: "var(--surface)" }}
                     >
                       {item.product.image ? (
-                        <img
+                        <Image
                           src={item.product.image}
                           alt={item.product.title}
+                          width={100}
+                          height={100}
                           className="h-full w-full object-cover"
                         />
                       ) : (
@@ -259,7 +260,7 @@ export function CartDrawer() {
 
         {cart.length > 0 && (
           <div
-            className="border-t p-4 flex-shrink-0"
+            className="border-t p-4 shrink-0"
             style={{
               borderColor: "var(--surface-border)",
               background: "var(--card-bg)",
@@ -286,10 +287,10 @@ export function CartDrawer() {
                     onClick={() => setIsCartOpen(false)}
                     className="relative block w-full h-full overflow-hidden group border-2 font-bold uppercase tracking-wider transition-colors hover:opacity-70"
                   >
-                    <div className="absolute w-full h-full left-0 top-0 text-white flex items-center justify-center transition-all duration-500 group-hover:top-[-100%]">
+                    <div className="absolute w-full h-full left-0 top-0 text-white flex items-center justify-center transition-all duration-500 group-hover:-top-full">
                       View Cart
                     </div>
-                    <div className="absolute w-full h-full left-0 top-[100%] text-white flex items-center justify-center transition-all duration-500 group-hover:top-0">
+                    <div className="absolute w-full h-full left-0 top-full text-white flex items-center justify-center transition-all duration-500 group-hover:top-0">
                       <svg
                         viewBox="0 0 16 16"
                         className="bi bi-cart2 fill-current w-6 h-6"

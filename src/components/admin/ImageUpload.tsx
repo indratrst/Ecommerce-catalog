@@ -10,7 +10,11 @@ interface ImageUploadProps {
   label?: string;
 }
 
-export function ImageUpload({ value, onChange, label = "Product Image" }: ImageUploadProps) {
+export function ImageUpload({
+  value,
+  onChange,
+  label = "Product Image",
+}: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,13 +48,14 @@ export function ImageUpload({ value, onChange, label = "Product Image" }: ImageU
       <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight">
         {label}
       </label>
-      
+
       {value ? (
-        <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm group">
+        <div className="relative w-full aspect-video rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm group">
           <Image
             src={value}
+            width={500}
+            height={900}
             alt="Upload preview"
-            fill
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -64,7 +69,7 @@ export function ImageUpload({ value, onChange, label = "Product Image" }: ImageU
           </div>
         </div>
       ) : (
-        <div 
+        <div
           onClick={() => fileInputRef.current?.click()}
           className="w-full aspect-video border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/10 transition-all group"
         >
@@ -75,7 +80,7 @@ export function ImageUpload({ value, onChange, label = "Product Image" }: ImageU
             accept="image/*"
             onChange={handleUpload}
           />
-          
+
           <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30 transition-all">
             {isUploading ? (
               <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
@@ -83,7 +88,7 @@ export function ImageUpload({ value, onChange, label = "Product Image" }: ImageU
               <Upload className="w-8 h-8 text-slate-400 group-hover:text-indigo-600 transition-colors" />
             )}
           </div>
-          
+
           <div className="text-center">
             <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
               {isUploading ? "Uploading..." : "Click to upload image"}
