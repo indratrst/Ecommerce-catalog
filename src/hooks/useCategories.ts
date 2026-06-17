@@ -3,6 +3,7 @@ import {
   CategoryResponse,
   CreateCategory,
 } from "@/lib/validation/category.schema";
+import { ErrorSchema } from "@/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -35,9 +36,8 @@ export function useCreateCategory() {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       router.push("/admin/categories");
     },
-    onError: (error: { response?: { data?: { error?: string } } }) => {
-      const message =
-        error.response?.data?.error ?? "Failed to create category";
+    onError: (error: ErrorSchema) => {
+      const message = error.message ?? "Failed to create category";
       alert(message); // ganti dengan toast jika ada
     },
   });
