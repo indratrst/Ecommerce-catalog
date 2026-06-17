@@ -23,11 +23,9 @@ export const UpdateCategorySchema = z
 // RESPONSE schema (from DB)
 export const CategoryResponseSchema = z.object({
   id: z.string(),
-  name: z.string(),
-  slug: z.string(),
-  description: z.string().nullable(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  ...CategoryBaseSchema,
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
 // Infer types
