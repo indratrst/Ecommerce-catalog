@@ -21,18 +21,6 @@ export default async function ProductDetailPage({
   }
 
   // Map to the shape the client component expects
-  const mappedProduct = {
-    id: product.id,
-    title: product.title,
-    price: product.price,
-    description: product.description,
-    category: product.category.name,
-    image: product.image ?? undefined,
-    rating: {
-      rate: product.ratingRate ?? 0,
-      count: product.ratingCount ?? 0,
-    },
-  };
 
   // Compute total stock from all variants
   const totalStock = product.variants.reduce(
@@ -43,9 +31,10 @@ export default async function ProductDetailPage({
   const filteredVariants = product.variants
     .filter((v) => v.isActive === true)
     .map((v) => VariantResponseSchema.parse(v));
+
   return (
     <ProductDetailClient
-      product={mappedProduct}
+      product={product}
       totalStock={totalStock}
       variants={filteredVariants}
     />
