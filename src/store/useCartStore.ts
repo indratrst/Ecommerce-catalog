@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { Product, CartItem } from "@/types";
+import { ProductResponse } from "@/lib/validation/products.schema";
+import { CartItem } from "@/types";
 
 interface CartState {
   items: CartItem[];
@@ -8,7 +9,7 @@ interface CartState {
 
   // Actions
   addItem: (
-    product: Product,
+    product: ProductResponse,
     quantity?: number,
     maxStock?: number,
     variant?: CartItem["variant"],
