@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CategoryResponseSchema } from "./category.schema";
 
 // const variantSchema = z.object({
 //   id: z.string().optional(),
@@ -60,10 +61,7 @@ import { z } from "zod";
 // ===== VARIANT SCHEMAS =====
 const VariantBaseSchema = {
   size: z.string().min(1, "Size wajib diisi"),
-  color: z
-    .string()
-    .nullable()
-    .transform((val) => val ?? ""),
+  color: z.string().nullable().optional(),
   stock: z.number().int().min(0, "Stock minimal 0"),
 };
 
@@ -90,7 +88,7 @@ const ProductBaseSchema = {
     .number({ message: "Harga wajib diisi" })
     .positive("Harga harus lebih dari 0"),
   description: z.string().min(1, "Deskripsi wajib diisi"),
-  image: z.string().default(""),
+  image: z.string().nullable(),
   categoryId: z.string().min(1, "Kategori wajib dipilih"),
 };
 
@@ -122,9 +120,16 @@ export const UpdateProductSchema = z
 export const ProductResponseSchema = z.object({
   id: z.string(),
   ...ProductBaseSchema,
+  category: CategoryResponseSchema.optional(),
   variants: z.array(VariantResponseSchema),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const ProductCardSchema = ProductResponseSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+  categoryId: true,
 });
 
 // ===== TYPE INFERS =====
@@ -133,3 +138,4 @@ export type UpdateProduct = z.infer<typeof UpdateProductSchema>;
 export type ProductResponse = z.infer<typeof ProductResponseSchema>;
 export type ProductVariant = z.infer<typeof VariantInputSchema>;
 export type VariantResponse = z.infer<typeof VariantResponseSchema>;
+export type ProductCardSchema = z.infer<typeof ProductCardSchema>;
