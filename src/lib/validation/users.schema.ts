@@ -5,7 +5,7 @@ const UserBaseSchema = {
   name: z.string().min(1, "Name is required").max(100),
   email: z.string().email("Invalid email format"),
   password: z.string().optional().nullable(),
-  role: z.enum(["SUPERUSER", "ADMIN", "USER"]).default("USER"),
+  role: z.enum(["SUPERUSER", "ADMIN", "USER"]),
   orders: z.array(z.string()).optional(), // Array of order IDs
 };
 
@@ -27,7 +27,7 @@ export const UsersResponseSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
   email: z.string().email("Invalid email format"),
   password: z.string().optional().nullable(),
-  role: z.enum(["SUPERUSER", "ADMIN", "USER"]).default("USER"),
+  role: z.enum(["SUPERUSER", "ADMIN", "USER"]),
   orders: z.array(z.string()).optional(), // Array of order IDs
   createdAt: z.date(),
   updatedAt: z.date(),
