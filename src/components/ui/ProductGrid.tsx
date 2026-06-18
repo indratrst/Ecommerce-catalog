@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/ui/ProductCard";
-import type { ProductWithRelations } from "@/lib/data";
+import { ProductCardSchema } from "@/lib/validation/products.schema";
 
 const sortOptions = [
   { value: "default", label: "Popular " },
@@ -11,11 +11,7 @@ const sortOptions = [
   { value: "price-desc", label: "Price: High to Low" },
 ];
 
-export function ProductGrid({
-  products,
-}: {
-  products: ProductWithRelations[];
-}) {
+export function ProductGrid({ products }: { products: ProductCardSchema[] }) {
   const [sortOption, setSortOption] = useState("default");
 
   // Map DB products to the shape ProductCard expects
@@ -25,17 +21,9 @@ export function ProductGrid({
       title: p.title,
       price: p.price,
       description: p.description,
-
       category: p.category,
-
-      image: p.image ?? undefined,
-
+      image: p.image ?? null,
       variants: p.variants ?? [],
-
-      rating: {
-        rate: p.ratingRate ?? 0,
-        count: p.ratingCount ?? 0,
-      },
     }));
   }, [products]);
 

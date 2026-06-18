@@ -1,6 +1,6 @@
 "use client";
 
-import { useProducts, useProductUnique } from "@/hooks/useProducts";
+import { useProductUnique } from "@/hooks/useProducts";
 import { ProductGrid } from "@/components/ui/ProductGrid";
 import { ProductWithRelations } from "@/lib/data";
 import { useSearchParams } from "next/navigation";

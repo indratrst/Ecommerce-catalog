@@ -6,39 +6,11 @@ import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import {
-  ProductResponse,
+  ProductCardSchema,
   VariantResponse,
 } from "@/lib/validation/products.schema";
 
-// type Variant = {
-//   id: string;
-//   size: string;
-//   stock: number;
-//   isActive?: boolean;
-// };
-
-// type Product = {
-//   id: string;
-//   title: string;
-//   image?: string | null;
-//   category?: { name: string } | null;
-//   price: number;
-//   variants: Variant[];
-// };
-
-// interface ProductCardProps {
-//   product: Product;
-// }
-
-type ProductWithCategory = ProductResponse & {
-  category?: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-};
-
-export function ProductCard({ product }: { product: ProductWithCategory }) {
+export function ProductCard({ product }: { product: ProductCardSchema }) {
   const [selectedSize, setSelectedSize] = useState<string | null>(
     product.variants?.[0]?.size ?? null,
   );
