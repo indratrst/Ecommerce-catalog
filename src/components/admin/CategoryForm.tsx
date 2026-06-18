@@ -7,11 +7,11 @@ import {
   CreateCategory,
   CreateCategorySchema,
 } from "@/lib/validation/category.schema";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm, useWatch } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-
+import { toast } from "sonner";
 interface CategoryFormProps {
-  initialData?: any;
+  initialData?: CreateCategory;
   onSubmit: (data: CreateCategory) => void | Promise<void>;
   isLoading?: boolean;
 }
@@ -25,10 +25,10 @@ export function CategoryForm({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<CreateCategory>({
-    resolver: standardSchemaResolver(CreateCategorySchema) as any,
+    resolver: standardSchemaResolver(CreateCategorySchema),
     defaultValues: {
       name: initialData?.name || "",
       slug: initialData?.slug || "",
@@ -36,15 +36,35 @@ export function CategoryForm({
     },
   });
 
-  const watchedName = watch("name");
+  const watchedName = useWatch({
+    control,
+    name: "name",
+    defaultValue: initialData?.name || "",
+  });
 
   const onFormSubmit = async (data: CreateCategory) => {
     // e.preventDefault();
     await onSubmit(data);
   };
 
-  const onFormError = (errors: any) => {
-    console.log("❌ Validation errors:", errors);
+  const onFormError = (errors: FieldErrors<CreateCategory>) => {
+    if (process.env.NODE_ENV === "development") {
+      console.log("❌ Validation errors:", errors);
+    }
+
+    // 2. Pemicu Toast Error dari sonner
+    toast.error("Gagal menyimpan! Silakan periksa kembali form Anda.");
+
+    // 3. Logika auto-scroll kamu yang sebelumnya (tetap dipertahankan)
+    const firstErrorKey = Object.keys(errors)[0];
+    if (firstErrorKey) {
+      // Catatan: Karena kamu menggunakan react-hook-form, gunakan querySelector berdasarkan 'name' attribute
+      const element = document.querySelector(
+        `[name="${firstErrorKey}"]`,
+      ) as HTMLElement;
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+      element?.focus();
+    }
   };
 
   useEffect(() => {
