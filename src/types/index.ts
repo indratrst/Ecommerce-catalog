@@ -1,3 +1,7 @@
+import {
+  ProductResponseSchema,
+  VariantResponseSchema,
+} from "@/lib/validation/products.schema";
 import { z } from "zod";
 
 // export const CategorySchema = z.object({
@@ -38,12 +42,12 @@ import { z } from "zod";
 //   isDeleted: z.boolean().optional(),
 // });
 
-// export const CartItemSchema = z.object({
-//   product: ProductSchema,
-//   quantity: z.number().min(1),
-//   productVariantId: z.string().optional(),
-//   variant: ProductVariantSchema.optional(),
-// });
+export const CartItemSchema = z.object({
+  product: ProductResponseSchema,
+  quantity: z.number().min(1),
+  productVariantId: z.string().optional(),
+  variant: VariantResponseSchema.optional(),
+});
 
 // export const ProductBaseSchema = z.object({
 //   title: z.string().min(1, "Judul produk wajib diisi"),
@@ -64,7 +68,6 @@ import { z } from "zod";
 // // export type Category = z.infer<typeof CategorySchema>;
 // export type Product = z.infer<typeof ProductSchema>;
 // export type ProductVariantSchema = z.infer<typeof ProductVariantSchema>;
-// export type CartItem = z.infer<typeof CartItemSchema>;
 // export type ProductBaseSchema = z.infer<typeof ProductBaseSchema>;
 
 export const Error = z.object({
@@ -77,3 +80,4 @@ export const Error = z.object({
 });
 
 export type ErrorSchema = z.infer<typeof Error>;
+export type CartItem = z.infer<typeof CartItemSchema>;
