@@ -6,11 +6,14 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { useEffect, useState } from "react";
-import { Product } from "@/types";
+import Image from "next/image";
+import { ProductResponse } from "@/lib/validation/products.schema";
 
 export default function CartPage() {
   const { cart = [], removeFromCart, updateQuantity, cartTotal } = useCart();
-  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
+  const [recommendedProducts, setRecommendedProducts] = useState<
+    ProductResponse[]
+  >([]);
 
   // Fetch recommendations from API, excluding items in cart
 
@@ -27,7 +30,7 @@ export default function CartPage() {
           const allProducts = await res.json();
           const cartIds = cart.map((item) => String(item.product.id));
           const filtered = allProducts
-            .filter((p: Product) => !cartIds.includes(String(p.id)))
+            .filter((p: ProductResponse) => !cartIds.includes(String(p.id)))
             .slice(0, 4);
           setRecommendedProducts(filtered);
         }
@@ -111,7 +114,7 @@ export default function CartPage() {
                       style={{ background: "var(--surface)" }}
                     >
                       {item.product.image ? (
-                        <img
+                        <Image
                           src={item.product.image}
                           alt={item.product.title}
                           className="h-full w-full object-cover"
