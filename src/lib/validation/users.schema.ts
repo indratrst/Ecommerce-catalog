@@ -33,6 +33,19 @@ export const UsersResponseSchema = z.object({
   updatedAt: z.date(),
 });
 
+export const UsersDataTableSchema = UsersResponseSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Infer types
+export type UserDataTableSchema = z.infer<typeof UsersDataTableSchema>;
+export type UserWithCount = UserDataTableSchema & {
+  _count: {
+    users?: number;
+  };
+};
+
 export type CreateUser = z.infer<typeof CreateUserSchema>;
 export type UpdateUser = z.infer<typeof UpdateUserSchema>;
 export type UserResponse = z.infer<typeof UsersResponseSchema>;

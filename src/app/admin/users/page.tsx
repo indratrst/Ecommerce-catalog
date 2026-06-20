@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DataTable } from "@/components/admin/DataTable";
+import { Column, DataTable } from "@/components/admin/DataTable";
 import { DeleteModal } from "@/components/admin/DeleteModal";
 import { UserForm } from "@/components/admin/UserForm";
 import { Plus, Shield, ShieldCheck, ShieldAlert, X } from "lucide-react";
@@ -11,54 +11,24 @@ import {
   useUpdateUser,
   useUsers,
 } from "@/hooks/useUsers";
-import { CreateUser, UpdateUser } from "@/lib/validation/users.schema";
+import {
+  CreateUser,
+  UpdateUser,
+  UserResponse,
+} from "@/lib/validation/users.schema";
+import { toast } from "sonner";
+import { LucideIcon } from "lucide-react";
 
 export default function UsersPage() {
   const { data: users = [], isLoading } = useUsers();
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Modal for creating/editing users
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editingUser, setEditingUser] = useState<UserResponse | null>(null);
   const [formLoading, setFormLoading] = useState(false);
-
-  // async function fetchUsers() {
-  //   setIsLoading(true);
-  //   try {
-  //     const res = await fetch("/api/users");
-  //     const data = await res.json();
-  //     setUsers(data);
-  //   } catch (error) {
-  //     console.error("Failed to fetch users:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, []);
-
-  // const handleDelete = async () => {
-  //   if (!deleteId) return;
-  //   setIsDeleting(true);
-  //   try {
-  //     const res = await fetch(`/api/users/${deleteId}`, {
-  //       method: "DELETE",
-  //     });
-  //     if (res.ok) {
-  //       setUsers(users.filter((u) => u.id !== deleteId));
-  //       setDeleteId(null);
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to delete user:", error);
-  //   } finally {
-  //     setIsDeleting(false);
-  //   }
-  // };
 
   const deleteUser = useDeleteUser();
 
@@ -86,6 +56,10 @@ export default function UsersPage() {
     setFormLoading(true);
     try {
       if (editingUser) {
+        if (!editingUser.id) {
+          toast("Cannot update user: Missing user ID");
+          return;
+        }
         // Mode update
         const updateData: Partial<UpdateUser> = {
           name: data.name,
@@ -101,18 +75,42 @@ export default function UsersPage() {
       setIsModalOpen(false);
       setEditingUser(null);
       // Data akan otomatis refetch karena onSuccess di hook sudah handle invalidateQueries
-    } catch (error) {
-      console.error("User action failed:", error);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.";
+      toast(message);
     } finally {
       setFormLoading(false);
     }
   };
 
-  const columns = [
+  type RoleConfig = {
+    bg: string;
+    text: string;
+    icon: LucideIcon;
+  };
+
+  const roleConfig: Record<UserResponse["role"], RoleConfig> = {
+    SUPERUSER: {
+      bg: "bg-purple-100",
+      text: "text-purple-700",
+      icon: ShieldCheck,
+    },
+    ADMIN: { bg: "bg-blue-100", text: "text-blue-700", icon: Shield },
+    USER: {
+      bg: "bg-slate-100",
+      text: "text-slate-700",
+      icon: ShieldAlert,
+    },
+  };
+
+  const columns: Column<UserResponse>[] = [
     {
       key: "name",
       label: "Name",
-      render: (name: string, item: any) => (
+      render: (name, item) => (
         <div className="flex flex-col">
           <span className="font-bold text-slate-900 dark:text-white">
             {name}
@@ -126,21 +124,8 @@ export default function UsersPage() {
     {
       key: "role",
       label: "Role",
-      render: (role: string) => {
-        const config: any = {
-          SUPERUSER: {
-            bg: "bg-purple-100",
-            text: "text-purple-700",
-            icon: ShieldCheck,
-          },
-          ADMIN: { bg: "bg-blue-100", text: "text-blue-700", icon: Shield },
-          USER: {
-            bg: "bg-slate-100",
-            text: "text-slate-700",
-            icon: ShieldAlert,
-          },
-        };
-        const { bg, text, icon: Icon } = config[role] || config.USER;
+      render: (role) => {
+        const { bg, text, icon: Icon } = roleConfig[role] || roleConfig.USER;
         return (
           <div
             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${bg} ${text}`}
@@ -154,7 +139,7 @@ export default function UsersPage() {
     {
       key: "createdAt",
       label: "Joined",
-      render: (date: string) => (
+      render: (date) => (
         <span className="text-xs text-slate-500 dark:text-slate-400 font-medium italic">
           {new Date(date).toLocaleDateString()}
         </span>
@@ -222,7 +207,7 @@ export default function UsersPage() {
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
-        isLoading={isDeleting}
+        isLoading={deleteUser.isPending}
         title="Revoke Access"
         description="Are you sure you want to remove this user? They will lose all access to the CMS immediately."
       />
