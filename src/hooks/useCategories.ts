@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
 import {
   CategoryResponse,
+  CategoryWithCount,
   CreateCategory,
 } from "@/lib/validation/category.schema";
 import { ErrorSchema } from "@/types";
@@ -9,7 +10,7 @@ import { useRouter } from "next/navigation";
 
 // Query hook
 export function useCategories() {
-  return useQuery<CategoryResponse[]>({
+  return useQuery<CategoryWithCount[]>({
     queryKey: ["categories"],
     queryFn: () => api.get("/categories").then((res) => res.data),
     staleTime: 60 * 60 * 1000,

@@ -1,37 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { DataTable } from "@/components/admin/DataTable";
+import { Column, DataTable } from "@/components/admin/DataTable";
 import { DeleteModal } from "@/components/admin/DeleteModal";
 import { Plus, Tag } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCategories, useDeleteCategory } from "@/hooks/useCategories";
-import { CategoryResponse } from "@/lib/validation/category.schema";
+import { CategoryWithCount } from "@/lib/validation/category.schema";
 
 export default function CategoriesPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  // const [isDeleting, setIsDeleting] = useState(false);
-
-  // async function fetchCategories() {
-  //   setIsLoading(true);
-  //   try {
-  //     const res = await fetch("/api/categories");
-  //     const data = await res.json();
-  //     console.log(data, "aaaaaaaa");
-  //     // setCategories(data);
-  //   } catch (error) {
-  //     console.error("Failed to fetch categories:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchCategories();
-  // }, []);
 
   const { data: categories, isLoading: categoryLoading } = useCategories();
 
@@ -47,11 +27,11 @@ export default function CategoriesPage() {
     });
   };
 
-  const columns = [
+  const columns: Column<CategoryWithCount>[] = [
     {
       key: "name",
       label: "Category Name",
-      render: (name: string, item: CategoryResponse) => (
+      render: (name, item) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <Tag className="w-5 h-5" />
@@ -68,7 +48,7 @@ export default function CategoriesPage() {
     {
       key: "description",
       label: "Description",
-      render: (desc: string) => (
+      render: (desc) => (
         <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 max-w-xs">
           {desc || "No description"}
         </p>
@@ -77,7 +57,7 @@ export default function CategoriesPage() {
     {
       key: "_count",
       label: "Products",
-      render: (count: { products?: number }) => (
+      render: (count) => (
         <span className="font-bold text-slate-900 dark:text-white">
           {count?.products || 0} items
         </span>

@@ -28,7 +28,18 @@ export const CategoryResponseSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
+export const CategoryDataTableSchema = CategoryResponseSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Infer types
 export type CreateCategory = z.infer<typeof CreateCategorySchema>;
 export type UpdateCategory = z.infer<typeof UpdateCategorySchema>;
 export type CategoryResponse = z.infer<typeof CategoryResponseSchema>;
+export type CategoryWithCount = CategoryResponse & {
+  _count: {
+    products?: number;
+  };
+};
+export type CategoryDataTableSchema = z.infer<typeof CategoryDataTableSchema>;
