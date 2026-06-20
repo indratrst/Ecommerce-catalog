@@ -6,37 +6,36 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUpDown,
-  MoreVertical,
   Edit,
   Trash2,
-  ChevronDown,
 } from "lucide-react";
-import { CategoryResponse } from "@/lib/validation/category.schema";
 
-interface Column {
-  key: string;
-  label: string;
-  render?: (value: any, item: any) => React.ReactNode;
-  sortable?: boolean;
-}
+export type Column<T> = {
+  [K in keyof T & string]: {
+    key: K; // Crucial: Ensures the key actually exists on the object
+    label: string;
+    render?: (value: T[K], item: T) => React.ReactNode;
+    sortable?: boolean;
+  };
+}[keyof T & string];
 
-interface DataTableProps {
-  columns: Column[];
-  data: CategoryResponse[];
-  onEdit?: (item: any) => void;
-  onDelete?: (item: any) => void;
+interface DataTableProps<T> {
+  columns: Column<T>[];
+  data?: T[];
+  onEdit?: (item: T) => void;
+  onDelete?: (item: T) => void;
   isLoading?: boolean;
   searchPlaceholder?: string;
 }
 
-export function DataTable({
+export function DataTable<T extends { id?: string | number }>({
   columns,
-  data,
+  data = [],
   onEdit,
   onDelete,
   isLoading,
   searchPlaceholder = "Search records...",
-}: DataTableProps) {
+}: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortKey, setSortKey] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -52,8 +51,8 @@ export function DataTable({
 
   const sortedData = [...(filteredData || [])].sort((a, b) => {
     if (!sortKey) return 0;
-    const aVal = a[sortKey as keyof CategoryResponse];
-    const bVal = b[sortKey as keyof CategoryResponse];
+    const aVal = a[sortKey as keyof T];
+    const bVal = b[sortKey as keyof T];
 
     if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
     if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
@@ -142,7 +141,7 @@ export function DataTable({
                     >
                       {col.render
                         ? col.render(item[col.key], item)
-                        : item[col.key]}
+                        : (item[col.key] as React.ReactNode)}
                     </td>
                   ))}
                   {(onEdit || onDelete) && (
