@@ -10,6 +10,7 @@ export interface BillingAddress {
   city_name?: string;
   district_name?: string;
   postcode: string;
+  zip_code: string;
 }
 
 export interface ShippingRate {
