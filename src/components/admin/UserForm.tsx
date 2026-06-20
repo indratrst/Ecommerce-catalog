@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 
 interface UserFormProps {
-  initialData?: UserResponse;
+  initialData?: UserResponse | null;
   onSubmit: (data: CreateUser) => Promise<void>;
   isLoading?: boolean;
 }
