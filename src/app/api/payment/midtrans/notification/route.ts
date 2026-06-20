@@ -15,10 +15,7 @@ export async function POST(request: Request) {
       transaction_status,
       status_code,
       gross_amount,
-      signature_key,
-      payment_type, // Ambil tipe pembayaran
-      transaction_id, // ID dari Midtrans
-      stock_reduced, // Tambahkan informasi apakah stok sudah dikurangi
+      signature_key, // Tambahkan informasi apakah stok sudah dikurangi
     } = body;
 
     // Verify signature using Midtrans notification formula

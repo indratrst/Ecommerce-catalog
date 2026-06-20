@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { X, AlertCircle } from "lucide-react";
 
 interface DeleteModalProps {
@@ -18,7 +17,7 @@ export function DeleteModal({
   onConfirm,
   title,
   description,
-  isLoading
+  isLoading,
 }: DeleteModalProps) {
   if (!isOpen) return null;
 
@@ -31,12 +30,14 @@ export function DeleteModal({
               <AlertCircle className="w-6 h-6 text-red-600" />
             </div>
             <div className="flex-1">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{title}</h3>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                {title}
+              </h3>
               <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
                 {description}
               </p>
             </div>
-            <button 
+            <button
               onClick={onClose}
               className="text-slate-400 hover:text-slate-500 transition-colors"
             >
@@ -44,7 +45,7 @@ export function DeleteModal({
             </button>
           </div>
         </div>
-        
+
         <div className="p-4 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row gap-3 justify-end border-t border-slate-100 dark:border-slate-800">
           <button
             onClick={onClose}

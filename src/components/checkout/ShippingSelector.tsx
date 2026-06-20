@@ -11,7 +11,7 @@ import {
 import { STORE_CONFIG } from "@/services/rajaongkir/constants";
 
 // adjust to your store location
-const ORIGIN_DISTRICT_ID = "5256";
+// const ORIGIN_DISTRICT_ID = "5256";
 
 const COURIERS = [
   { code: "jne", label: "JNE" },
@@ -113,7 +113,7 @@ export function ShippingSelector({
     } finally {
       setLoading(false);
     }
-  }, [billingData.areaId, totalWeight, selectedCourier]); // ✅ Dependency array lengkap
+  }, [canCalculate, billingData.areaId, totalWeight, selectedCourier]); // ✅ Dependency array lengkap
 
   // Auto fetch when areaId or courier changes
   useEffect(() => {

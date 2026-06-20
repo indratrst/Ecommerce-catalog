@@ -9,7 +9,7 @@ import { CreateProduct } from "@/lib/validation/products.schema";
 
 export default function NewProductPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const { data: categories } = useCategories();
 
   const createProduct = useCreateProduct();

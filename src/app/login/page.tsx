@@ -31,8 +31,8 @@ export default function LoginPage() {
 
       router.push("/admin");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -134,9 +134,9 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-        
+
         <div className="mt-8 text-center">
-          <button 
+          <button
             onClick={() => router.push("/")}
             className="text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors"
           >

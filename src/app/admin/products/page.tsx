@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DataTable } from "@/components/admin/DataTable";
+import { Column, DataTable } from "@/components/admin/DataTable";
 import { DeleteModal } from "@/components/admin/DeleteModal";
 import { Plus, Package, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -24,7 +24,7 @@ type ProductWithCategory = ProductResponse & {
 export default function ProductsPage() {
   const router = useRouter();
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting] = useState(false);
 
   const { data: products, isLoading } = useProducts();
 
@@ -55,11 +55,11 @@ export default function ProductsPage() {
     });
   };
 
-  const columns = [
+  const columns: Column<ProductWithCategory>[] = [
     {
       key: "image",
       label: "Product",
-      render: (image: string, item: ProductWithCategory) => (
+      render: (image, item) => (
         <div className="flex items-center gap-3">
           <div className="relative w-12 h-12 rounded-xl bg-slate-100 overflow-hidden shrink-0">
             {image ? (

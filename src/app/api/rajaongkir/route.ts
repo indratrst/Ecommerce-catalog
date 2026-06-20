@@ -1,75 +1,116 @@
-import { NextResponse } from "next/server";
+// app/api/rajaongkir/route.ts
+import { NextRequest, NextResponse } from "next/server";
 
-const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY;
-// const RAJAONGKIR_QRIS_KEY = process.env.RAJAONGKIR_QRIS_KEY;
-const RAJAONGKIR_BASE_URL = "https://rajaongkir.komerce.id/api/v1";
+const RAJAONGKIR_BASE = "https://rajaongkir.komerce.id/api/v1";
+const API_KEY = process.env.RAJAONGKIR_API_KEY;
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const type = searchParams.get("type"); // destination/province, destination/city/{id}, etc.
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const search = searchParams.get("search");
 
-  if (!type)
-    return NextResponse.json({ error: "Type required" }, { status: 400 });
+  if (!search) {
+    return NextResponse.json(
+      { meta: { code: 400, message: "Search query required" }, data: null },
+      { status: 400 },
+    );
+  }
 
-  const response = await fetch(`${RAJAONGKIR_BASE_URL}/${type}`, {
-    headers: {
-      key: RAJAONGKIR_API_KEY!,
-    },
-  });
-
-  const data = await response.json();
-  return NextResponse.json(data);
-}
-
-export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { type, ...payload } = body;
-
-    // if (type === "qris") {
-    //   console.log("Generating QRIS with payload:", payload);
-
-    //   const response = await fetch(`${RAJAONGKIR_BASE_URL}/payment/qris/generate`, {
-    //     method: "POST",
-    //     headers: {
-    //       key: RAJAONGKIR_QRIS_KEY!,
-    //       "Content-Type": "application/x-www-form-urlencoded",
-    //     },
-    //     body: new URLSearchParams(payload).toString(),
-    //   });
-
-    //   const text = await response.text();
-    //   console.log("Raja Ongkir QRIS Response Raw:", text);
-
-    //   try {
-    //     const data = JSON.parse(text);
-    //     return NextResponse.json(data);
-    //   } catch (e) {
-    //     return NextResponse.json({
-    //       error: "Invalid JSON response from Raja Ongkir",
-    //       raw: text.substring(0, 500)
-    //     }, { status: 500 });
-    //   }
-    // }
-
-    const endpoint =
-      type === "district"
-        ? "calculate/district/domestic-cost"
-        : "calculate/domestic-cost";
-
-    const response = await fetch(`${RAJAONGKIR_BASE_URL}/${endpoint}`, {
-      method: "POST",
-      headers: {
-        key: RAJAONGKIR_API_KEY!,
-        "Content-Type": "application/x-www-form-urlencoded",
+    const response = await fetch(
+      `${RAJAONGKIR_BASE}/destination/domestic-destination?search=${encodeURIComponent(search)}&limit=15`,
+      {
+        headers: {
+          key: API_KEY!,
+          "Content-Type": "application/json",
+        },
       },
-      body: new URLSearchParams(payload).toString(),
-    });
+    );
+
+    // Check if response is OK
+    if (!response.ok) {
+      console.error(
+        "RajaOngkir response error:",
+        response.status,
+        response.statusText,
+      );
+      const text = await response.text();
+      console.error("Response body:", text.substring(0, 200));
+      return NextResponse.json(
+        {
+          meta: { code: response.status, message: "RajaOngkir API error" },
+          data: null,
+        },
+        { status: response.status },
+      );
+    }
 
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (error: any) {
-    console.error("Proxy Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    console.error("RajaOngkir API Error:", error);
+    return NextResponse.json(
+      { meta: { code: 500, message: "Internal server error" }, data: null },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  if (!API_KEY) {
+    return NextResponse.json(
+      { meta: { code: 500, message: "API key missing" }, data: null },
+      { status: 500 },
+    );
+  }
+
+  try {
+    const body = await request.json();
+    const { origin, destination, weight, courier } = body;
+
+    // Validate
+    if (!origin || !destination || !weight || !courier) {
+      return NextResponse.json(
+        { meta: { code: 400, message: "Missing required fields" }, data: null },
+        { status: 400 },
+      );
+    }
+
+    // Prepare form data
+    const formData = new URLSearchParams();
+    formData.append("origin", origin);
+    formData.append("destination", destination);
+    formData.append("weight", weight.toString());
+    formData.append("courier", courier);
+
+    // Call RajaOngkir API
+    const response = await fetch(`${RAJAONGKIR_BASE}/calculate/domestic-cost`, {
+      method: "POST",
+      headers: {
+        key: API_KEY,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("RajaOngkir response error:", errorText);
+      return NextResponse.json(
+        {
+          meta: { code: response.status, message: "RajaOngkir API error" },
+          data: null,
+        },
+        { status: response.status },
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Calculate error:", error);
+    return NextResponse.json(
+      { meta: { code: 500, message: "Internal server error" }, data: null },
+      { status: 500 },
+    );
   }
 }

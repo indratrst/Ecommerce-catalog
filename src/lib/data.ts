@@ -9,18 +9,6 @@ export type CategoryWithCount = Awaited<
 >[number];
 
 export async function getProducts(categorySlug?: string, search?: string) {
-  // const where: { category?: { slug: string } } & { search?: string } = {};
-
-  // if (categorySlug) {
-  //   where.category = { slug: categorySlug };
-  // }
-
-  // if (search) {
-  //   where.OR = [
-  //     { title: { contains: search, mode: "insensitive" } },
-  //     { description: { contains: search, mode: "insensitive" } },
-  //   ];
-  // }
   const where: {
     category?: { slug: string };
     OR?: Array<

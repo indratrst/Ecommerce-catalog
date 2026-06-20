@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getProducts } from "@/lib/data";
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import { ProductListClient } from "@/components/products/ProductListClient";
 
 const categories = [
@@ -58,7 +62,8 @@ export default async function Home() {
             Elevate Your <br className="hidden md:block" /> Everyday
           </h1>
           <p className="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl font-medium">
-            Discover premium streetwear and lifestyle essentials designed for those who appreciate quality and style.
+            Discover premium streetwear and lifestyle essentials designed for
+            those who appreciate quality and style.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
@@ -79,7 +84,11 @@ export default async function Home() {
       </section>
 
       {/* CATEGORIES SECTION */}
-      <section id="categories" className="py-20" style={{ backgroundColor: "var(--background)" }}>
+      <section
+        id="categories"
+        className="py-20"
+        style={{ backgroundColor: "var(--background)" }}
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center mb-12">
             <h2
@@ -98,8 +107,8 @@ export default async function Home() {
             {categories.map((category) => (
               <Link
                 key={category.title}
-                href={category.link}
-                className="group relative h-[400px] overflow-hidden flex items-center justify-center"
+                href={`/products?category=${category.title.toLowerCase()}`}
+                className="group relative h-100 overflow-hidden flex items-center justify-center"
               >
                 <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"

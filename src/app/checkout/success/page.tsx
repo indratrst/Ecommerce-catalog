@@ -13,7 +13,6 @@ import {
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { stat } from "fs";
 
 function SuccessContent() {
   const searchParams = useSearchParams();

@@ -1,6 +1,9 @@
+// app/api/products/route.ts
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { z } from "zod"; // 🔥 IMPORT ZOD
+import { CreateProductSchema } from "@/lib/validation/products.schema";
 
 export async function GET(request: Request) {
   try {
@@ -8,7 +11,15 @@ export async function GET(request: Request) {
     const categorySlug = searchParams.get("category");
     const search = searchParams.get("search");
 
-    const where: any = {};
+    const where: {
+      category?: { slug: string };
+      OR?: Array<
+        | { title: { contains: string; mode: "insensitive" } }
+        | { description: { contains: string; mode: "insensitive" } }
+        | { category: { name: { contains: string; mode: "insensitive" } } }
+        | { category: { slug: { contains: string; mode: "insensitive" } } }
+      >;
+    } = {};
     if (categorySlug) {
       where.category = { slug: categorySlug };
     }
@@ -16,6 +27,8 @@ export async function GET(request: Request) {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
+        { category: { name: { contains: search, mode: "insensitive" } } },
+        { category: { slug: { contains: search, mode: "insensitive" } } },
       ];
     }
 
@@ -40,6 +53,39 @@ export async function GET(request: Request) {
   }
 }
 
+// Schema untuk validation
+// const CreateProductWithVariantsSchema = z.object({
+//   title: z.string().min(1, "Title is required"),
+//   price: z
+//     .number()
+//     .or(z.string())
+//     .transform((val) => {
+//       const num = typeof val === "string" ? parseFloat(val) : val;
+//       if (isNaN(num)) throw new Error("Price must be a number");
+//       return num;
+//     }),
+//   description: z.string().optional().default(""),
+//   image: z.string().optional().nullable(),
+//   categoryId: z.string().min(1, "Category is required"),
+//   variants: z
+//     .array(
+//       z.object({
+//         id: z.string().optional(),
+//         size: z.string().min(1, "Size is required"),
+//         stock: z
+//           .number()
+//           .or(z.string())
+//           .transform((val) => {
+//             const num = typeof val === "string" ? parseInt(val) : val;
+//             return isNaN(num) ? 0 : num;
+//           }),
+//         color: z.string().optional().nullable(),
+//       }),
+//     )
+//     .optional()
+//     .default([]),
+// });
+
 export async function POST(request: Request) {
   try {
     const session = await getSession();
@@ -51,35 +97,83 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { title, price, description, image, categoryId, variants } = body;
+    console.log("📦 Received body:", body); // Debug
 
-    const product = await prisma.product.create({
-      data: {
-        title,
-        price: parseInt(price),
-        description,
-        image,
-        categoryId,
-        variants: {
-          create: variants.map((v: any) => ({
+    // Validate dengan Zod
+    const validatedData = CreateProductSchema.parse(body);
+    // console.log("✅ Validated data:", validatedData); // Debug
+
+    const { title, price, description, image, categoryId, variants } =
+      validatedData;
+
+    // Cek category
+    const categoryExists = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!categoryExists) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 400 },
+      );
+    }
+
+    // Create product dengan transaction (atomic)
+    const product = await prisma.$transaction(async (tx) => {
+      // Create product
+      const newProduct = await tx.product.create({
+        data: {
+          title,
+          price,
+          description: description || "",
+          image: image || null,
+          categoryId,
+        },
+      });
+
+      // Create variants jika ada
+      if (variants && variants.length > 0) {
+        await tx.productVariant.createMany({
+          data: variants.map((v) => ({
+            productId: newProduct.id,
             size: v.size,
-            stock: parseInt(v.stock),
+            stock: v.stock,
             color: v.color || null,
             isActive: true,
           })),
-        },
-      },
+        });
+      }
+
+      return newProduct;
+    });
+
+    // Ambil product lengkap dengan variants
+    const productWithVariants = await prisma.product.findUnique({
+      where: { id: product.id },
       include: {
         category: true,
         variants: true,
       },
     });
 
-    return NextResponse.json(product);
+    console.log("🎉 Product created:", productWithVariants);
+    return NextResponse.json(productWithVariants);
   } catch (error) {
-    console.error("Failed to create product:", error);
+    console.error("❌ Failed to create product:", error);
+
+    if (error instanceof z.ZodError) {
+      console.error("Zod validation errors:", error.issues);
+      return NextResponse.json(
+        { error: "Validation failed", details: error.issues },
+        { status: 400 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to create product" },
+      {
+        error:
+          error instanceof Error ? error.message : "Failed to create product",
+      },
       { status: 500 },
     );
   }
