@@ -76,10 +76,10 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
     setShowDropdown(false);
 
     // Format area name based on available data
-    let areaName = location.label;
-    let provinceName = location.province_name;
-    let cityName = location.city_name;
-    let districtName = location.district_name || undefined;
+    const areaName = location.label;
+    const provinceName = location.province_name;
+    const cityName = location.city_name;
+    const districtName = location.district_name || undefined;
 
     const newData: Partial<BillingAddress> = {
       ...formData,
