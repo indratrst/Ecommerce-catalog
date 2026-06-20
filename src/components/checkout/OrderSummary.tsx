@@ -4,6 +4,7 @@ import { CartItem } from "@/types";
 import { ShippingRate } from "@/types/checkout";
 import { getCartItemKey } from "@/store/useCartStore";
 import { ShoppingBag } from "lucide-react";
+import Image from "next/image";
 
 interface OrderSummaryProps {
   items: CartItem[];
@@ -38,7 +39,7 @@ export function OrderSummary({
                 style={{ borderColor: "var(--surface-border)" }}
               >
                 {item.product.image ? (
-                  <img
+                  <Image
                     src={item.product.image}
                     alt={item.product.title}
                     className="h-full w-full object-cover"
