@@ -4,6 +4,7 @@ import { CartItem } from "@/types";
 import { ShippingRate } from "@/types/checkout";
 import { getCartItemKey } from "@/store/useCartStore";
 import { X, CheckCircle2, AlertCircle, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 
 interface PaymentConfirmationModalProps {
   isOpen: boolean;
@@ -54,7 +55,7 @@ export function PaymentConfirmationModal({
             </div>
           </div>
 
-          <div className="space-y-4 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-4 mb-8 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
             {items.map((item) => {
               const itemKey = getCartItemKey(
                 item.product.id,
@@ -68,7 +69,7 @@ export function PaymentConfirmationModal({
                 >
                   <div className="h-16 w-16 bg-white rounded overflow-hidden shrink-0">
                     {item.product.image ? (
-                      <img
+                      <Image
                         src={item.product.image}
                         alt={item.product.title}
                         className="h-full w-full object-cover"
