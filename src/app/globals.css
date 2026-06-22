@@ -1,58 +1,175 @@
-/* @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #111111;
-  --surface: #f5f5f5;
-  --surface-border: #e5e7eb;
-  --muted: #6b7280;
-  --card-bg: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #111111;
-    --foreground: #f5f5f5;
-    --surface: #1f1f1f;
-    --surface-border: #333333;
-    --muted: #9ca3af;
-    --card-bg: #1a1a1a;
-  }
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-} */
-
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
-  --foreground: #111111;
-  --surface: #f5f5f5;
-  --surface-border: #e5e7eb;
-  --muted: #6b7280;
-  --card-bg: #f9fafb;
+  --foreground: #0f1a24;
+  --surface: #f0f2f4;
+  --surface-hover: #e1e5ea;
+  --surface-border: #b7cde1;
+  --muted: #566576;
+  --card-bg: #ffffff;
+  --texted: #e6e6e6;
+  --black: #000000;
+
+  --deep-space-blue-50: #edf3f8;
+  --deep-space-blue-100: #dbe6f0;
+  --deep-space-blue-200: #b7cde1;
+  --deep-space-blue-300: #92b5d3;
+  --deep-space-blue-400: #6e9cc4;
+  --deep-space-blue-500: #4a83b5;
+  --deep-space-blue-600: #3b6991;
+  --deep-space-blue-700: #2c4f6d;
+  --deep-space-blue-800: #1e3448;
+  --deep-space-blue-900: #0f1a24;
+  --deep-space-blue-950: #0a1219;
+
+  --brick-ember-50: #ffe5e5;
+  --brick-ember-100: #ffcccc;
+  --brick-ember-200: #ff9999;
+  --brick-ember-300: #ff6666;
+  --brick-ember-400: #ff3333;
+  --brick-ember-500: #ff0000;
+  --brick-ember-600: #cc0000;
+  --brick-ember-700: #990000;
+  --brick-ember-800: #660000;
+  --brick-ember-900: #330000;
+  --brick-ember-950: #240000;
+
+  --amber-flame-50: #fff8e5;
+  --amber-flame-100: #fff1cc;
+  --amber-flame-200: #ffe299;
+  --amber-flame-300: #ffd466;
+  --amber-flame-400: #ffc533;
+  --amber-flame-500: #ffb700;
+  --amber-flame-600: #cc9200;
+  --amber-flame-700: #996e00;
+  --amber-flame-800: #664900;
+  --amber-flame-900: #332500;
+  --amber-flame-950: #241a00;
+
+  --cool-steel-50: #f0f2f4;
+  --cool-steel-100: #e1e5ea;
+  --cool-steel-200: #c4ccd4;
+  --cool-steel-300: #a6b2bf;
+  --cool-steel-400: #8998a9;
+  --cool-steel-500: #6b7f94;
+  --cool-steel-600: #566576;
+  --cool-steel-700: #404c59;
+  --cool-steel-800: #2b333b;
+  --cool-steel-900: #15191e;
+  --cool-steel-950: #0f1215;
+
+  --steel-blue-50: #ebf3f9;
+  --steel-blue-100: #d8e7f3;
+  --steel-blue-200: #b0cfe8;
+  --steel-blue-300: #89b7dc;
+  --steel-blue-400: #629fd0;
+  --steel-blue-500: #3b86c4;
+  --steel-blue-600: #2f6c9d;
+  --steel-blue-700: #235176;
+  --steel-blue-800: #17364f;
+  --steel-blue-900: #0c1b27;
+  --steel-blue-950: #08131b;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-border: var(--surface-border);
+  --color-muted: var(--muted);
+  --color-card-bg: var(--card-bg);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-deep-space-blue-50: var(--deep-space-blue-50);
+  --color-deep-space-blue-100: var(--deep-space-blue-100);
+  --color-deep-space-blue-200: var(--deep-space-blue-200);
+  --color-deep-space-blue-300: var(--deep-space-blue-300);
+  --color-deep-space-blue-400: var(--deep-space-blue-400);
+  --color-deep-space-blue-500: var(--deep-space-blue-500);
+  --color-deep-space-blue-600: var(--deep-space-blue-600);
+  --color-deep-space-blue-700: var(--deep-space-blue-700);
+  --color-deep-space-blue-800: var(--deep-space-blue-800);
+  --color-deep-space-blue-900: var(--deep-space-blue-900);
+  --color-deep-space-blue-950: var(--deep-space-blue-950);
+
+  --color-brick-ember-50: var(--brick-ember-50);
+  --color-brick-ember-100: var(--brick-ember-100);
+  --color-brick-ember-200: var(--brick-ember-200);
+  --color-brick-ember-300: var(--brick-ember-300);
+  --color-brick-ember-400: var(--brick-ember-400);
+  --color-brick-ember-500: var(--brick-ember-500);
+  --color-brick-ember-600: var(--brick-ember-600);
+  --color-brick-ember-700: var(--brick-ember-700);
+  --color-brick-ember-800: var(--brick-ember-800);
+  --color-brick-ember-900: var(--brick-ember-900);
+  --color-brick-ember-950: var(--brick-ember-950);
+
+  --color-amber-flame-50: var(--amber-flame-50);
+  --color-amber-flame-100: var(--amber-flame-100);
+  --color-amber-flame-200: var(--amber-flame-200);
+  --color-amber-flame-300: var(--amber-flame-300);
+  --color-amber-flame-400: var(--amber-flame-400);
+  --color-amber-flame-500: var(--amber-flame-500);
+  --color-amber-flame-600: var(--amber-flame-600);
+  --color-amber-flame-700: var(--amber-flame-700);
+  --color-amber-flame-800: var(--amber-flame-800);
+  --color-amber-flame-900: var(--amber-flame-900);
+  --color-amber-flame-950: var(--amber-flame-950);
+
+  --color-cool-steel-50: var(--cool-steel-50);
+  --color-cool-steel-100: var(--cool-steel-100);
+  --color-cool-steel-200: var(--cool-steel-200);
+  --color-cool-steel-300: var(--cool-steel-300);
+  --color-cool-steel-400: var(--cool-steel-400);
+  --color-cool-steel-500: var(--cool-steel-500);
+  --color-cool-steel-600: var(--cool-steel-600);
+  --color-cool-steel-700: var(--cool-steel-700);
+  --color-cool-steel-800: var(--cool-steel-800);
+  --color-cool-steel-900: var(--cool-steel-900);
+  --color-cool-steel-950: var(--cool-steel-950);
+
+  --color-steel-blue-50: var(--steel-blue-50);
+  --color-steel-blue-100: var(--steel-blue-100);
+  --color-steel-blue-200: var(--steel-blue-200);
+  --color-steel-blue-300: var(--steel-blue-300);
+  --color-steel-blue-400: var(--steel-blue-400);
+  --color-steel-blue-500: var(--steel-blue-500);
+  --color-steel-blue-600: var(--steel-blue-600);
+  --color-steel-blue-700: var(--steel-blue-700);
+  --color-steel-blue-800: var(--steel-blue-800);
+  --color-steel-blue-900: var(--steel-blue-900);
+  --color-steel-blue-950: var(--steel-blue-950);
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--steel-blue-300) var(--cool-steel-100);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--cool-steel-100);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--steel-blue-300);
+  border-radius: 999px;
+}
+
+.font-heading {
+  font-family: var(--font-cormorant-garamond), Georgia, serif;
+  letter-spacing: 0;
+  font-style: italic;
 }

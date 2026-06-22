@@ -21,7 +21,7 @@ export function OrderSummary({
   const total = subtotal + shippingCost;
 
   return (
-    <div className="bg-surface p-6 rounded-lg">
+    <div className="bg-surface px-6 rounded-lg py-4">
       <h2 className="text-xl font-bold uppercase tracking-wider mb-6 flex items-center gap-2">
         <ShoppingBag className="h-5 w-5" /> Your Order
       </h2>
@@ -35,7 +35,7 @@ export function OrderSummary({
           return (
             <div key={itemKey} className="flex gap-4 items-start">
               <div
-                className="h-16 w-16 bg-white rounded overflow-hidden shrink-0 border"
+                className="h-48 w-36 bg-deep-space-blue-900 rounded overflow-hidden shrink-0 border"
                 style={{ borderColor: "var(--surface-border)" }}
               >
                 {item.product.image ? (
@@ -43,9 +43,11 @@ export function OrderSummary({
                     src={item.product.image}
                     alt={item.product.title}
                     className="h-full w-full object-cover"
+                    width={500}
+                    height={500}
                   />
                 ) : (
-                  <div className="h-full w-full bg-gray-100" />
+                  <div className="h-full w-full bg-deep-space-blue-900" />
                 )}
               </div>
               <div className="flex-1">
@@ -88,11 +90,10 @@ export function OrderSummary({
             Shipping
           </span>
           <span
-            className={`font-bold ${
-              shippingRate?.price === 0
+            className={`font-bold ${shippingRate?.price === 0
                 ? "line-through text-muted-foreground"
                 : ""
-            }`}
+              }`}
           >
             {shippingRate
               ? `Rp ${shippingRate.price.toLocaleString("id-ID")}`
@@ -118,3 +119,5 @@ export function OrderSummary({
     </div>
   );
 }
+
+

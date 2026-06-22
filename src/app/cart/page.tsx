@@ -31,7 +31,7 @@ export default function CartPage() {
           const cartIds = cart.map((item) => String(item.product.id));
           const filtered = allProducts
             .filter((p: ProductResponse) => !cartIds.includes(String(p.id)))
-            .slice(0, 4);
+            .slice(0, 5);
           setRecommendedProducts(filtered);
         }
       } catch (error) {
@@ -49,7 +49,7 @@ export default function CartPage() {
           style={{ color: "var(--foreground)" }}
         />
         <h1
-          className="text-3xl font-bold uppercase tracking-wider mb-4"
+          className="font-heading text-4xl md:text-5xl font-semibold mb-4"
           style={{ color: "var(--foreground)" }}
         >
           Your Cart is Empty
@@ -60,7 +60,7 @@ export default function CartPage() {
         </p>
         <Link
           href="/"
-          className="bg-black text-white px-8 py-3 uppercase font-bold tracking-widest hover:bg-gray-800 transition-colors"
+          className="bg-deep-space-blue-900 text-white px-8 py-3 uppercase font-bold tracking-widest hover:bg-steel-blue-700 transition-colors"
         >
           Return to Shop
         </Link>
@@ -69,9 +69,9 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
+    <div className="container mx-auto px-4 py-12 md:py-20 max-w-7xl mt-20">
       <h1
-        className="text-3xl font-bold uppercase tracking-widest mb-10 text-center"
+        className="font-heading text-5xl font-semibold mb-10 text-center"
         style={{ color: "var(--foreground)" }}
       >
         Your Cart
@@ -118,6 +118,7 @@ export default function CartPage() {
                           src={item.product.image}
                           alt={item.product.title}
                           className="h-full w-full object-cover"
+                          fill
                         />
                       ) : (
                         <div
@@ -149,7 +150,7 @@ export default function CartPage() {
                             ),
                           )
                         }
-                        className="text-sm text-red-500 font-medium hover:text-red-700 uppercase flex items-center gap-1"
+                        className="text-sm text-brick-ember-600 font-medium hover:text-brick-ember-700 uppercase flex items-center gap-1"
                       >
                         <Trash2 className="h-4 w-4" /> Remove
                       </button>
@@ -254,7 +255,7 @@ export default function CartPage() {
             }}
           >
             <h2
-              className="text-xl font-bold uppercase tracking-wider border-b pb-4 mb-6"
+              className="font-heading text-2xl font-semibold border-b pb-4 mb-6"
               style={{
                 color: "var(--foreground)",
                 borderColor: "var(--surface-border)",
@@ -291,7 +292,7 @@ export default function CartPage() {
             </div>
 
             <Link href="/checkout">
-              <button className="w-full bg-black text-white py-4 px-6 uppercase font-bold tracking-widest hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+              <button className="w-full bg-deep-space-blue-900 text-white py-4 px-6 uppercase font-bold tracking-widest hover:bg-steel-blue-700 transition-colors flex items-center justify-center gap-2">
                 Checkout <ArrowRight className="h-5 w-5" />
               </button>
             </Link>
@@ -313,7 +314,7 @@ export default function CartPage() {
         >
           <div className="flex flex-col items-center mb-10">
             <h2
-              className="text-3xl font-bold uppercase tracking-widest text-center"
+              className="font-heading text-4xl md:text-5xl font-semibold text-center"
               style={{ color: "var(--foreground)" }}
             >
               You May Also Like
@@ -323,7 +324,7 @@ export default function CartPage() {
               style={{ background: "var(--muted)" }}
             ></div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 gap-y-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 gap-y-10 ">
             {recommendedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -333,3 +334,6 @@ export default function CartPage() {
     </div>
   );
 }
+
+
+

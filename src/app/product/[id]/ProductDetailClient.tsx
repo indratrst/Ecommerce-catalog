@@ -60,8 +60,8 @@ export default function ProductDetailClient({
     );
   };
   const getStockColor = (currentStock: number) => {
-    if (currentStock === 0) return "text-red-500";
-    if (currentStock < 5) return "text-orange-500";
+    if (currentStock === 0) return "text-brick-ember-600";
+    if (currentStock < 5) return "text-amber-flame-700";
     return "text-white";
   };
 
@@ -73,7 +73,7 @@ export default function ProductDetailClient({
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
+    <div className="container mx-auto px-4 py-12 md:py-20 max-w-6xl mt-5">
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest mb-10 transition-colors hover:opacity-70"
@@ -162,22 +162,21 @@ export default function ProductDetailClient({
                   <button
                     key={variant.id}
                     onClick={() => setSelectedSize(variant.size)}
-                    className={`px-4 py-2 border-2 text-sm font-bold uppercase tracking-wide transition-all duration-200 ${
-                      selectedSize === variant.size
-                        ? "bg-black text-white border-black"
+                    className={`px-4 py-2 border-2 text-sm font-bold uppercase tracking-wide transition-all duration-200 ${selectedSize === variant.size
+                        ? "bg-deep-space-blue-900 text-white border-deep-space-blue-900"
                         : variant.stock === 0
-                          ? "border-gray-200 text-gray-300 cursor-not-allowed line-through"
-                          : "border-gray-300 hover:border-black"
-                    }`}
+                          ? "border-cool-steel-200 text-cool-steel-300 cursor-not-allowed line-through"
+                          : "border-cool-steel-300 hover:border-deep-space-blue-900"
+                      }`}
                     style={
                       selectedSize === variant.size
                         ? {}
                         : {
-                            color:
-                              variant.stock === 0
-                                ? undefined
-                                : "var(--foreground)",
-                          }
+                          color:
+                            variant.stock === 0
+                              ? undefined
+                              : "var(--foreground)",
+                        }
                     }
                   >
                     {variant.size}
@@ -187,7 +186,7 @@ export default function ProductDetailClient({
               {/* {selectedVariant &&
                 selectedVariant.stock <= 5 &&
                 selectedVariant.stock > 0 && (
-                  <p className="text-xs text-red-500 mt-2 font-medium">
+                  <p className="text-xs text-brick-ember-600 mt-2 font-medium">
                     Only {selectedVariant.stock} left in stock!
                   </p>
                 )} */}
@@ -234,11 +233,10 @@ export default function ProductDetailClient({
           <button
             onClick={handleAddToCart}
             disabled={currentStock === 0 || cartQuantity === currentStock}
-            className={`w-full py-4 px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors ${
-              currentStock === 0
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-black text-white hover:bg-gray-800"
-            }`}
+            className={`w-full py-4 px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors ${currentStock === 0
+                ? "bg-cool-steel-200 text-cool-steel-500 cursor-not-allowed"
+                : "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700"
+              }`}
           >
             <ShoppingBag className="h-6 w-6" />
             {currentStock === 0
@@ -252,3 +250,5 @@ export default function ProductDetailClient({
     </div>
   );
 }
+
+

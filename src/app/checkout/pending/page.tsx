@@ -11,7 +11,7 @@ function PendingContent() {
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 text-center py-20">
-      <div className="bg-yellow-50 text-yellow-500 dark:bg-yellow-900/20 p-5 rounded-full mb-6 animate-[fadeIn_0.5s_ease]">
+      <div className="bg-amber-flame-50 text-amber-flame-700 dark:bg-amber-flame-900/20 p-5 rounded-full mb-6 animate-[fadeIn_0.5s_ease]">
         <Clock className="h-16 w-16" />
       </div>
 
@@ -36,7 +36,7 @@ function PendingContent() {
         </div>
       )}
 
-      <div className="flex items-center gap-2 mb-8 text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 px-4 py-3 rounded-lg">
+      <div className="flex items-center gap-2 mb-8 text-amber-flame-700 dark:text-amber-flame-400 bg-amber-flame-50 dark:bg-amber-flame-900/20 px-4 py-3 rounded-lg">
         <RefreshCw className="h-4 w-4 shrink-0" />
         <p className="text-xs font-medium text-left">
           Status pesanan akan diperbarui otomatis setelah pembayaran
@@ -47,13 +47,13 @@ function PendingContent() {
       <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
         <Link
           href="/products"
-          className="flex-1 bg-black text-white py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+          className="flex-1 bg-deep-space-blue-900 text-white py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-steel-blue-700 transition-all flex items-center justify-center gap-2"
         >
           Lanjut Belanja <ArrowRight className="h-4 w-4" />
         </Link>
         <Link
           href="/"
-          className="flex-1 border-2 border-black py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2"
+          className="flex-1 border-2 border-deep-space-blue-900 py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-deep-space-blue-900 hover:text-white transition-all flex items-center justify-center gap-2"
         >
           <ShoppingBag className="h-4 w-4" /> Beranda
         </Link>
@@ -69,3 +69,4 @@ export default function PendingPage() {
     </Suspense>
   );
 }
+

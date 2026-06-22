@@ -1,6 +1,6 @@
 import { Product } from "@/types";
 
-export const dummyProducts: Product[] = [
+export const dummyProducts: ProductResponse[] = [
   {
     id: "1",
     title: "Wellborn Fukazi LS T-shirt Dark Grey",
@@ -8,7 +8,6 @@ export const dummyProducts: Product[] = [
     description: "Classic long sleeve t-shirt with premium cotton material.",
     category: "T-Shirt",
     image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.8, count: 124 }
   },
   {
     id: "2",
@@ -17,7 +16,6 @@ export const dummyProducts: Product[] = [
     description: "Comfortable track pants for daily wear.",
     category: "Pants",
     image: "https://images.unsplash.com/photo-1718252540511-e958742e4165?q=80&w=880&auto=format&fit=crop",
-    rating: { rate: 4.6, count: 85 }
   },
   {
     id: "3",
@@ -26,7 +24,6 @@ export const dummyProducts: Product[] = [
     description: "Durable daily bag for all your essentials.",
     category: "Bag",
     image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.9, count: 210 }
   },
   {
     id: "4",
@@ -35,7 +32,6 @@ export const dummyProducts: Product[] = [
     description: "Stylish utility denim pants with multiple pockets.",
     category: "Pants",
     image: "https://images.unsplash.com/photo-1542272454315-4c01d7abdf4a?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.7, count: 65 }
   },
   {
     id: "5",
@@ -44,7 +40,6 @@ export const dummyProducts: Product[] = [
     description: "Lightweight tote bag featuring aesthetic paisley patterns.",
     category: "Bag",
     image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.5, count: 42 }
   },
   {
     id: "6",
@@ -53,7 +48,6 @@ export const dummyProducts: Product[] = [
     description: "Vintage style cap with spark embroidery.",
     category: "Accessories",
     image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.4, count: 98 }
   },
   {
     id: "7",
@@ -62,7 +56,6 @@ export const dummyProducts: Product[] = [
     description: "Oversized jersey made with breathable mesh fabric.",
     category: "T-Shirt",
     image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.8, count: 150 }
   },
   {
     id: "8",
@@ -71,7 +64,6 @@ export const dummyProducts: Product[] = [
     description: "Compact bag suitable to carry your phone and cards securely.",
     category: "Bag",
     image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.6, count: 77 }
   },
   {
     id: "9",
@@ -80,7 +72,6 @@ export const dummyProducts: Product[] = [
     description: "Premium heavyweight hoodie with a boxy oversized fit.",
     category: "clothing",
     image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.9, count: 320 }
   },
   {
     id: "10",
@@ -89,7 +80,6 @@ export const dummyProducts: Product[] = [
     description: "Classic denim jacket with a vintage wash finish.",
     category: "clothing",
     image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.8, count: 154 }
   },
   {
     id: "11",
@@ -98,7 +88,6 @@ export const dummyProducts: Product[] = [
     description: "Tactical chest rig for your daily essentials.",
     category: "accessories",
     image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.5, count: 89 }
   },
   {
     id: "12",
@@ -107,7 +96,6 @@ export const dummyProducts: Product[] = [
     description: "Durable industrial belt with matte black buckle.",
     category: "accessories",
     image: "https://images.unsplash.com/photo-1523206489230-c012c64b2b48?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.6, count: 210 }
   },
   {
     id: "13",
@@ -116,7 +104,6 @@ export const dummyProducts: Product[] = [
     description: "Limited edition varsity jacket to celebrate our 10th year.",
     category: "special-edition",
     image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 5.0, count: 45 }
   },
   {
     id: "14",
@@ -125,6 +112,5 @@ export const dummyProducts: Product[] = [
     description: "Special edition graphic tee in collaboration with local artists.",
     category: "special-edition",
     image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=600&auto=format&fit=crop",
-    rating: { rate: 4.9, count: 120 }
   }
 ];

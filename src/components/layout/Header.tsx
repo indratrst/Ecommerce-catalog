@@ -86,11 +86,7 @@ export function Header() {
   return (
     <>
       <header
-        className="sticky top-0 z-40 w-full border-b transition-all duration-300"
-        style={{
-          background: "var(--background)",
-          borderColor: "var(--surface-border)",
-        }}
+        className="w-full transition-all duration-300 absolute top-0 z-40 bg-black"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative flex h-16 items-center justify-between">
@@ -103,11 +99,10 @@ export function Header() {
                     setMockMode(newMode);
                     window.location.reload();
                   }}
-                  className={`text-xs px-3 py-1.5 rounded-full ${
-                    isMock
-                      ? "bg-yellow-500/20 text-yellow-600 border border-yellow-500/50"
-                      : "bg-green-500/20 text-green-600 border border-green-500/50"
-                  }`}
+                  className={`text-xs px-3 py-1.5 rounded-full ${isMock
+                    ? "bg-amber-flame-500/20 text-amber-flame-700 border border-amber-flame-500/50"
+                    : "bg-steel-blue-500/20 text-steel-blue-600 border border-steel-blue-500/50"
+                    }`}
                 >
                   {isMock ? "⚡ Mock" : "🌐 Live"}
                 </button>
@@ -118,7 +113,7 @@ export function Header() {
               >
                 <span
                   className="px-2 py-1 uppercase text-lg font-black"
-                  style={{ color: "var(--foreground)" }}
+                  style={{ color: "var(--texted)" }}
                 >
                   BITEWORKS
                 </span>
@@ -126,33 +121,34 @@ export function Header() {
 
               <nav
                 className="hidden md:ml-10 md:flex md:space-x-8"
-                style={{ color: "var(--foreground)" }}
+                style={{ color: "var(--texted)" }}
               >
-                <Link
-                  href={`/products`}
-                  className="font-medium transition-colors hover:text-foreground"
-                  style={{ color: "var(--muted)" }}
-                >
-                  New Arrivals
-                </Link>
+
                 <Link
                   href={`/products?category=clothing`}
-                  className="font-medium transition-colors hover:text-foreground"
-                  style={{ color: "var(--muted)" }}
+                  className="font-medium transition-colors hover:text-texted"
+                  style={{ color: "var(--texted)" }}
                 >
                   Clothing
                 </Link>
                 <Link
+                  href={`/products?category=bags`}
+                  className="font-medium transition-colors hover:text-texted"
+                  style={{ color: "var(--texted)" }}
+                >
+                  Bags
+                </Link>
+                <Link
                   href={`/products?category=accessories`}
-                  className="font-medium transition-colors hover:text-foreground"
-                  style={{ color: "var(--muted)" }}
+                  className="font-medium transition-colors hover:text-texted"
+                  style={{ color: "var(--texted)" }}
                 >
                   Accessories
                 </Link>
                 <Link
                   href={`/products?category=special-edition`}
-                  className="font-medium transition-colors hover:text-foreground"
-                  style={{ color: "var(--muted)" }}
+                  className="font-medium transition-colors hover:text-texted"
+                  style={{ color: "var(--texted)" }}
                 >
                   Special Edition
                 </Link>
@@ -161,28 +157,28 @@ export function Header() {
 
             <div className="flex items-center space-x-6">
               <button
-                style={{ color: "var(--muted)" }}
+                style={{ color: "var(--texted)" }}
                 onClick={() => setIsSearchVisible(true)}
-                className="hover:text-foreground transition-colors"
+                className="hover:text-texted transition-colors"
                 aria-label="Open search"
               >
                 <Search className="h-5 w-5" />
               </button>
               <button
-                style={{ color: "var(--muted)" }}
-                className="hover:text-foreground transition-colors"
+                style={{ color: "var(--texted)" }}
+                className="hover:text-texted transition-colors"
               >
                 <User className="h-5 w-5" />
               </button>
               <button
                 className="relative group flex items-center transition-colors"
-                style={{ color: "var(--foreground)" }}
+                style={{ color: "var(--texted)" }}
                 onClick={() => setIsCartOpen(true)}
               >
                 <ShoppingBag className="h-5 w-5 mr-1" />
                 <span className="font-medium hidden sm:inline-block">Cart</span>
                 {itemCount > 0 && (
-                  <span className="absolute -top-1.5 -right-5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">
+                  <span className="absolute -top-1.5 -right-5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-brick-ember-500 rounded-full border-2 border-card-bg dark:border-deep-space-blue-950">
                     {itemCount}
                   </span>
                 )}
@@ -194,28 +190,26 @@ export function Header() {
 
       {/* SEARCH OVERLAY */}
       <div
-        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
-          isSearchVisible
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${isSearchVisible
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
+          }`}
       >
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          className="absolute inset-0 bg-deep-space-blue-950/45 backdrop-blur-sm"
           onClick={() => setIsSearchVisible(false)}
         />
 
         {/* Search Panel */}
         <div
-          className={`absolute top-0 inset-x-0 transition-transform duration-500 ease-in-out ${
-            isSearchVisible ? "translate-y-0" : "-translate-y-full"
-          }`}
+          className={`bg-redabsolute top-0 inset-x-0 transition-transform duration-500 ease-in-out ${isSearchVisible ? "translate-y-0" : "-translate-y-full"
+            }`}
           style={{
             maxHeight: "80vh",
             display: "flex",
             flexDirection: "column",
-            background: "var(--background)",
+            background: "var(--black)"
           }}
         >
           <div
@@ -223,14 +217,14 @@ export function Header() {
             style={{ borderColor: "var(--surface-border)" }}
           >
             <div className="container mx-auto px-4 md:px-8 py-4 md:py-6 flex items-center gap-4">
-              <Search className="h-6 w-6" style={{ color: "var(--muted)" }} />
+              <Search className="h-6 w-6" style={{ color: "var(--texted)" }} />
               <form onSubmit={handleSearchSubmit} className="flex-1">
                 <input
                   ref={inputRef}
                   type="text"
                   placeholder="What are you looking for?"
                   className="w-full text-xl md:text-2xl font-medium outline-none bg-transparent"
-                  style={{ color: "var(--foreground)" }}
+                  style={{ color: "var(--texted)" }}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -244,7 +238,7 @@ export function Header() {
               <button
                 onClick={() => setIsSearchVisible(false)}
                 className="p-2 transition-colors hover:opacity-70"
-                style={{ color: "var(--foreground)" }}
+                style={{ color: "var(--texted)" }}
               >
                 <X className="h-6 w-6" />
               </button>
@@ -253,7 +247,7 @@ export function Header() {
 
           <div
             className="flex-1 overflow-y-auto"
-            style={{ background: "var(--surface)" }}
+            style={{ background: "var(--black)" }}
           >
             <div className="container mx-auto px-4 md:px-8 py-10">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
@@ -261,7 +255,7 @@ export function Header() {
                 <div className="md:col-span-4 lg:col-span-3">
                   <h3
                     className="text-xs font-bold uppercase tracking-widest mb-6"
-                    style={{ color: "var(--muted)" }}
+                    style={{ color: "var(--texted)" }}
                   >
                     Suggestions
                   </h3>
@@ -273,7 +267,7 @@ export function Header() {
                           href={`/products?category=${cat.slug}`}
                           onClick={() => setIsSearchVisible(false)}
                           className="block text-lg font-bold hover:translate-x-1 transition-transform uppercase tracking-tighter"
-                          style={{ color: "var(--foreground)" }}
+                          style={{ color: "var(--texted)" }}
                         >
                           {cat.name}
                         </Link>
@@ -293,7 +287,7 @@ export function Header() {
                         onClick={() => setIsSearchVisible(false)}
                         className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest mt-8 pt-6 border-t"
                         style={{
-                          color: "var(--foreground)",
+                          color: "var(--texted)",
                           borderColor: "var(--surface-border)",
                         }}
                       >
@@ -308,7 +302,7 @@ export function Header() {
                 <div className="md:col-span-8 lg:col-span-9">
                   <h3
                     className="text-xs font-bold uppercase tracking-widest mb-6"
-                    style={{ color: "var(--muted)" }}
+                    style={{ color: "var(--texted)" }}
                   >
                     Products
                   </h3>
@@ -355,7 +349,7 @@ export function Header() {
                             </h4>
                             <p
                               className="text-[10px] uppercase tracking-widest mt-1"
-                              style={{ color: "var(--muted)" }}
+                              style={{ color: "var(--foreground)" }}
                             >
                               {product.category.name}
                             </p>
@@ -372,7 +366,7 @@ export function Header() {
                       <div className="col-span-full py-10 flex flex-col items-center justify-center text-center">
                         <p
                           className="italic mb-4"
-                          style={{ color: "var(--muted)" }}
+                          style={{ color: "var(--texted)" }}
                         >
                           {searchQuery.length < 2
                             ? "Start typing to search products..."

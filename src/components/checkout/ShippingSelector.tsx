@@ -182,7 +182,7 @@ export function ShippingSelector({
       {/* Error */}
       {error && !loading && (
         <div className="space-y-2">
-          <p className="text-xs text-red-500">{error}</p>
+          <p className="text-xs text-brick-ember-600">{error}</p>
           <button
             onClick={fetchRates}
             className="flex items-center gap-1.5 text-xs font-bold uppercase hover:opacity-70 transition-opacity"
@@ -203,14 +203,14 @@ export function ShippingSelector({
                 onClick={() => handleSelect(rate, idx)}
                 className={`w-full flex items-center gap-4 p-3 border text-left transition-all ${
                   isSelected
-                    ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
-                    : "border-transparent bg-surface hover:border-gray-300"
+                    ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white dark:border-card-bg dark:bg-card-bg dark:text-deep-space-blue-950"
+                    : "border-transparent bg-surface hover:border-cool-steel-300"
                 }`}
               >
                 <Truck
                   className={`h-4 w-4 shrink-0 ${
                     isSelected
-                      ? "text-white dark:text-black"
+                      ? "text-white dark:text-deep-space-blue-950"
                       : "text-muted-foreground"
                   }`}
                 />
@@ -221,7 +221,7 @@ export function ShippingSelector({
                   <p
                     className={`text-[10px] mt-0.5 ${
                       isSelected
-                        ? "text-gray-300 dark:text-gray-600"
+                        ? "text-cool-steel-300 dark:text-cool-steel-600"
                         : "text-muted-foreground"
                     }`}
                   >
@@ -239,3 +239,5 @@ export function ShippingSelector({
     </div>
   );
 }
+
+

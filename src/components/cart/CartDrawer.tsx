@@ -40,7 +40,7 @@ export function CartDrawer() {
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 z-50 transition-opacity"
+        className="fixed inset-0 bg-deep-space-blue-900/50 z-50 transition-opacity"
         onClick={() => setIsCartOpen(false)}
       />
       <div
@@ -71,13 +71,13 @@ export function CartDrawer() {
           {cart.length === 0 ? (
             <div
               className="flex flex-col items-center justify-center py-10 space-y-4"
-              style={{ color: "var(--muted)" }}
+              style={{ color: "var(--foreground)" }}
             >
               <ShoppingBag className="h-16 w-16 opacity-20" />
               <p className="text-lg">No products in the cart.</p>
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="mt-4 border px-6 py-2 uppercase transition-colors hover:bg-black hover:text-white"
+                className="mt-4 border px-6 py-2 uppercase transition-colors hover:bg-deep-space-blue-900 hover:text-white"
                 style={{ borderColor: "var(--foreground)" }}
               >
                 Return to shop
@@ -134,14 +134,14 @@ export function CartDrawer() {
                           </p> */}
                           <p
                             className="mt-1 text-sm font-medium"
-                            style={{ color: "var(--muted)" }}
+                            style={{ color: "var(--foreground)" }}
                           >
                             Rp {item.product.price.toLocaleString("id-ID")}
                           </p>
                         </div>
                         <button
                           onClick={() => removeFromCart(itemKey)}
-                          className="text-red-400 hover:text-red-600 transition-colors"
+                          className="text-brick-ember-600 hover:text-brick-ember-700 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -243,7 +243,7 @@ export function CartDrawer() {
                     </div>
                     <button
                       onClick={() => addToCart(product)}
-                      className="mt-2 text-xs font-bold uppercase flex items-center justify-center gap-1 py-1 border transition-colors hover:bg-black hover:text-white"
+                      className="mt-2 text-xs font-bold uppercase flex items-center justify-center gap-1 py-1 border transition-colors hover:bg-deep-space-blue-900 hover:text-white"
                       style={{
                         borderColor: "var(--foreground)",
                         color: "var(--foreground)",
@@ -274,7 +274,7 @@ export function CartDrawer() {
               <span>Rp {cartTotal.toLocaleString("id-ID")}</span>
             </div>
             <div className="space-y-3">
-              <div className="group relative h-12 bg-[#222] text-center rounded-[0.45em] font-arial transition-colors duration-300 hover:bg-[#222]">
+              <div className="group relative h-12 bg-deep-space-blue-900 text-center rounded-[0.45em] font-arial transition-colors duration-300 hover:bg-deep-space-blue-900">
                 {/* <div className="absolute w-[90px] h-[35px] bg-[#555] text-[0.9rem] text-white rounded-[0.25em] leading-[35px] bottom-[calc(35px+18px+10px)] left-[calc(50%-45px)] opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:bottom-[calc(35px+18px)] transition-all duration-500 pointer-events-none">
                   Price:-$20
                 </div>
@@ -304,7 +304,7 @@ export function CartDrawer() {
               </div>
 
               <Link href="/checkout" onClick={() => setIsCartOpen(false)}>
-                <button className="w-full py-3 bg-black text-white font-bold uppercase tracking-wider hover:bg-gray-900 transition-colors">
+                <button className="w-full py-3 bg-deep-space-blue-900 text-white font-bold uppercase tracking-wider hover:bg-steel-blue-700 transition-colors">
                   Checkout
                 </button>
               </Link>
@@ -315,3 +315,6 @@ export function CartDrawer() {
     </>
   );
 }
+
+
+

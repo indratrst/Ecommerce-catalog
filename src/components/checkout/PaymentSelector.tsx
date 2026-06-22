@@ -68,8 +68,8 @@ export function PaymentSelector({ onSelect }: PaymentSelectorProps) {
               key={method.id}
               className={`flex items-center gap-4 p-4 border cursor-pointer transition-all ${
                 isSelected
-                  ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
-                  : "bg-surface border-transparent hover:border-gray-300"
+                  ? "bg-deep-space-blue-900 text-white border-deep-space-blue-900 dark:bg-card-bg dark:text-deep-space-blue-950 dark:border-card-bg"
+                  : "bg-surface border-transparent hover:border-steel-blue-300"
               }`}
               onClick={() => handleSelect(method.id)}
             >
@@ -82,14 +82,14 @@ export function PaymentSelector({ onSelect }: PaymentSelectorProps) {
               />
               <Icon
                 className={`h-5 w-5 shrink-0 ${
-                  isSelected ? "text-white dark:text-black" : "text-muted-foreground"
+                  isSelected ? "text-white dark:text-deep-space-blue-950" : "text-muted-foreground"
                 }`}
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold uppercase leading-tight">{method.name}</p>
                 <p
                   className={`text-[10px] mt-0.5 ${
-                    isSelected ? "text-gray-300 dark:text-gray-600" : "text-muted-foreground"
+                    isSelected ? "text-cool-steel-300 dark:text-cool-steel-600" : "text-muted-foreground"
                   }`}
                 >
                   {method.description}
@@ -98,14 +98,14 @@ export function PaymentSelector({ onSelect }: PaymentSelectorProps) {
               <span
                 className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full shrink-0 ${
                   isSelected
-                    ? "bg-white/20 dark:bg-black/20 text-white dark:text-black"
+                    ? "bg-card-bg/20 dark:bg-deep-space-blue-900/20 text-white dark:text-deep-space-blue-950"
                     : "bg-surface-border text-muted-foreground"
                 }`}
               >
                 {method.type}
               </span>
               {isSelected && (
-                <div className="h-2 w-2 rounded-full bg-white dark:bg-black shrink-0" />
+                <div className="h-2 w-2 rounded-full bg-card-bg dark:bg-deep-space-blue-900 shrink-0" />
               )}
             </label>
           );
@@ -113,7 +113,7 @@ export function PaymentSelector({ onSelect }: PaymentSelectorProps) {
       </div>
 
       <div className="flex items-center gap-2 pt-1">
-        <ShieldCheck className="h-3.5 w-3.5 text-green-500 shrink-0" />
+        <ShieldCheck className="h-3.5 w-3.5 text-steel-blue-600 shrink-0" />
         <p className="text-[10px] text-muted-foreground">
           Pembayaran diproses secara aman oleh{" "}
           <span className="font-bold text-foreground">Midtrans</span>. Data Anda terenkripsi.
@@ -122,3 +122,4 @@ export function PaymentSelector({ onSelect }: PaymentSelectorProps) {
     </div>
   );
 }
+

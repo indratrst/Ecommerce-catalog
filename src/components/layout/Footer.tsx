@@ -12,14 +12,14 @@ export function Footer() {
               Join our newsletter for updates on new drops, special offers, and events.
             </p>
             <form className="flex flex-col gap-3">
-              <input 
-                type="email" 
-                placeholder="EMAIL ADDRESS" 
+              <input
+                type="email"
+                placeholder="EMAIL ADDRESS"
                 className="bg-transparent border px-4 py-3 text-sm focus:outline-none transition-colors"
                 style={{ borderColor: "var(--background)/30", color: "var(--background)" }}
               />
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="font-bold text-sm tracking-widest uppercase px-4 py-3 transition-colors hover:opacity-80"
                 style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
               >

@@ -58,9 +58,9 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
   };
 
   const getStockColor = (currentStock: number) => {
-    if (currentStock === 0) return "text-red-500";
-    if (currentStock < 5) return "text-orange-500";
-    return "text-black";
+    if (currentStock === 0) return "text-brick-ember-600";
+    if (currentStock < 5) return "text-amber-flame-700";
+    return "text-deep-space-blue-950";
   };
 
   const getStockMessage = (currentStock: number) => {
@@ -76,7 +76,7 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
         variants={{
           hover: {
             y: -8,
-            boxShadow: "0 25px 40px -12px rgba(0,0,0,0.25)",
+            boxShadow: "0 25px 40px -12px rgba(15,26,36,0.22)",
             transition: {
               type: "spring",
               stiffness: 700,
@@ -91,17 +91,16 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
         }}
         className="
           overflow-hidden
-          rounded-[28px]
-          border
-          border-neutral-200
-          bg-white
-          shadow-[0_4px_30px_rgba(0,0,0,0.07)]
+          rounded-[8px]
+          
+          bg-card-bg
+          shadow-[0_4px_30px_rgba(15,26,36,0.10)]
         "
       >
         {/* IMAGE AREA */}
         <div className="relative overflow-hidden">
           <Link href={`/product/${product.id}`}>
-            <div className="relative aspect-4/5 overflow-hidden bg-neutral-100">
+            <div className="relative aspect-4/5 overflow-hidden bg-cool-steel-100">
               {product.image ? (
                 <motion.img
                   src={product.image}
@@ -150,7 +149,7 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
               items-center
               justify-center
               rounded-full
-              bg-white/90
+              bg-card-bg/90
               backdrop-blur-md
               shadow-lg
             "
@@ -169,8 +168,8 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
               className="
               uppercase
               tracking-wider
-              border border-black text-black text-xs font-medium px-2 py-1 rounded
-              hover:bg-black hover:text-white transition-colors
+              border border-deep-space-blue-900 text-deep-space-blue-950 text-xs font-medium px-2 py-1 rounded
+              hover:bg-deep-space-blue-900 hover:text-white transition-colors
             "
             >
               {product.category?.name}
@@ -184,9 +183,9 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
                 text-[16px]
                 font-semibold
                 leading-snug
-                text-neutral-900
+                text-deep-space-blue-900
                 transition-colors
-                hover:text-neutral-600
+                hover:text-steel-blue-700
                 mt-3
               "
             >
@@ -202,7 +201,7 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
                   text-xl
                   font-bold
                   tracking-tight
-                  text-neutral-900
+                  text-deep-space-900
                 "
               >
                 Rp {product.price.toLocaleString("id-ID")}
@@ -211,7 +210,7 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
               <p
                 className="
                   text-sm
-                  text-neutral-400
+                  text-cool-steel-400
                   line-through
                 "
               >
@@ -227,7 +226,7 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
                 py-1
                 text-xs
                 font-medium
-                text-green-600
+                text-steel-blue-600
               "
             >
               -20%
@@ -252,11 +251,10 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
           text-sm
           font-medium
           transition-all
-          ${
-            selectedSize === variant.size
-              ? "bg-black text-white border-black"
-              : "bg-white text-neutral-700 border-neutral-300 hover:border-black"
-          }
+          ${selectedSize === variant.size
+                      ? "bg-deep-space-blue-900 text-white border-deep-space-blue-900"
+                      : "bg-card-bg text-cool-steel-700 border-cool-steel-300 hover:border-deep-space-blue-900"
+                    }
         `}
                 >
                   {variant.size}
@@ -273,11 +271,10 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
           <button
             onClick={handleAddToCart}
             disabled={currentStock === 0 || cartQuantity === currentStock}
-            className={`w-full py-4 px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors rounded-4xl ${
-              currentStock === 0
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-black text-white hover:bg-gray-800"
-            }`}
+            className={`w-full py-4 px-6 md:px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors text-[15px] md:text-md whitespace-nowrap  ${currentStock === 0
+              ? "bg-cool-steel-200 text-cool-steel-500 cursor-not-allowed"
+              : "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700"
+              }`}
           >
             <ShoppingBag className="h-6 w-6" />
             {currentStock === 0

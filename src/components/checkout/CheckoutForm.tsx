@@ -128,19 +128,19 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
     switch (type) {
       case "province":
         return (
-          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+          <span className="text-xs px-1.5 py-0.5 rounded bg-steel-blue-100 text-steel-blue-700">
             Province
           </span>
         );
       case "city":
         return (
-          <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700">
+          <span className="text-xs px-1.5 py-0.5 rounded bg-steel-blue-100 text-steel-blue-700">
             City
           </span>
         );
       case "district":
         return (
-          <span className="text-xs px-1.5 py-0.5 rounded bg-orange-100 text-orange-700">
+          <span className="text-xs px-1.5 py-0.5 rounded bg-amber-flame-100 text-amber-flame-700">
             District
           </span>
         );
@@ -279,7 +279,7 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
               )}
               {isSearching && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="animate-spin h-4 w-4 border-2 border-gray-500 border-t-transparent rounded-full" />
+                  <div className="animate-spin h-4 w-4 border-2 border-cool-steel-500 border-t-transparent rounded-full" />
                 </div>
               )}
             </div>
@@ -307,8 +307,8 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
                         <p className="text-sm font-medium">{result.label}</p>
                         <p className="text-xs opacity-60 mt-1">
                           {result.province_name}
-                          {result.city_name && ` › ${result.city_name}`}
-                          {result.district_name && ` › ${result.district_name}`}
+                          {result.city_name && `  ${result.city_name}`}
+                          {result.district_name && `  ${result.district_name}`}
                           {result.zip_code && ` (${result.zip_code})`}
                         </p>
                       </div>

@@ -105,12 +105,12 @@ export default function CheckoutPage() {
   if (cart.length === 0 && !isSubmitting) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4">
-        <h2 className="text-2xl font-bold uppercase tracking-widest">
+        <h2 className="font-heading text-4xl font-semibold">
           Your cart is empty
         </h2>
         <Link
           href="/products"
-          className="bg-black text-white px-8 py-3 uppercase text-sm font-bold hover:bg-gray-800 transition-colors"
+          className="bg-deep-space-blue-900 text-white px-8 py-3 uppercase text-sm font-bold hover:bg-steel-blue-700 transition-colors"
         >
           Return to Shop
         </Link>
@@ -127,7 +127,7 @@ export default function CheckoutPage() {
         >
           <ArrowLeft className="h-3 w-3" /> Back to Products
         </Link>
-        <h1 className="text-3xl md:text-4xl font-extrabold uppercase tracking-tighter mt-4">
+        <h1 className="font-heading text-5xl md:text-6xl font-semibold mt-4">
           Checkout
         </h1>
       </div>
@@ -142,11 +142,10 @@ export default function CheckoutPage() {
                 setDeliveryMethod("shipping");
                 setShippingRate(null);
               }}
-              className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${
-                deliveryMethod === "shipping"
-                  ? "border-black bg-black text-white"
-                  : "border-gray-200 text-muted-foreground"
-              }`}
+              className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${deliveryMethod === "shipping"
+                ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white"
+                : "border-cool-steel-200 text-muted-foreground"
+                }`}
             >
               Delivery Shipping
             </button>
@@ -162,11 +161,10 @@ export default function CheckoutPage() {
                   duration: "Same Day",
                 });
               }}
-              className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${
-                deliveryMethod === "pickup"
-                  ? "border-black bg-black text-white"
-                  : "border-gray-200 text-muted-foreground"
-              }`}
+              className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${deliveryMethod === "pickup"
+                ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white"
+                : "border-cool-steel-200 text-muted-foreground"
+                }`}
             >
               Ambil di Store
             </button>
@@ -206,14 +204,14 @@ export default function CheckoutPage() {
 
           {/* Error Message */}
           {errorMsg && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-4 text-sm rounded-lg font-medium">
-              ⚠️ {errorMsg}
+            <div className="bg-brick-ember-50 border border-brick-ember-200 text-brick-ember-700 p-4 text-sm rounded-lg font-medium">
+              ?? {errorMsg}
             </div>
           )}
         </div>
 
         {/* Right Column: Summary */}
-        <div className="lg:col-span-4 sticky top-24 self-start">
+        <div className="lg:col-span-4 top-24 self-start">
           <OrderSummary
             items={cart}
             subtotal={cartTotal}
@@ -226,8 +224,8 @@ export default function CheckoutPage() {
             disabled={!isFormValid}
             className={`w-full mt-6 py-4 uppercase font-bold tracking-widest transition-all shadow-md flex items-center justify-center gap-2 ${
               isFormValid
-                ? "bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 scale-[1.02]"
-                : "bg-surface text-muted-foreground opacity-50 cursor-not-allowed border border-dashed"
+                ? "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700 dark:bg-card-bg dark:text-deep-space-blue-950 dark:hover:bg-cool-steel-100 scale-[1.02]"
+                : "bg-cool-steel-100 text-muted-foreground opacity-60 cursor-not-allowed border border-dashed border-cool-steel-300"
             }`}
           >
             {isSubmitting ? (
@@ -244,11 +242,10 @@ export default function CheckoutPage() {
             id="place-order-btn"
             onClick={handleConfirmPayment}
             disabled={!isFormValid}
-            className={`w-full mt-6 py-4 uppercase font-bold tracking-widest transition-all shadow-md flex items-center justify-center gap-2 ${
-              isFormValid
-                ? "bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 scale-[1.02]"
-                : "bg-surface text-muted-foreground opacity-50 cursor-not-allowed border border-dashed"
-            }`}
+            className={`w-full mt-6 py-4 uppercase font-bold tracking-widest transition-all shadow-md flex items-center justify-center gap-2 ${isFormValid
+              ? "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700 dark:bg-card-bg dark:text-deep-space-blue-950 dark:hover:bg-cool-steel-100 scale-[1.02]"
+              : "bg-cool-steel-100 text-muted-foreground opacity-60 cursor-not-allowed border border-dashed border-cool-steel-300"
+              }`}
           >
             {isSubmitting ? (
               <>
@@ -272,7 +269,7 @@ export default function CheckoutPage() {
 
           {isFormValid && !isSubmitting && (
             <div className="flex items-center justify-center gap-1.5 mt-3">
-              <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
+              <ShieldCheck className="h-3.5 w-3.5 text-steel-blue-600" />
               <p className="text-[10px] text-center text-muted-foreground uppercase tracking-tighter">
                 Aman & dienkripsi via Midtrans
               </p>
@@ -289,3 +286,5 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
+

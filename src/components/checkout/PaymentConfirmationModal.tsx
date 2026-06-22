@@ -28,10 +28,10 @@ export function PaymentConfirmationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-deep-space-blue-950/80 backdrop-blur-sm p-4">
       <div
-        className="bg-surface w-full max-w-lg rounded-xl overflow-hidden shadow-2xl relative border"
-        style={{ borderColor: "var(--surface-border)" }}
+        className="bg-deep-space-blue-900 text-white w-full max-w-lg rounded-xl overflow-hidden shadow-2xl relative border"
+        style={{ borderColor: "var(--steel-blue-700)" }}
       >
         <button
           onClick={onClose}
@@ -42,20 +42,20 @@ export function PaymentConfirmationModal({
 
         <div className="p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-10 w-10 bg-black text-white rounded-full flex items-center justify-center">
+            <div className="h-10 w-10 bg-amber-flame-500 text-deep-space-blue-950 rounded-full flex items-center justify-center">
               <CheckCircle2 className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold uppercase tracking-tight">
+              <h2 className="text-xl font-bold uppercase tracking-tight text-white">
                 Konfirmasi Pesanan
               </h2>
-              <p className="text-xs text-muted-foreground uppercase">
+              <p className="text-xs text-deep-space-blue-100 uppercase ">
                 Pastikan data pesanan Anda sudah benar
               </p>
             </div>
           </div>
 
-          <div className="space-y-4 mb-8 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-4 mb-8 max-h-75 overflow-y-auto pr-2 custom-scrollbar text-white">
             {items.map((item) => {
               const itemKey = getCartItemKey(
                 item.product.id,
@@ -64,18 +64,20 @@ export function PaymentConfirmationModal({
               return (
                 <div
                   key={itemKey}
-                  className="flex gap-4 p-3 bg-white/5 rounded-lg border"
-                  style={{ borderColor: "var(--surface-border)" }}
+                  className="flex gap-4 p-3 bg-deep-space-blue-800 rounded-lg border"
+                  style={{ borderColor: "var(--steel-blue-700)" }}
                 >
-                  <div className="h-16 w-16 bg-white rounded overflow-hidden shrink-0">
+                  <div className="h-16 w-16 bg-card-bg rounded overflow-hidden shrink-0">
                     {item.product.image ? (
                       <Image
                         src={item.product.image}
                         alt={item.product.title}
                         className="h-full w-full object-cover"
+                        width={500}
+                        height={500}
                       />
                     ) : (
-                      <div className="h-full w-full bg-gray-100 flex items-center justify-center">
+                      <div className="h-full w-full bg-cool-steel-100 flex items-center justify-center">
                         <ShoppingBag className="h-6 w-6 opacity-20" />
                       </div>
                     )}
@@ -104,7 +106,7 @@ export function PaymentConfirmationModal({
               );
             })}
           </div>
-          <div className="bg-black text-white p-6 rounded-xl mb-1 flex justify-between items-center shadow-lg">
+          <div className="bg-deep-space-blue-900 text-white p-6 rounded-xl mb-1 flex justify-between items-center shadow-lg">
             <div>
               <p className="text-[10px] uppercase tracking-widest opacity-60">
                 Delivery Method:
@@ -121,7 +123,7 @@ export function PaymentConfirmationModal({
               </div>
             </div>
           </div>
-          <div className="bg-black text-white p-6 rounded-xl mb-8 flex justify-between items-center shadow-lg">
+          <div className="bg-amber-flame-500 text-deep-space-blue-950 p-6 rounded-xl mb-8 flex justify-between items-center shadow-lg">
             <div>
               <p className="text-[10px] uppercase tracking-widest opacity-60">
                 Total Pembayaran
@@ -136,13 +138,13 @@ export function PaymentConfirmationModal({
           <div className="flex flex-col gap-3">
             <button
               onClick={onConfirm}
-              className="w-full bg-black text-white py-4 font-black uppercase tracking-widest hover:bg-gray-800 transition-all rounded-lg text-sm shadow-xl flex items-center justify-center gap-2"
+              className="w-full bg-amber-flame-500 text-deep-space-blue-950 py-4 font-black uppercase tracking-widest hover:bg-amber-flame-400 transition-all rounded-lg text-sm shadow-xl flex items-center justify-center gap-2"
             >
               Sudah benar
             </button>
             <button
               onClick={onClose}
-              className="w-full bg-surface border-2 border-dashed py-4 font-bold uppercase tracking-widest hover:bg-white transition-all rounded-lg text-sm text-muted-foreground"
+              className="w-full bg-deep-space-blue-800 border-2 border-dashed border-steel-blue-600 py-4 font-bold uppercase tracking-widest transition-all rounded-lg text-sm text-deep-space-blue-100 hover:bg-deep-space-blue-700"
             >
               Cek kembali
             </button>
@@ -152,3 +154,5 @@ export function PaymentConfirmationModal({
     </div>
   );
 }
+
+

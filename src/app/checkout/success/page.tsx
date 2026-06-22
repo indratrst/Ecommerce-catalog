@@ -102,8 +102,8 @@ function SuccessContent() {
       <div
         className={`p-5 rounded-full mb-6 animate-[fadeIn_0.5s_ease] ${
           status === "PENDING"
-            ? "bg-yellow-50 text-yellow-500 dark:bg-yellow-900/20"
-            : "bg-green-50 text-green-600 dark:bg-green-900/20"
+            ? "bg-amber-flame-50 text-amber-flame-700 dark:bg-amber-flame-900/20"
+            : "bg-steel-blue-50 text-steel-blue-600 dark:bg-steel-blue-900/20"
         }`}
       >
         {status === "PENDING" ? (
@@ -140,11 +140,11 @@ function SuccessContent() {
               </p>
               <button
                 onClick={handleCopy}
-                className="shrink-0 p-1.5 hover:bg-black/5 rounded transition-colors"
+                className="shrink-0 p-1.5 hover:bg-deep-space-blue-900/5 rounded transition-colors"
                 title="Salin ID"
               >
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-green-500" />
+                  <Check className="h-3.5 w-3.5 text-steel-blue-600" />
                 ) : (
                   <Copy className="h-3.5 w-3.5 text-muted-foreground" />
                 )}
@@ -169,7 +169,7 @@ function SuccessContent() {
 
         {order?.status === "PENDING" && (
           <>
-            <p className="text-yellow-600 font-medium">
+            <p className="text-amber-flame-700 font-medium">
               Silakan selesaikan pembayaran kamu
             </p>
 
@@ -199,13 +199,13 @@ function SuccessContent() {
           <span
             className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase px-3 py-1 rounded-full ${
               status === "PENDING"
-                ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                ? "bg-amber-flame-100 text-amber-flame-800 dark:bg-amber-flame-900/30 dark:text-amber-flame-400"
+                : "bg-steel-blue-100 text-steel-blue-700 dark:bg-steel-blue-900/30 dark:text-steel-blue-300"
             }`}
           >
             <span
               className={`h-1.5 w-1.5 rounded-full ${
-                status === "PENDING" ? "bg-yellow-500" : "bg-green-500"
+                status === "PENDING" ? "bg-amber-flame-500" : "bg-steel-blue-500"
               }`}
             />
             {status === "PENDING" ? "Pending" : "Lunas"}
@@ -217,13 +217,13 @@ function SuccessContent() {
       <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
         <Link
           href="/products"
-          className="flex-1 bg-black text-white py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+          className="flex-1 bg-deep-space-blue-900 text-white py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-steel-blue-700 transition-all flex items-center justify-center gap-2"
         >
           Lanjut Belanja <ArrowRight className="h-4 w-4" />
         </Link>
         <Link
           href="/"
-          className="flex-1 border-2 border-black py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2"
+          className="flex-1 border-2 border-deep-space-blue-900 py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-deep-space-blue-900 hover:text-white transition-all flex items-center justify-center gap-2"
         >
           <ShoppingBag className="h-4 w-4" /> Beranda
         </Link>
@@ -239,3 +239,4 @@ export default function SuccessPage() {
     </Suspense>
   );
 }
+
