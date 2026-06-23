@@ -10,11 +10,7 @@ interface ImageUploadProps {
   label?: string;
 }
 
-export function ImageUpload({
-  value,
-  onChange,
-  label = "Product Image",
-}: ImageUploadProps) {
+export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 

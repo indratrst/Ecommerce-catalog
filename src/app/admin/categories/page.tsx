@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { Column, DataTable } from "@/components/admin/DataTable";
 import { DeleteModal } from "@/components/admin/DeleteModal";
-import { Plus, Tag } from "lucide-react";
+import { Package, Plus, Tag } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCategories, useDeleteCategory } from "@/hooks/useCategories";
 import { CategoryWithCount } from "@/lib/validation/category.schema";
+import Image from "next/image";
 
 export default function CategoriesPage() {
   const router = useRouter();
@@ -29,15 +30,28 @@ export default function CategoriesPage() {
 
   const columns: Column<CategoryWithCount>[] = [
     {
-      key: "name",
+      key: "image",
       label: "Category Name",
-      render: (name, item) => (
+      render: (image, item) => (
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-            <Tag className="w-5 h-5" />
+          <div className="relative w-12 h-12 rounded-xl bg-slate-100 overflow-hidden shrink-0">
+            {image ? (
+              <Image
+                src={image}
+                fill
+                alt={item.name}
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                <Package className="w-6 h-6 text-slate-400" />
+              </div>
+            )}
           </div>
           <div>
-            <p className="font-bold text-slate-900 dark:text-white">{name}</p>
+            <p className="font-bold text-slate-900 dark:text-white">
+              {item.name}
+            </p>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-0.5">
               /{item.slug}
             </p>

@@ -366,6 +366,7 @@ export function ProductForm({
           <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
             <ImageUpload
               value={watchedImage ?? ""}
+              label="Product Image"
               onChange={(url) => setValue("image", url)}
             />
           </div>

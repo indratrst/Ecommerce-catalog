@@ -1,9 +1,9 @@
 // app/api/products/route.ts
-import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { z } from "zod"; // 🔥 IMPORT ZOD
 import { CreateProductSchema } from "@/lib/validation/products.schema";
+import prisma from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {

@@ -1,6 +1,6 @@
 import { getProducts } from "@/lib/data";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import {
   dehydrate,
   HydrationBoundary,

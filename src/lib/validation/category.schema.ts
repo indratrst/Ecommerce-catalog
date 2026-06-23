@@ -4,6 +4,7 @@ import { z } from "zod";
 const CategoryBaseSchema = {
   name: z.string().min(1, "Name is required").max(100),
   slug: z.string(),
+  image: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
 };
 

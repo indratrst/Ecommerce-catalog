@@ -91,7 +91,7 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
         }}
         className="
           overflow-hidden
-          rounded-[8px]
+          rounded-lg
           
           bg-card-bg
           shadow-[0_4px_30px_rgba(15,26,36,0.10)]
@@ -251,10 +251,11 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
           text-sm
           font-medium
           transition-all
-          ${selectedSize === variant.size
-                      ? "bg-deep-space-blue-900 text-white border-deep-space-blue-900"
-                      : "bg-card-bg text-cool-steel-700 border-cool-steel-300 hover:border-deep-space-blue-900"
-                    }
+          ${
+            selectedSize === variant.size
+              ? "bg-deep-space-blue-900 text-white border-deep-space-blue-900"
+              : "bg-card-bg text-cool-steel-700 border-cool-steel-300 hover:border-deep-space-blue-900"
+          }
         `}
                 >
                   {variant.size}
@@ -271,10 +272,11 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
           <button
             onClick={handleAddToCart}
             disabled={currentStock === 0 || cartQuantity === currentStock}
-            className={`w-full py-4 px-6 md:px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors text-[15px] md:text-md whitespace-nowrap  ${currentStock === 0
-              ? "bg-cool-steel-200 text-cool-steel-500 cursor-not-allowed"
-              : "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700"
-              }`}
+            className={`w-full py-4 px-6 md:px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors text-[15px] md:text-md whitespace-nowrap  ${
+              currentStock === 0
+                ? "bg-cool-steel-200 text-cool-steel-500 cursor-not-allowed"
+                : "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700"
+            }`}
           >
             <ShoppingBag className="h-6 w-6" />
             {currentStock === 0

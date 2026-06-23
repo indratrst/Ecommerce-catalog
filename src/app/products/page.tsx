@@ -1,14 +1,13 @@
-import { getProducts } from "@/lib/data";
+import { getCategories, getProducts } from "@/lib/data";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
 import { ProductListClient } from "@/components/products/ProductListClient";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { dummyCategories } from "@/data/categories";
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -31,6 +30,8 @@ export default async function ProductsPage({
     queryFn: () => getProducts(categorySlug, search),
   });
 
+  const categories = await getCategories();
+
   // Get active category name if applicable
   let categoryName = "All Products";
   if (categorySlug) {
@@ -51,9 +52,10 @@ export default async function ProductsPage({
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 hover:scale-105"
           style={{
-            backgroundImage: `url('${dummyCategories?.find((category) => category.name === categoryName)?.image
-              ?? '/images/homepage/work-office-hero.png'
-              }')`
+            backgroundImage: `url('${
+              categories?.find((category) => category.name === categoryName)
+                ?.image ?? "/images/homepage/work-office-hero.png"
+            }')`,
           }}
         >
           <div className="absolute inset-0 bg-black/50" />
@@ -65,8 +67,6 @@ export default async function ProductsPage({
             Latest Collection
           </span>
           <h1 className="font-heading text-6xl md:text-8xl font-semibold text-white mb-6 leading-[0.95]">
-
-
             {categoryName}
           </h1>
           <p className="text-base md:text-lg text-gray-200 mb-10 max-w-2xl font-medium leading-8">
@@ -94,31 +94,25 @@ export default async function ProductsPage({
       {/* 2. PRODUCT LIST SECTION */}
       <section id="products-display" className="w-full  sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-
           {/* Section Title / Header */}
-          <div className="flex flex-col mb-1">
-            <h2
-              className="font-heading text-5xl md:text-6xl font-semibold"
-              style={{ color: "var(--foreground)" }}
-            >
-              {search ? `Search: ${search}` : categoryName}
-            </h2>
-            <div
-              className="h-1 w-96 mt-6"
-              style={{ background: "var(--foreground)" }}
-            ></div>
-            {search && (
-              <p className="font-heading text-3xl md:text-4xl font-semibold text-center">
-                Showing results for &quot;{search ? `Search: ${search}` : categoryName}&quot;
-              </p>
-            )}
-          </div>
+          <h2
+            className="font-heading text-5xl md:text-6xl font-semibold inline-block relative ps-2"
+            style={{ color: "var(--foreground)" }}
+          >
+            {search ? `Search: ${search}` : categoryName}
+            <span
+              className="absolute -bottom-5 left-0 h-1 mt-6"
+              style={{
+                background: "var(--foreground)",
+                width: "110%",
+              }}
+            ></span>
+          </h2>
 
           {/* Hydrated Client Component (Product Cards) */}
           <HydrationBoundary state={dehydrate(queryClient)}>
             <ProductListClient />
           </HydrationBoundary>
-
         </div>
       </section>
     </>

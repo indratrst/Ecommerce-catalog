@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import prisma from "./prisma";
 
 // Types that match the Prisma output (with relations)
 export type ProductWithRelations = Awaited<

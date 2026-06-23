@@ -10,6 +10,7 @@ import {
 import { FieldErrors, useForm, useWatch } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { toast } from "sonner";
+import { ImageUpload } from "./ImageUpload";
 interface CategoryFormProps {
   initialData?: CreateCategory;
   onSubmit: (data: CreateCategory) => void | Promise<void>;
@@ -32,6 +33,7 @@ export function CategoryForm({
     defaultValues: {
       name: initialData?.name || "",
       slug: initialData?.slug || "",
+      image: initialData?.image || "",
       description: initialData?.description || "",
     },
   });
@@ -41,6 +43,8 @@ export function CategoryForm({
     name: "name",
     defaultValue: initialData?.name || "",
   });
+
+  const watchedImage = useWatch({ control, name: "image" });
 
   const onFormSubmit = async (data: CreateCategory) => {
     // e.preventDefault();
@@ -142,6 +146,15 @@ export function CategoryForm({
           )}
         </div>
 
+        <div className="space-y-8 w-1/2">
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <ImageUpload
+              label="Category Image"
+              value={watchedImage ?? ""}
+              onChange={(url) => setValue("image", url)}
+            />
+          </div>
+        </div>
         <div className="pt-4 flex justify-end">
           <button
             type="submit"

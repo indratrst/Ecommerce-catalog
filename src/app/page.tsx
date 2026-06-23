@@ -1,15 +1,18 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Truck, RefreshCcw, Package } from "lucide-react";
-import { getProducts } from "@/lib/data";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Truck,
+  RefreshCcw,
+  Package,
+} from "lucide-react";
+import { getCategories, getProducts } from "@/lib/data";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
 import { ProductListClient } from "@/components/products/ProductListClient";
-import { dummyCategories } from "@/data/categories";
-
-
 
 export default async function Home() {
   const queryClient = new QueryClient();
@@ -19,6 +22,8 @@ export default async function Home() {
     queryKey: ["products", { category: undefined }],
     queryFn: () => getProducts(),
   });
+
+  const categories = await getCategories();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -65,28 +70,18 @@ export default async function Home() {
         </div>
       </section>
 
-
-
       {/* CATEGORIES SECTION */}
-      <section
-        id="categories"
-        className="py-20 "
-
-      >
+      <section id="categories" className="py-20 ">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-left mb-12">
-            <h2
-              className="font-heading text-4xl md:text-5xl font-semibold text-deep-space-blue-800"
-            >
+            <h2 className="font-heading text-4xl md:text-5xl font-semibold text-deep-space-blue-800">
               Shop by Category
             </h2>
-            <div
-              className="h-1 w-24 mt-4 bg-black"
-            ></div>
+            <div className="h-1 w-24 mt-4 bg-black"></div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {dummyCategories.map((category) => (
+            {categories.slice(0, 3).map((category) => (
               <Link
                 key={category.name}
                 href={`/products?category=${category.name.toLowerCase()}`}
@@ -99,7 +94,7 @@ export default async function Home() {
                   <div className="absolute inset-0 bg-black/40 transition-opacity duration-300 group-hover:bg-black/50" />
                 </div>
                 <div className="relative z-10 text-center">
-                  <h3 className="font-heading text-4xl md:text-5xl font-semibold text-white mb-2 inline-block border-b-2 border-white   transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                  <h3 className="font-heading text-4xl md:text-5xl font-semibold text-white mb-2 inline-block transform  translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:border-b-2 group-hover:border-white">
                     {category.name}
                   </h3>
                 </div>
@@ -113,11 +108,15 @@ export default async function Home() {
       <section className="relative h-[70vh] w-full flex items-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-fixed "
-          style={{ backgroundImage: "url('/images/homepage/work-office-hero.png')" }}
+          style={{
+            backgroundImage: "url('/images/homepage/work-office-hero.png')",
+          }}
         >
-          <div className="absolute inset-0 bg-linear-to-r
+          <div
+            className="absolute inset-0 bg-linear-to-r
 from-black
-to-transparent" />
+to-transparent"
+          />
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-xl text-white">
@@ -128,7 +127,8 @@ to-transparent" />
               Professional pinstripe <br /> blazers collection
             </h2>
             <p className="text-lg text-white/80 mb-10 max-w-lg leading-relaxed">
-              Dive into a world of style with our latest collection! Shop now and redefine your wardrobe narrative!
+              Dive into a world of style with our latest collection! Shop now
+              and redefine your wardrobe narrative!
             </p>
             <Link
               href="/products?category=work"
@@ -197,13 +197,12 @@ to-transparent" />
         </div>
       </section> */}
 
-
       {/* NEW ARRIVALS SECTION */}
       <section
         id="new-arrivals"
         className="py-16 "
 
-      // style={{ borderColor: "var(--surface-border)" }}
+        // style={{ borderColor: "var(--surface-border)" }}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-left mb-10">
@@ -213,9 +212,7 @@ to-transparent" />
             >
               New Arrivals
             </h2>
-            <div
-              className="h-1 w-24 mt-4 bg-black"
-            ></div>
+            <div className="h-1 w-24 mt-4 bg-black"></div>
           </div>
 
           <HydrationBoundary state={dehydrate(queryClient)}>
@@ -224,19 +221,19 @@ to-transparent" />
         </div>
       </section>
 
-
-
-
       {/* BOTTOM CTA SECTION */}
-      <section
-        className="relative  h-[70vh] text-white text-right overflow-hidden bg-cover ">
-
+      <section className="relative  h-[70vh] text-white text-right overflow-hidden bg-cover ">
         <div
-          style={{ backgroundImage: "url('/images/homepage/weekend-wanderlust.png')" }}
-          className="absolute inset-0 bg-cover bg-fixed">
-          <div className="absolute inset-0 bg-linear-to-l
+          style={{
+            backgroundImage: "url('/images/homepage/weekend-wanderlust.png')",
+          }}
+          className="absolute inset-0 bg-cover bg-fixed"
+        >
+          <div
+            className="absolute inset-0 bg-linear-to-l
 from-black via-transparent
-to-transparent" />
+to-transparent"
+          />
         </div>
 
         <div className="grid grid-cols-2 md:px-28">
@@ -249,7 +246,8 @@ to-transparent" />
               Elevate your wardrobe, embrace timeless style!
             </h2>
             <p className="text-lg text-white/60 mb-12 max-w-2xl mx-auto leading-relaxed">
-              Explore our collections today and experience the joy of fashion. Shop now for the epitome of chic sophistication!
+              Explore our collections today and experience the joy of fashion.
+              Shop now for the epitome of chic sophistication!
             </p>
             <Link
               href="/products"
@@ -259,42 +257,53 @@ to-transparent" />
             </Link>
           </div>
         </div>
-
       </section>
 
       {/* SERVICES SECTION */}
-      <section
-        className="py-20 ">
+      <section className="py-20 ">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {[
               {
                 title: "Secure Payments",
                 desc: "Shop with confidence knowing that your transactions are safeguarded.",
-                icon: <ShieldCheck className="w-8 h-8" strokeWidth={1.5} />
+                icon: <ShieldCheck className="w-8 h-8" strokeWidth={1.5} />,
               },
               {
                 title: "Free Shipping",
                 desc: "Shopping with no extra charges – savor the liberty of complimentary shipping on every order.",
-                icon: <Truck className="w-8 h-8" strokeWidth={1.5} />
+                icon: <Truck className="w-8 h-8" strokeWidth={1.5} />,
               },
               {
                 title: "Easy Returns",
                 desc: "With our hassle-free Easy Returns, changing your mind has never been more convenient.",
-                icon: <RefreshCcw className="w-8 h-8" strokeWidth={1.5} />
+                icon: <RefreshCcw className="w-8 h-8" strokeWidth={1.5} />,
               },
               {
                 title: "Order Tracking",
                 desc: "Stay in the loop with our Order Tracking feature – from checkout to your doorstep.",
-                icon: <Package className="w-8 h-8" strokeWidth={1.5} />
-              }
+                icon: <Package className="w-8 h-8" strokeWidth={1.5} />,
+              },
             ].map((service, index) => (
-              <div key={index} className="flex flex-col items-center text-center group">
-                <div style={{ backgroundColor: "var(--foreground)", color: "var(--background)" }} className="mb-6 p-4 rounded-full  transition-all duration-300">
+              <div
+                key={index}
+                className="flex flex-col items-center text-center group"
+              >
+                <div
+                  style={{
+                    backgroundColor: "var(--foreground)",
+                    color: "var(--background)",
+                  }}
+                  className="mb-6 p-4 rounded-full  transition-all duration-300"
+                >
                   {service.icon}
                 </div>
-                <h4 className="font-heading text-xl font-bold mb-3 uppercase tracking-wider text-black">{service.title}</h4>
-                <p className="text-black text-sm leading-relaxed max-w-xs">{service.desc}</p>
+                <h4 className="font-heading text-xl font-bold mb-3 uppercase tracking-wider text-black">
+                  {service.title}
+                </h4>
+                <p className="text-black text-sm leading-relaxed max-w-xs">
+                  {service.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -303,16 +312,21 @@ to-transparent" />
 
       {/* TESTIMONIAL SECTION */}
       <section className="relative h-[90vh] text-white  overflow-hidden ">
-
         <div
           style={{ backgroundImage: "url('/images/homepage/urban-chic.png')" }}
-          className="absolute inset-0 bg-cover bg-fixed">
+          className="absolute inset-0 bg-cover bg-fixed"
+        >
           <div className="absolute inset-0 bg-black/50" />
         </div>
         <div className="relative z-10 px-4 max-w-4xl translate-y-1/3 text-center mx-auto">
           <div className="mb-10 text-6xl text-gray-300 font-serif">“</div>
           <h4 className=" text-2xl md:text-3xl font-medium leading-relaxed italic mb-10 text-gray-800 dark:text-gray-200">
-            ”FemmeWardrobe is my fashion sanctuary! The curated collection effortlessly blends chic trends with timeless elegance, making every purchase a delightful discovery. The quality of their pieces is unmatched, and I appreciate the brand's commitment to sustainable fashion. What truly sets FemmeWardrobe apart is their customer-centric approach.”
+            ”FemmeWardrobe is my fashion sanctuary! The curated collection
+            effortlessly blends chic trends with timeless elegance, making every
+            purchase a delightful discovery. The quality of their pieces is
+            unmatched, and I appreciate the brand&apos;s commitment to
+            sustainable fashion. What truly sets FemmeWardrobe apart is their
+            customer-centric approach.”
           </h4>
           <div className="h-1 w-12 bg-black dark:bg-white mx-auto mb-6"></div>
           <h6 className="uppercase tracking-[0.2em] text-xs font-bold">
@@ -320,11 +334,6 @@ to-transparent" />
           </h6>
         </div>
       </section>
-
-
-
-
-
-    </div >
+    </div>
   );
 }
