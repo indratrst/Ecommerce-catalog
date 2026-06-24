@@ -33,14 +33,6 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
   );
   const cartQuantity = cartItem ? cartItem.quantity : 0;
   const remainingStock = currentStock - cartQuantity;
-  // useEffect(() => {
-  //   // if (product.variants && product.variants.length > 0) {
-  //   //   const firstInStock = product.variants.find((v) => v.stock > 0);
-  //   //   setSelectedSize(firstInStock ? firstInStock.size : null);
-  //   // }
-
-  //   console.log(product);
-  // }, [product, product.variants]);
 
   const handleAddToCart = () => {
     if (remainingStock <= 0) {
@@ -58,8 +50,8 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
   };
 
   const getStockColor = (currentStock: number) => {
-    if (currentStock === 0) return "text-brick-ember-600";
-    if (currentStock < 5) return "text-amber-flame-700";
+    if (currentStock === 0) return "text-red-600";
+    if (currentStock < 5) return "text-orange-700";
     return "text-deep-space-blue-950";
   };
 

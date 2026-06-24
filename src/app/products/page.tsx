@@ -70,8 +70,10 @@ export default async function ProductsPage({
             {categoryName}
           </h1>
           <p className="text-base md:text-lg text-gray-200 mb-10 max-w-2xl font-medium leading-8">
-            Discover premium streetwear and lifestyle essentials designed for
-            those who appreciate quality and style.
+            {
+              categories?.find((category) => category.name === categoryName)
+                ?.description
+            }
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
@@ -108,6 +110,12 @@ export default async function ProductsPage({
               }}
             ></span>
           </h2>
+          <p className="text-base md:text-lg text-gray-600 mb-10 max-w-2xl font-medium leading-8 mt-8">
+            {
+              categories?.find((category) => category.name === categoryName)
+                ?.description
+            }
+          </p>
 
           {/* Hydrated Client Component (Product Cards) */}
           <HydrationBoundary state={dehydrate(queryClient)}>

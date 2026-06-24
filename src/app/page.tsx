@@ -78,6 +78,12 @@ export default async function Home() {
               Shop by Category
             </h2>
             <div className="h-1 w-24 mt-4 bg-black"></div>
+
+            <p className="text-base md:text-lg text-gray-600 mb-10 max-w-2xl font-medium leading-8 mt-8">
+              Explore our diverse range of categories below and start your
+              shopping journey. We&apos;ve made it easy to discover your next
+              favorite item!
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -213,6 +219,12 @@ to-transparent"
               New Arrivals
             </h2>
             <div className="h-1 w-24 mt-4 bg-black"></div>
+
+            <p className="text-base md:text-lg text-gray-600 mb-10 max-w-2xl font-medium leading-8 mt-8">
+              The freshest picks have arrived! Browse our New Arrivals for the
+              latest products, styles, and innovations. Shop what&apos;s new and
+              exciting today!
+            </p>
           </div>
 
           <HydrationBoundary state={dehydrate(queryClient)}>

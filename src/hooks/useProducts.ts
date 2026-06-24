@@ -25,14 +25,21 @@ export function useProductUnique(categorySlug?: string, search?: string) {
   });
 }
 
-export function useProducts() {
+export function useProducts(category?: string, search?: string) {
   return useQuery<ProductResponse[]>({
-    queryKey: ["products"],
-    queryFn: () => api.get(`products`).then((res) => res.data),
+    queryKey: ["products", { category, search }],
+    queryFn: () =>
+      api
+        .get(`products`, {
+          params: {
+            ...(category && { category }),
+            ...(search && { search }),
+          },
+        })
+        .then((res) => res.data),
     staleTime: 60 * 60 * 1000,
   });
 }
-
 export function useProduct(id: string) {
   return useQuery<ProductResponse>({
     queryKey: ["products", id],

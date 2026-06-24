@@ -44,7 +44,7 @@ export function ProductGrid({ products }: { products: ProductCardSchema[] }) {
 
   return (
     <>
-      <div className="mb-8 p-4 transition-colors duration-200">
+      <div className="mb-3 py-3 px-4 transition-colors duration-200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 ">
           <p className="text-sm uppercase tracking-widest font-semibold">
             Sort Product

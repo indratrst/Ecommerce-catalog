@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useState, useRef, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -19,6 +19,8 @@ import { isMockMode, setMockMode } from "@/services/rajaongkir/mock";
 import Image from "next/image";
 
 export function Header() {
+  const pathname = usePathname();
+  const [isScrolled, setIsScrolled] = useState(false);
   const { cart, setIsCartOpen } = useCart();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,8 +28,14 @@ export function Header() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isMock, setIsMock] = useState(false);
-  const [isDev, setIsDev] = useState(false);
+  const [isMock, setIsMock] = useState<boolean>(() => {
+    try {
+      return isMockMode();
+    } catch {
+      return false;
+    }
+  });
+  const [isDev] = useState<boolean>(process.env.NODE_ENV === "development");
 
   const { data: searchResults, isLoading: isSearching } = useProducts(
     undefined,
@@ -38,18 +46,16 @@ export function Header() {
 
   const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
-  useEffect(() => {
-    setIsDev(process.env.NODE_ENV === "development");
-    setIsMock(isMockMode());
-  }, []);
-
   // Sync search input with URL params if it changes from outside
   useEffect(() => {
     const currentSearch = searchParams.get("search");
-    if (currentSearch) {
-      setSearchQuery(currentSearch);
+    if (currentSearch && currentSearch !== searchQuery) {
+      // Defer the update to avoid calling setState synchronously inside the effect
+      const id = window.setTimeout(() => setSearchQuery(currentSearch), 0);
+      return () => window.clearTimeout(id);
     }
-  }, [searchParams]);
+    return;
+  }, [searchParams, searchQuery]);
 
   useEffect(() => {
     if (isSearchVisible && inputRef.current) {
@@ -83,10 +89,23 @@ export function Header() {
     )
     .slice(0, 5);
 
+  const isProductDetailPage = pathname?.startsWith("/product/");
+
+  // Tambahkan scroll listener agar header menjadi solid saat di-scroll (opsional tapi disarankan)
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
       <header
-        className="w-full transition-all duration-300 absolute top-0 z-40 bg-black"
+        className={`w-full transition-all duration-300 fixed top-0 z-40 ${
+          isProductDetailPage || isScrolled ? "bg-black" : "bg-transparent"
+        }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative flex h-16 items-center justify-between">
@@ -99,10 +118,11 @@ export function Header() {
                     setMockMode(newMode);
                     window.location.reload();
                   }}
-                  className={`text-xs px-3 py-1.5 rounded-full ${isMock
-                    ? "bg-amber-flame-500/20 text-amber-flame-700 border border-amber-flame-500/50"
-                    : "bg-steel-blue-500/20 text-steel-blue-600 border border-steel-blue-500/50"
-                    }`}
+                  className={`text-xs px-3 py-1.5 rounded-full ${
+                    isMock
+                      ? "bg-amber-flame-500/20 text-amber-flame-700 border border-amber-flame-500/50"
+                      : "bg-steel-blue-500/20 text-steel-blue-600 border border-steel-blue-500/50"
+                  }`}
                 >
                   {isMock ? "⚡ Mock" : "🌐 Live"}
                 </button>
@@ -123,7 +143,6 @@ export function Header() {
                 className="hidden md:ml-10 md:flex md:space-x-8"
                 style={{ color: "var(--texted)" }}
               >
-
                 <Link
                   href={`/products?category=clothing`}
                   className="font-medium transition-colors hover:text-texted"
@@ -190,10 +209,11 @@ export function Header() {
 
       {/* SEARCH OVERLAY */}
       <div
-        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${isSearchVisible
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
+          isSearchVisible
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
       >
         {/* Backdrop */}
         <div
@@ -203,13 +223,14 @@ export function Header() {
 
         {/* Search Panel */}
         <div
-          className={`bg-redabsolute top-0 inset-x-0 transition-transform duration-500 ease-in-out ${isSearchVisible ? "translate-y-0" : "-translate-y-full"
-            }`}
+          className={`bg-redabsolute top-0 inset-x-0 transition-transform duration-500 ease-in-out ${
+            isSearchVisible ? "translate-y-0" : "-translate-y-full"
+          }`}
           style={{
             maxHeight: "80vh",
             display: "flex",
             flexDirection: "column",
-            background: "var(--black)"
+            background: "var(--black)",
           }}
         >
           <div
@@ -351,7 +372,7 @@ export function Header() {
                               className="text-[10px] uppercase tracking-widest mt-1"
                               style={{ color: "var(--foreground)" }}
                             >
-                              {product.category.name}
+                              {product?.category?.name}
                             </p>
                             <p
                               className="text-xs font-bold mt-2"
