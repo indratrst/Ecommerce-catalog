@@ -7,7 +7,10 @@ import { v4 as uuidv4 } from "uuid";
 export async function POST(request: Request) {
   try {
     const session = await getSession();
-    if (!session || (session.role !== "SUPERUSER" && session.role !== "ADMIN")) {
+    if (
+      !session ||
+      (session.role !== "SUPERUSER" && session.role !== "ADMIN")
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -27,6 +30,10 @@ export async function POST(request: Request) {
       await mkdir(uploadDir, { recursive: true });
     } catch (error) {
       // Ignore if directory exists
+      const errorMessage =
+        error instanceof Error ? error.message : "Internal server error";
+
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 
     const fileExtension = file.name.split(".").pop();
@@ -35,15 +42,15 @@ export async function POST(request: Request) {
 
     await writeFile(path, buffer);
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       url: `/uploads/${fileName}`,
-      success: true 
+      success: true,
     });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
       { error: "Failed to upload image" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

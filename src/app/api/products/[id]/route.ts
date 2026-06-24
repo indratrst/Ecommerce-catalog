@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { VariantResponse } from "@/lib/validation/products.schema";
 
 export async function GET(
   _request: Request,
@@ -79,15 +80,15 @@ export async function PUT(
 
     const product = await prisma.$transaction(async (tx) => {
       // 🔥 ambil semua variant lama
-      const existingVariants = await tx.productVariant.findMany({
-        where: { productId: id },
-      });
+      // const existingVariants = await tx.productVariant.findMany({
+      //   where: { productId: id },
+      // });
 
-      const existingMap = new Map(existingVariants.map((v) => [v.id, v]));
+      // const existingMap = new Map(existingVariants.map((v) => [v.id, v]));
 
       const incomingIds = variants
-        .filter((v: any) => v.id)
-        .map((v: any) => v.id);
+        .filter((v: VariantResponse) => v.id)
+        .map((v: VariantResponse) => v.id);
 
       console.log("incomingIds:", incomingIds);
 

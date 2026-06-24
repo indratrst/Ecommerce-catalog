@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Column, DataTable } from "@/components/admin/DataTable";
 import { DeleteModal } from "@/components/admin/DeleteModal";
-import { Package, Plus, Tag } from "lucide-react";
+import { Package, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCategories, useDeleteCategory } from "@/hooks/useCategories";

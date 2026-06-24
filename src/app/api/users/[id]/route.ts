@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 export async function PUT(
   request: Request,
@@ -17,7 +18,12 @@ export async function PUT(
     const body = await request.json();
     const { name, email, password, role } = body;
 
-    const data: any = { name, email, role };
+    const data: Prisma.UserUpdateInput = {
+      name,
+      email,
+      role,
+    };
+
     if (password) {
       data.password = await bcrypt.hash(password, 10);
     }

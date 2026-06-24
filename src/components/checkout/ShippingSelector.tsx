@@ -9,6 +9,7 @@ import {
   transformToShippingRate,
 } from "@/services/rajaongkir/client";
 import { STORE_CONFIG } from "@/services/rajaongkir/constants";
+import { ProductResponse } from "@/lib/validation/products.schema";
 
 // adjust to your store location
 // const ORIGIN_DISTRICT_ID = "5256";
@@ -39,7 +40,8 @@ export function ShippingSelector({
   const [selectedCourier, setSelectedCourier] = useState("jne");
 
   const totalWeight = items.reduce((sum, item) => {
-    const weight = (item.product as any).weight || 500;
+    const weight =
+      (item.product as ProductResponse & { weight?: number }).weight || 500;
     return sum + weight * item.quantity;
   }, 0);
 
@@ -98,7 +100,7 @@ export function ShippingSelector({
         courier: selectedCourier,
       });
 
-      console.log("📦 Rates response:", data);
+      // console.log("📦 Rates response:", data);
 
       if (!data || data.length === 0) {
         setError("Tidak ada layanan pengiriman tersedia ke area ini.");
@@ -107,9 +109,11 @@ export function ShippingSelector({
 
       const mapped: ShippingRate[] = data.map(transformToShippingRate);
       setRates(mapped);
-    } catch (e: any) {
+    } catch (e) {
+      const errorMessage =
+        e instanceof Error ? e.message : "Gagal memuat ongkir.";
       console.error("Fetch rates error:", e);
-      setError(e.message || "Gagal memuat ongkir.");
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -118,7 +122,11 @@ export function ShippingSelector({
   // Auto fetch when areaId or courier changes
   useEffect(() => {
     if (canCalculate) {
-      fetchRates();
+      const performFetch = async () => {
+        await fetchRates();
+      };
+
+      performFetch();
     }
   }, [canCalculate, fetchRates]);
 
@@ -239,5 +247,3 @@ export function ShippingSelector({
     </div>
   );
 }
-
-

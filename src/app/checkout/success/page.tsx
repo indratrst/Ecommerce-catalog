@@ -205,7 +205,9 @@ function SuccessContent() {
           >
             <span
               className={`h-1.5 w-1.5 rounded-full ${
-                status === "PENDING" ? "bg-amber-flame-500" : "bg-steel-blue-500"
+                status === "PENDING"
+                  ? "bg-amber-flame-500"
+                  : "bg-steel-blue-500"
               }`}
             />
             {status === "PENDING" ? "Pending" : "Lunas"}
@@ -239,4 +241,3 @@ export default function SuccessPage() {
     </Suspense>
   );
 }
-

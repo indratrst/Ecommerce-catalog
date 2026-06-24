@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { PaymentConfirmationModal } from "@/components/checkout/PaymentConfirmationModal";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
@@ -95,8 +96,12 @@ export default function CheckoutPage() {
           router.push(`/checkout/success?order_id=${order_id}&status=pending`);
         },
       });
-    } catch (err: any) {
-      setErrorMsg(err.message || "Terjadi kesalahan. Coba lagi.");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message);
+      } else {
+        console.error("An unexpected error occurred", error);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -142,10 +147,11 @@ export default function CheckoutPage() {
                 setDeliveryMethod("shipping");
                 setShippingRate(null);
               }}
-              className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${deliveryMethod === "shipping"
-                ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white"
-                : "border-cool-steel-200 text-muted-foreground"
-                }`}
+              className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${
+                deliveryMethod === "shipping"
+                  ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white"
+                  : "border-cool-steel-200 text-muted-foreground"
+              }`}
             >
               Delivery Shipping
             </button>
@@ -161,10 +167,11 @@ export default function CheckoutPage() {
                   duration: "Same Day",
                 });
               }}
-              className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${deliveryMethod === "pickup"
-                ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white"
-                : "border-cool-steel-200 text-muted-foreground"
-                }`}
+              className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${
+                deliveryMethod === "pickup"
+                  ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white"
+                  : "border-cool-steel-200 text-muted-foreground"
+              }`}
             >
               Ambil di Store
             </button>
@@ -242,10 +249,11 @@ export default function CheckoutPage() {
             id="place-order-btn"
             onClick={handleConfirmPayment}
             disabled={!isFormValid}
-            className={`w-full mt-6 py-4 uppercase font-bold tracking-widest transition-all shadow-md flex items-center justify-center gap-2 ${isFormValid
-              ? "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700 dark:bg-card-bg dark:text-deep-space-blue-950 dark:hover:bg-cool-steel-100 scale-[1.02]"
-              : "bg-cool-steel-100 text-muted-foreground opacity-60 cursor-not-allowed border border-dashed border-cool-steel-300"
-              }`}
+            className={`w-full mt-6 py-4 uppercase font-bold tracking-widest transition-all shadow-md flex items-center justify-center gap-2 ${
+              isFormValid
+                ? "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700 dark:bg-card-bg dark:text-deep-space-blue-950 dark:hover:bg-cool-steel-100 scale-[1.02]"
+                : "bg-cool-steel-100 text-muted-foreground opacity-60 cursor-not-allowed border border-dashed border-cool-steel-300"
+            }`}
           >
             {isSubmitting ? (
               <>
@@ -286,5 +294,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
-

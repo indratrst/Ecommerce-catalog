@@ -41,11 +41,23 @@ export interface PaymentMethod {
 //   };
 // }
 
+export interface OrderItem {
+  productVariantId: string;
+  quantity: number;
+  priceAtPurchase: number;
+  variantNameAtPurchase: string;
+  product: {
+    id: string;
+    title: string;
+    image: string;
+  };
+}
+
 export interface OrderData {
   billingAddress: BillingAddress;
   shippingRate: ShippingRate | null;
   paymentMethod: string | null;
-  items: any[];
+  items: OrderItem[];
   subtotal: number;
   shippingCost: number;
   total: number;
