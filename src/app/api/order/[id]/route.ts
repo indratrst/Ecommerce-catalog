@@ -3,12 +3,25 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+
   try {
     const order = await prisma.order.findUnique({
       where: { id },
+      include: {
+        user: true,
+        items: {
+          include: {
+            productVariant: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!order) {
@@ -17,10 +30,8 @@ export async function GET(
 
     return NextResponse.json(order);
   } catch (error: unknown) {
-    // Gunakan pesan error yang lebih spesifik untuk debugging internal jika diperlukan
     const errorMessage =
       error instanceof Error ? error.message : "Internal server error";
-
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

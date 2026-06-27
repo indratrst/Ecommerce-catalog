@@ -1,6 +1,7 @@
 // src/lib/validation/order.schema.ts
 
 import { z } from "zod";
+import { ProductResponse, VariantResponse } from "./products.schema";
 
 // Base schema (shared fields)
 const OrderBaseSchema = {
@@ -14,6 +15,7 @@ const OrderBaseSchema = {
   snapRedirectUrl: z.string().optional().nullable(),
   paymentMethod: z.string().optional().nullable(),
   externalId: z.string().uuid("Invalid UUID").optional(),
+  userId: z.string().uuid("Invalid UUID").optional(),
   stockReduced: z.boolean().default(false),
 };
 
@@ -65,6 +67,15 @@ export const OrderDataTableSchema = OrderSchema.omit({
   updatedAt: true,
 });
 
+// 1. Buat tipe Variant yang sudah include Product di dalamnya
+export type VariantWithProduct = VariantResponse & {
+  product?: ProductResponse; // Menyesuaikan dengan schema include backend-mu
+};
+
+// 2. Gunakan tipe tersebut di dalam OrderDetail
+export type OrderDetail = Order & {
+  productVariant: VariantWithProduct;
+};
 // Infer types
 export type CreateOrderData = z.infer<typeof CreateOrderSchema>;
 export type UpdateOrderData = z.infer<typeof UpdateOrderSchema>;

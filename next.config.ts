@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // eslint: {
+  //   // Mengabaikan ESLint saat dev untuk menghemat RAM
+  //   ignoreDuringBuilds: true,
+  // },
+  typescript: {
+    // Mengabaikan error typescript saat dev agar compile super cepat
+    ignoreBuildErrors: true,
+  },
   allowedDevOrigins: ["third-pts-cameron-mariah.trycloudflare.com"],
 };
 

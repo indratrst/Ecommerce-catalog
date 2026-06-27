@@ -1,3 +1,5 @@
+import { ProductVariant } from "@/lib/validation/products.schema";
+
 export interface BillingAddress {
   firstName: string;
   lastName: string;
@@ -43,14 +45,10 @@ export interface PaymentMethod {
 
 export interface OrderItem {
   productVariantId: string;
+  productVariant: ProductVariant;
   quantity: number;
   priceAtPurchase: number;
   variantNameAtPurchase: string;
-  product: {
-    id: string;
-    title: string;
-    image: string;
-  };
 }
 
 export interface OrderData {
@@ -61,6 +59,41 @@ export interface OrderData {
   subtotal: number;
   shippingCost: number;
   total: number;
+}
+
+export interface ProductResponse {
+  id: string;
+  title: string;
+  price: number;
+  description: string;
+  image: string;
+  ratingRate: number;
+  ratingCount: number;
+  categoryId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductVariantWithProduct {
+  id: string;
+  productId: string;
+  size: string;
+  color: string | null; // Sesuai JSON, bisa bernilai null
+  stock: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  product: ProductResponse; // Scope product masuk ke dalam productVariant
+}
+
+export interface OrderItemDetail {
+  id: string;
+  orderId: string;
+  productVariantId: string;
+  quantity: number;
+  priceAtPurchase: number;
+  variantSnapshot: Omit<ProductVariantWithProduct, "product">; // Snapshot data lama tanpa relasi product live
+  productVariant: ProductVariantWithProduct; // Data live variant beserta detail product-nya
 }
 
 export interface OrderDataNew {
@@ -77,7 +110,8 @@ export interface OrderDataNew {
   paymentMethod?: string;
   externalId?: string;
   stockReduced: boolean;
-  items: OrderItem[];
+  items: OrderItemDetail[];
+  user: { name: string };
   createdAt: Date;
   updatedAt: Date;
 }

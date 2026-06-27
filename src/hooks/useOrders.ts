@@ -1,8 +1,8 @@
-// src/hooks/useOrders.ts
-
+"use client";
 import api from "@/lib/axios";
 import { CreateOrderData, Order } from "@/lib/validation/order.schema";
 import { ErrorSchema } from "@/types";
+import { OrderDataNew } from "@/types/checkout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -16,7 +16,7 @@ export function useOrders() {
 }
 
 export function useOrder(id: string) {
-  return useQuery<Order>({
+  return useQuery<OrderDataNew>({
     queryKey: ["orders", id],
     enabled: !!id, // Only run if there's an id
     queryFn: () => api.get(`/order/${id}`).then((res) => res.data),
@@ -88,4 +88,9 @@ export function useOrdersWithStats() {
       return res.data;
     },
   });
+}
+
+export function formatDate(date: Date) {
+  const options = { year: "numeric", month: "long", day: "numeric" } as const;
+  return new Date(date).toLocaleDateString(undefined, options);
 }

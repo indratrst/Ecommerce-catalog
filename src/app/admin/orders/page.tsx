@@ -3,7 +3,9 @@
 import { Column, DataTable } from "@/components/admin/DataTable";
 import { useOrders } from "@/hooks/useOrders";
 import { Order } from "@/lib/validation/order.schema";
+import { useRouter } from "next/navigation";
 export default function OrdersPage() {
+  const router = useRouter();
   const { data: orders } = useOrders();
 
   const columns: Column<Order>[] = [
@@ -78,6 +80,7 @@ export default function OrdersPage() {
         columns={columns}
         data={orders}
         searchPlaceholder="Filter orders by customer name, status..."
+        onEdit={(item) => router.push(`/admin/orders/${item.id}/detail/`)}
       />
     </div>
   );
