@@ -228,7 +228,7 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
             {product?.variants
               .filter(
                 (variant: VariantResponse) =>
-                  variant.stock > 0 && variant.isActive,
+                  variant.stock > 0 || variant.isActive,
               )
               .map((variant: VariantResponse) => (
                 <button

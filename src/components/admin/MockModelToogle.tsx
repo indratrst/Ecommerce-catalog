@@ -1,19 +1,24 @@
-// components/MockModeToggle.tsx (update)
 "use client";
 
 import { isMockMode, setMockMode } from "@/services/rajaongkir/mock";
 import { useEffect, useState } from "react";
 
 export function MockModeToggle() {
-  const [isMock, setIsMock] = useState(false);
+  const [isMock, setIsMock] = useState(isMockMode());
 
   useEffect(() => {
-    setIsMock(isMockMode());
-
-    // ✅ Tambahkan ini untuk akses console (opsional)
     if (process.env.NODE_ENV === "development") {
-      (window as any).isMockMode = isMockMode;
-      (window as any).toggleMockMode = () => {
+      // Define a custom interface for window with the new properties
+      interface CustomWindow extends Window {
+        isMockMode: () => boolean;
+        toggleMockMode: () => void;
+      }
+
+      // Cast window to the custom interface
+      const customWindow = window as unknown as CustomWindow;
+
+      customWindow.isMockMode = isMockMode;
+      customWindow.toggleMockMode = () => {
         const newMode = !isMockMode();
         setMockMode(newMode);
         setIsMock(newMode);

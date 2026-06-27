@@ -10,7 +10,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -20,8 +20,7 @@ function SuccessContent() {
   const [status, setStatus] = useState("PENDING");
   const paymentType = searchParams.get("payment_type") || "";
   const [copied, setCopied] = useState(false);
-  const [order, setOrder] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [order, setOrder] = useState<Record<string, unknown> | null>(null);
 
   // const isPending = status === "pending";
 
@@ -48,7 +47,29 @@ function SuccessContent() {
     return map[type] || type || "—";
   };
 
-  const fetchOrder = async () => {
+  const markOrderAsPaid = useCallback(async () => {
+    if (!orderId) return;
+    try {
+      const res = await fetch(`/api/order/${orderId}/mark-paid`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          payment_type: paymentType,
+          transaction_id: searchParams.get("transaction_id"),
+        }),
+      });
+
+      if (res.ok) {
+        console.log("Order marked as paid successfully");
+      } else {
+        console.warn("Failed to mark order as paid");
+      }
+    } catch (err) {
+      console.error("Error marking order as paid:", err);
+    }
+  }, [orderId, paymentType, searchParams]);
+
+  const fetchOrder = useCallback(async () => {
     try {
       const res = await fetch(`/api/order/${orderId}`);
       const data = await res.json();
@@ -57,44 +78,47 @@ function SuccessContent() {
 
       setOrder(data);
       setStatus(data.status);
-      // if (data.status === "PAID" || data.status === "SETTLEMENT") {
-      //   clearInterval(interval);
-      // }
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [orderId]);
 
   useEffect(() => {
     if (!orderId) return;
 
-    const fetchOrder = async () => {
-      try {
-        const res = await fetch(`/api/order/${orderId}`);
-        const data = await res.json();
+    let markPaidTimer: NodeJS.Timeout;
+    let pollInterval: NodeJS.Timeout;
 
-        console.log("Fetched Order:", data);
+    const setupPolling = async () => {
+      // Fetch order pertama kali
+      await fetchOrder();
 
-        setOrder(data);
-        setStatus(data.status);
-        // if (data.status === "PAID" || data.status === "SETTLEMENT") {
-        //   clearInterval(interval);
-        // }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      // Setelah 2 detik, jika status masih PENDING, coba mark as paid
+      markPaidTimer = setTimeout(() => {
+        setOrder((prevOrder: typeof order) => {
+          if (prevOrder?.status === "PENDING") {
+            console.log(
+              "Status masih PENDING, triggering mark-paid endpoint...",
+            );
+            markOrderAsPaid();
+          }
+          return prevOrder;
+        });
+      }, 2000);
+
+      // Poll status setiap 3 detik
+      pollInterval = setInterval(() => {
+        fetchOrder();
+      }, 3000);
     };
 
-    fetchOrder();
+    setupPolling();
 
-    // const interval = setInterval(fetchOrder, 3000);
-
-    // return () => clearInterval(interval);
-  }, [orderId]);
+    return () => {
+      clearTimeout(markPaidTimer);
+      clearInterval(pollInterval);
+    };
+  }, [orderId, paymentType, searchParams, fetchOrder, markOrderAsPaid]);
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 text-center py-20">
@@ -175,7 +199,9 @@ function SuccessContent() {
 
             {order.snapRedirectUrl && (
               <button
-                onClick={() => window.open(order.snapRedirectUrl, "_blank")}
+                onClick={() =>
+                  window.open(String(order?.snapRedirectUrl), "_blank")
+                }
                 className="bg-surface text-muted-foreground opacity-50 border border-dashed rounded-md px-4 py-2 text-sm font-bold uppercase tracking-wide"
               >
                 Lanjutkan Pembayaran

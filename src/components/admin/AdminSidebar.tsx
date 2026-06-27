@@ -41,6 +41,12 @@ export function AdminSidebar({ role, userName }: SidebarProps) {
       href: "/admin/categories",
       roles: ["SUPERUSER", "ADMIN", "USER"],
     },
+    {
+      name: "Orders",
+      icon: Tag,
+      href: "/admin/orders",
+      roles: ["SUPERUSER", "ADMIN"],
+    },
     { name: "Users", icon: Users, href: "/admin/users", roles: ["SUPERUSER"] },
   ];
 

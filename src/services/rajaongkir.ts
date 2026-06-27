@@ -5,18 +5,28 @@ export async function getRajaOngkirProvinces() {
 }
 
 export async function getRajaOngkirCities(provinceId: string) {
-  const res = await fetch(`/api/rajaongkir?type=destination/city/${provinceId}`);
+  const res = await fetch(
+    `/api/rajaongkir?type=destination/city/${provinceId}`,
+  );
   const data = await res.json();
   return data.data || [];
 }
 
 export async function getRajaOngkirDistricts(cityId: string) {
-  const res = await fetch(`/api/rajaongkir?type=destination/district/${cityId}`);
+  const res = await fetch(
+    `/api/rajaongkir?type=destination/district/${cityId}`,
+  );
   const data = await res.json();
   return data.data || [];
 }
 
-export async function calculateRates(originId: string, destinationId: string, weight: number, courier: string, isDistrict = false) {
+export async function calculateRates(
+  originId: string,
+  destinationId: string,
+  weight: number,
+  courier: string,
+  isDistrict = false,
+) {
   const res = await fetch("/api/rajaongkir", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -33,8 +43,17 @@ export async function calculateRates(originId: string, destinationId: string, we
 }
 
 // Matching logic
-export function findMatch(list: any[], name: string, keyName: string) {
-  if (!name || !list || !Array.isArray(list)) return null;
-  const normalized = name.toLowerCase().replace(/^(kab|kota|kabupaten)\.?\s+/i, "").trim();
-  return list.find(item => item[keyName]?.toLowerCase().includes(normalized));
+export function findMatch<T extends Record<string, unknown>>(
+  list: T[],
+  name: string,
+  keyName: keyof T,
+): T | undefined {
+  if (!name || !list || !Array.isArray(list)) return undefined;
+  const normalized = name
+    .toLowerCase()
+    .replace(/^(kab|kota|kabupaten)\.?\s+/i, "")
+    .trim();
+  return list.find((item) =>
+    String(item[keyName]).toLowerCase().includes(normalized),
+  );
 }

@@ -90,6 +90,8 @@ export function Header() {
     .slice(0, 5);
 
   const isProductDetailPage = pathname?.startsWith("/product/");
+  const isCheckoutPage = pathname?.startsWith("/checkout/");
+  const isCartPage = pathname?.startsWith("/cart/");
 
   // Tambahkan scroll listener agar header menjadi solid saat di-scroll (opsional tapi disarankan)
   useEffect(() => {
@@ -104,7 +106,9 @@ export function Header() {
     <>
       <header
         className={`w-full transition-all duration-300 fixed top-0 z-40 ${
-          isProductDetailPage || isScrolled ? "bg-black" : "bg-transparent"
+          isCheckoutPage || isCartPage || isProductDetailPage || isScrolled
+            ? "bg-black"
+            : "bg-transparent"
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -223,7 +227,7 @@ export function Header() {
 
         {/* Search Panel */}
         <div
-          className={`bg-redabsolute top-0 inset-x-0 transition-transform duration-500 ease-in-out ${
+          className={`bg-red absolute top-0 inset-x-0 transition-transform duration-500 ease-in-out ${
             isSearchVisible ? "translate-y-0" : "-translate-y-full"
           }`}
           style={{

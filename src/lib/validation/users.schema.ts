@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Base schema (shared fields)
-const UserBaseSchema = {
+export const UserBaseSchema = {
   name: z.string().min(1, "Name is required").max(100),
   email: z.string().email("Invalid email format"),
   password: z.string().optional().nullable(),
@@ -49,3 +49,4 @@ export type UserWithCount = UserDataTableSchema & {
 export type CreateUser = z.infer<typeof CreateUserSchema>;
 export type UpdateUser = z.infer<typeof UpdateUserSchema>;
 export type UserResponse = z.infer<typeof UsersResponseSchema>;
+export type UserBaseSchema = z.infer<typeof UserBaseSchema>;

@@ -62,3 +62,22 @@ export interface OrderData {
   shippingCost: number;
   total: number;
 }
+
+export interface OrderDataNew {
+  id: string;
+  userId?: string; // Optional, if user is not null
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress?: string; // Optional
+  totalAmount: number;
+  status: "PENDING" | "SETTLEMENT" | "EXPIRED" | "CANCEL" | "FAILED";
+  snapToken?: string;
+  snapRedirectUrl?: string;
+  paymentMethod?: string;
+  externalId?: string;
+  stockReduced: boolean;
+  items: OrderItem[];
+  createdAt: Date;
+  updatedAt: Date;
+}

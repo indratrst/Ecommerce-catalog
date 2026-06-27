@@ -210,7 +210,7 @@ export function DataTable<T extends { id?: string | number }>({
             disabled={currentPage === 1}
             className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg disabled:opacity-30 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4 text-white" />
           </button>
           <div className="flex items-center gap-1">
             {Array.from({ length: totalPages }).map((_, i) => (
@@ -234,7 +234,7 @@ export function DataTable<T extends { id?: string | number }>({
             disabled={currentPage === totalPages}
             className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg disabled:opacity-30 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 text-white" />
           </button>
         </div>
       </div>

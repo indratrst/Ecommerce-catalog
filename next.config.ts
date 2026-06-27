@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  allowedDevOrigins: ["citizen-checked-branches-request.trycloudflare.com"],
+  allowedDevOrigins: ["third-pts-cameron-mariah.trycloudflare.com"],
 };
 
 export default nextConfig;
