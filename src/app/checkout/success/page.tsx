@@ -150,16 +150,14 @@ function SuccessContent() {
 
       {/* Order Info Card */}
       <div
-        className="bg-surface border rounded-xl p-6 mb-10 w-full max-w-sm space-y-4 text-left"
+        className="bg-green-100 border rounded-xl p-6 mb-10 w-full max-w-sm space-y-4 text-left"
         style={{ borderColor: "var(--surface-border)" }}
       >
         {orderId && (
           <div>
-            <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">
-              ID Pesanan
-            </p>
+            <p className="text-[10px] font-bold uppercase mb-1">ID Pesanan</p>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-mono font-bold truncate flex-1">
+              <p className="text-sm font-mono font-bold truncate flex-1 text-green-800">
                 {orderId}
               </p>
               <button
@@ -213,27 +211,23 @@ function SuccessContent() {
         <button
           disabled={status !== "PENDING"}
           onClick={() => fetchOrder()}
-          className="bg-surface text-muted-foreground opacity-50 border border-dashed rounded-md px-4 py-2 text-sm font-bold uppercase tracking-wide cursor-pointer"
+          className="bg-green-700 text-green-100 opacity-50 border border-dashed rounded-md px-4 py-2 text-sm font-bold uppercase tracking-wide cursor-pointer"
         >
           Cek Status Pembayaran
         </button>
 
         <div>
-          <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">
-            Status
-          </p>
+          <p className="text-[10px] font-bold uppercase  mb-1">Status</p>
           <span
             className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase px-3 py-1 rounded-full ${
               status === "PENDING"
                 ? "bg-amber-flame-100 text-amber-flame-800 dark:bg-amber-flame-900/30 dark:text-amber-flame-400"
-                : "bg-steel-blue-100 text-steel-blue-700 dark:bg-steel-blue-900/30 dark:text-steel-blue-300"
+                : "bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-800"
             }`}
           >
             <span
               className={`h-1.5 w-1.5 rounded-full ${
-                status === "PENDING"
-                  ? "bg-amber-flame-500"
-                  : "bg-steel-blue-500"
+                status === "PENDING" ? "bg-amber-flame-500" : "bg-green-900"
               }`}
             />
             {status === "PENDING" ? "Pending" : "Lunas"}
@@ -245,7 +239,7 @@ function SuccessContent() {
       <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
         <Link
           href="/products"
-          className="flex-1 bg-deep-space-blue-900 text-white py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-steel-blue-700 transition-all flex items-center justify-center gap-2"
+          className="flex-1 bg-deep-space-blue-900 text-white py-4 px-8 uppercase font-bold text-sm tracking-widest hover:bg-steel-blue-700 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
         >
           Lanjut Belanja <ArrowRight className="h-4 w-4" />
         </Link>

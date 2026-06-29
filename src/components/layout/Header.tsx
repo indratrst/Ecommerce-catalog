@@ -90,8 +90,8 @@ export function Header() {
     .slice(0, 5);
 
   const isProductDetailPage = pathname?.startsWith("/product/");
-  const isCheckoutPage = pathname?.startsWith("/checkout/");
-  const isCartPage = pathname?.startsWith("/cart/");
+  const isCheckoutPage = pathname?.startsWith("/checkout");
+  const isCartPage = pathname?.startsWith("/cart");
 
   // Tambahkan scroll listener agar header menjadi solid saat di-scroll (opsional tapi disarankan)
   useEffect(() => {
