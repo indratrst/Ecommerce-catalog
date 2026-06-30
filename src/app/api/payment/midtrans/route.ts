@@ -17,6 +17,10 @@ export async function POST(request: Request) {
     const { items, billingData, shippingRate, shippingCost, total } = body;
 
     const orderId = `ORDER-${uuidv4().split("-")[0].toUpperCase()}-${Date.now()}`;
+    // Cek apakah opsi pengiriman adalah Pickup
+    const isPickup =
+      String(billingData.address).toLowerCase().trim() === "Pickup" ||
+      !billingData.address;
 
     await prisma.$transaction(async (tx) => {
       const orderItems = [] as Array<{
@@ -63,6 +67,7 @@ export async function POST(request: Request) {
           shippingAddress: billingData.address || "Pickup",
           totalAmount: total,
           status: "PENDING",
+          fulfillmentStatus: "NOT_APPLICABLE",
           items: {
             create: orderItems,
           },
@@ -94,8 +99,9 @@ export async function POST(request: Request) {
         last_name: billingData.lastName,
         email: billingData.email,
         phone: billingData.phone,
-        shipping_address: billingData.address
-          ? {
+        shipping_address: isPickup
+          ? undefined
+          : {
               first_name: billingData.firstName,
               last_name: billingData.lastName,
               email: billingData.email,
@@ -104,8 +110,7 @@ export async function POST(request: Request) {
               city: billingData.city_name || "",
               postal_code: billingData.postcode || "",
               country_code: "IDN",
-            }
-          : undefined,
+            },
       },
       item_details: [
         ...items.map(

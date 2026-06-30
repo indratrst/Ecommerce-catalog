@@ -51,6 +51,25 @@ export default function OrdersPage() {
         </span>
       ),
     },
+    {
+      key: "fulfillmentStatus",
+      label: "fulfillmentStatus",
+      render: (fulfillmentStatus) => (
+        <span
+          className={`text-xs font-bold px-2 py-0.5 rounded-full inline-block w-fit  capitalize ${
+            fulfillmentStatus === "NOT_APPLICABLE"
+              ? "bg-red-100 text-amber-900"
+              : fulfillmentStatus === "PICKED_UP"
+                ? "bg-emerald-100 text-emerald-700"
+                : fulfillmentStatus === "PENDING_PICKUP"
+                  ? "bg-orange-200 text-red-900"
+                  : ""
+          }`}
+        >
+          {fulfillmentStatus}
+        </span>
+      ),
+    },
     // {
     //   key: "createdAt",
     //   label: "Created At",

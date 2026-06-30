@@ -10,6 +10,7 @@ const OrderBaseSchema = {
   customerPhone: z.string().length(10, "Invalid phone number"),
   shippingAddress: z.string().optional().nullable(),
   totalAmount: z.number().positive("Total amount must be a positive number"),
+  fulfillmentStatus: z.enum(["NOT_APPLICABLE", "PENDING_PICKUP", "PICKED_UP"]),
   status: z.enum(["PENDING", "SETTLEMENT", "EXPIRED", "CANCEL", "FAILED"]),
   snapToken: z.string().optional().nullable(),
   snapRedirectUrl: z.string().optional().nullable(),
