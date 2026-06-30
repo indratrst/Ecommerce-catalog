@@ -90,6 +90,54 @@ export function useOrdersWithStats() {
   });
 }
 
+// Mutation hook - Mengubah Order Status secara umum (misal dari dashboard admin)
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: "PENDING" | "SETTLEMENT" | "EXPIRED" | "CANCEL" | "FAILED";
+    }) => {
+      const res = await api.put(`/order/${id}/status`, { status });
+      return res.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["orders", variables.id] });
+    },
+    onError: (error: ErrorSchema) => {
+      alert(error.message ?? "Gagal memperbarui status order");
+    },
+  });
+}
+
+// BARU: Mutation hook - Khusus Admin mengonfirmasi pengambilan barang (Pick Up)
+export function useConfirmPickup() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      // Menembak ke API khusus logistik/pickup order
+      const res = await api.put(`/order/${id}/mark-picked-up`, {
+        fulfillmentStatus: "PICKED_UP",
+      });
+      return res.data;
+    },
+    onSuccess: (_, id) => {
+      // Invalidation otomatis memperbarui UI Admin agar lencana berubah jadi 'PICKED_UP'
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["orders", id] });
+    },
+    onError: (error: ErrorSchema) => {
+      alert(error.message ?? "Gagal mengonfirmasi pengambilan barang");
+    },
+  });
+}
+
 export function formatDate(date: Date) {
   const options = { year: "numeric", month: "long", day: "numeric" } as const;
   return new Date(date).toLocaleDateString(undefined, options);

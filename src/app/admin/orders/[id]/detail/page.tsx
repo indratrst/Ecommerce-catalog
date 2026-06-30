@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { formatDate, useOrder } from "@/hooks/useOrders";
+import { formatDate, useConfirmPickup, useOrder } from "@/hooks/useOrders";
 import { useParams } from "next/navigation";
 import { OrderItemDetail } from "@/types/checkout";
 
@@ -10,6 +10,17 @@ export default function OrdersDetailPage() {
   const ordersId = params.id as string;
 
   const { data: orders } = useOrder(ordersId);
+
+  const { mutate: confirmPickup, isPending } = useConfirmPickup();
+  const handleConfirm = () => {
+    if (
+      confirm(
+        `Apakah kamu yakin order ${ordersId} sudah diambil oleh customer?`,
+      )
+    ) {
+      confirmPickup(ordersId);
+    }
+  };
 
   if (!orders) {
     return <div>Data order tidak ditemukan.</div>;
@@ -106,6 +117,22 @@ export default function OrdersDetailPage() {
                 {orders.externalId ?? "-"}
               </p>
             </div>
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-300">
+                Fulfillment Status
+              </p>
+              <span
+                className={`px-2 py-1 text-xs rounded ${
+                  orders.fulfillmentStatus === "PICKED_UP"
+                    ? "bg-green-200 text-green-800"
+                    : "bg-yellow-200 text-yellow-800"
+                }`}
+              >
+                {orders.fulfillmentStatus === "PICKED_UP"
+                  ? "Sudah Diambil"
+                  : "Menunggu Pick Up"}
+              </span>
+            </div>
             <div className="sm:col-span-2">
               <p className="text-sm uppercase tracking-[0.2em] text-slate-300">
                 Snap Redirect URL
@@ -154,6 +181,26 @@ export default function OrdersDetailPage() {
                 {formatDate(orders.updatedAt)}
               </p>
             </div>
+          </div>
+          <div
+            className={`mt-9 w-full rounded-4xl transition-colors ${
+              orders.fulfillmentStatus === "PICKED_UP"
+                ? "bg-gray-400 cursor-not-allowed" // Jika sudah diambil: abu-abu & kursor banned
+                : "bg-green-600 hover:bg-green-700" // Jika belum diambil: hijau & hover hijau lebih tua
+            }`}
+          >
+            <button
+              onClick={handleConfirm}
+              // Tombol otomatis di-disable jika sedang loading ATAU barang sudah diambil
+              disabled={isPending || orders.fulfillmentStatus === "PICKED_UP"}
+              className="text-white py-3 w-full uppercase font-medium tracking-wider disabled:cursor-not-allowed"
+            >
+              {isPending
+                ? "Memproses..."
+                : orders.fulfillmentStatus === "PICKED_UP"
+                  ? "Sudah Diambil"
+                  : "Tandai Telah Diambil"}
+            </button>
           </div>
         </section>
 

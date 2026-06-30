@@ -65,6 +65,12 @@ model ProductVariant {
 @@index([productId])
 }
 
+enum FulfillmentStatus {
+  NOT_APPLICABLE  // Default untuk pengiriman reguler (jika ada alamat)
+  PENDING_PICKUP  // Customer memilih "Pick up", sudah bayar, tapi belum diambil
+  PICKED_UP       // Barang sudah diambil oleh customer di offline store
+}
+
 model Order {
   id              String      @id @default(uuid())
   // Dibuat opsional agar Guest bisa checkout tanpa harus membuat akun
@@ -77,6 +83,7 @@ model Order {
   shippingAddress String?     // Opsional, jika butuh alamat
   totalAmount     Int
   status          OrderStatus @default(PENDING)
+  fulfillmentStatus FulfillmentStatus @default(NOT_APPLICABLE)
 
  // Midtrans Related
   snapToken       String? 

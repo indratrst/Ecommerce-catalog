@@ -55,10 +55,13 @@ export async function POST(
         }
       }
 
+      const isPickUp = order.shippingAddress === "Pickup";
+
       // Update order status menjadi SETTLEMENT
       const updatedOrder = await tx.order.update({
         where: { id },
         data: {
+          fulfillmentStatus: isPickUp ? "PENDING_PICKUP" : "NOT_APPLICABLE",
           status: OrderStatus.SETTLEMENT,
           stockReduced: true,
           externalId: transaction_id || order.externalId,

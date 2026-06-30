@@ -3,11 +3,13 @@ import prisma from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
 
 const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY!;
-const IS_PRODUCTION = process.env.NODE_ENV === "production";
+// const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
-const MIDTRANS_BASE_URL = IS_PRODUCTION
-  ? "https://app.midtrans.com/snap/v1/transactions"
-  : "https://app.sandbox.midtrans.com/snap/v1/transactions";
+const MIDTRANS_BASE_URL =
+  "https://app.sandbox.midtrans.com/snap/v1/transactions";
+// const MIDTRANS_BASE_URL = IS_PRODUCTION
+//   ? "https://app.midtrans.com/snap/v1/transactions"
+//   : "https://app.sandbox.midtrans.com/snap/v1/transactions";
 
 export async function POST(request: Request) {
   try {
