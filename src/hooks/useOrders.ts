@@ -5,7 +5,10 @@ import { ErrorSchema } from "@/types";
 import { OrderDataNew } from "@/types/checkout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-
+interface ConfirmPickupPayload {
+  id: string;
+  fulfillmentStatus: "READY_TO_PICKUP" | "PICKED_UP";
+}
 // Query hook
 export function useOrders() {
   return useQuery<Order[]>({
@@ -120,20 +123,25 @@ export function useConfirmPickup() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      // Menembak ke API khusus logistik/pickup order
+    // 1. Ubah parameter mutationFn agar menerima objek dinamis { id, fulfillmentStatus }
+    mutationFn: async ({ id, fulfillmentStatus }: ConfirmPickupPayload) => {
+      // 2. Kirim fulfillmentStatus yang dinamis dari komponen ke request body API
       const res = await api.put(`/order/${id}/mark-picked-up`, {
-        fulfillmentStatus: "PICKED_UP",
+        fulfillmentStatus: fulfillmentStatus,
       });
       return res.data;
     },
-    onSuccess: (_, id) => {
-      // Invalidation otomatis memperbarui UI Admin agar lencana berubah jadi 'PICKED_UP'
+    // 3. Sesuaikan parameter onSuccess karena payload mutasinya sekarang berupa objek
+    onSuccess: (_, variables) => {
+      // variables berisi data { id, fulfillmentStatus } yang dikirim saat mutasi sukses
       queryClient.invalidateQueries({ queryKey: ["orders"] });
-      queryClient.invalidateQueries({ queryKey: ["orders", id] });
+      queryClient.invalidateQueries({ queryKey: ["orders", variables.id] });
     },
     onError: (error: ErrorSchema) => {
-      alert(error.message ?? "Gagal mengonfirmasi pengambilan barang");
+      alert(
+        error.message ??
+          "Gagal memperbarui status pengemasan/pengambilan barang",
+      );
     },
   });
 }

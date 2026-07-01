@@ -67,7 +67,8 @@ model ProductVariant {
 
 enum FulfillmentStatus {
   NOT_APPLICABLE  // Default untuk pengiriman reguler (jika ada alamat)
-  PENDING_PICKUP  // Customer memilih "Pick up", sudah bayar, tapi belum diambil
+  PENDING_PICKUP  // Customer memilih "Pick up", sudah bayar, tapi belum disiapkan pesanannya oleh admin
+  READY_TO_PICKUP  // Customer memilih "Pick up", sudah bayar, sudah siap untuk diambil
   PICKED_UP       // Barang sudah diambil oleh customer di offline store
 }
 

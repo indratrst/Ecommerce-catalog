@@ -105,7 +105,11 @@ export interface OrderDataNew {
   shippingAddress?: string; // Optional
   totalAmount: number;
   status: "PENDING" | "SETTLEMENT" | "EXPIRED" | "CANCEL" | "FAILED";
-  fulfillmentStatus: "NOT_APPLICABLE" | "PENDING_PICKUP" | "PICKED_UP";
+  fulfillmentStatus:
+    | "NOT_APPLICABLE"
+    | "PENDING_PICKUP"
+    | "READY_TO_PICKUP"
+    | "PICKED_UP";
   snapToken?: string;
   snapRedirectUrl?: string;
   paymentMethod?: string;

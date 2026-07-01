@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth";
+import { sendOrderPickedUpEmail, sendPickupReadyEmail } from "@/lib/nodemailer";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -43,6 +44,36 @@ export async function PUT(
         fulfillmentStatus: fulfillmentStatus || "PICKED_UP",
       },
     });
+    // 4. LOGIKA EMAIL: Kirim email jika status berubah dari PENDING_PICKUP ke READY_TO_PICKUP
+    // ================= TRIGGER EMAIL 1: READY TO PICKUP =================
+    if (
+      existingOrder.fulfillmentStatus === "PENDING_PICKUP" &&
+      updatedOrder.fulfillmentStatus === "READY_TO_PICKUP"
+    ) {
+      if (existingOrder.customerEmail) {
+        await sendPickupReadyEmail({
+          to: existingOrder.customerEmail,
+          orderId: id,
+          customerName: existingOrder.customerName || "Customer",
+        });
+      }
+    }
+
+    // ================= BARU: TRIGGER EMAIL 2: PICKED UP =================
+    if (
+      existingOrder.fulfillmentStatus === "READY_TO_PICKUP" &&
+      updatedOrder.fulfillmentStatus === "PICKED_UP"
+    ) {
+      if (existingOrder.customerEmail) {
+        await sendOrderPickedUpEmail({
+          to: existingOrder.customerEmail,
+          orderId: id,
+          customerName: existingOrder.customerName || "Customer",
+        });
+      }
+    }
+
+    // 5. TRIGGER EMAIL: Hanya jika status berubah dari PENDING_PICKUP ke READY_TO_PICKUP
     return NextResponse.json({
       message: "Status pengambilan berhasil diperbarui",
       order: updatedOrder,
