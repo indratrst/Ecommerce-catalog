@@ -71,7 +71,7 @@ export async function sendOrderPickedUpEmail({
 }: PickedUpEmailParams) {
   try {
     const mailOptions = {
-      from: `"Nama Toko Kamu" <${process.env.SMTP_USER}>`,
+      from: `"BITEWORKS" <${process.env.SMTP_USER}>`,
       to: to,
       subject: `🛍️ Pesanan #${orderId} Berhasil Diambil!`,
       html: `
