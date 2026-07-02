@@ -17,6 +17,7 @@ export async function PUT(
     // 1. Validasi apakah order tersebut ada di database
     const existingOrder = await prisma.order.findUnique({
       where: { id },
+      include: { items: { include: { productVariant: { include: { product: true } } } } },
     });
 
     if (!existingOrder) {
@@ -55,6 +56,8 @@ export async function PUT(
           to: existingOrder.customerEmail,
           orderId: id,
           customerName: existingOrder.customerName || "Customer",
+          items: existingOrder.items,
+          totalAmount: existingOrder.totalAmount || 0,
         });
       }
     }
@@ -69,6 +72,8 @@ export async function PUT(
           to: existingOrder.customerEmail,
           orderId: id,
           customerName: existingOrder.customerName || "Customer",
+          items: existingOrder.items,
+          totalAmount: existingOrder.totalAmount || 0,
         });
       }
     }
