@@ -92,6 +92,7 @@ export function Header() {
   const isProductDetailPage = pathname?.startsWith("/product/");
   const isCheckoutPage = pathname?.startsWith("/checkout");
   const isCartPage = pathname?.startsWith("/cart");
+  const isProfilePage = pathname?.startsWith("/profile-user");
 
   // Tambahkan scroll listener agar header menjadi solid saat di-scroll (opsional tapi disarankan)
   useEffect(() => {
@@ -106,7 +107,11 @@ export function Header() {
     <>
       <header
         className={`w-full transition-all duration-300 fixed top-0 z-40 ${
-          isCheckoutPage || isCartPage || isProductDetailPage || isScrolled
+          isProfilePage ||
+          isCheckoutPage ||
+          isCartPage ||
+          isProductDetailPage ||
+          isScrolled
             ? "bg-black"
             : "bg-transparent"
         }`}
@@ -187,12 +192,13 @@ export function Header() {
               >
                 <Search className="h-5 w-5" />
               </button>
-              <button
+              <Link
+                href="/profile-user"
                 style={{ color: "var(--texted)" }}
-                className="hover:text-texted transition-colors"
+                className="hover:text-texted transition-colors p-2 inline-block"
               >
                 <User className="h-5 w-5" />
-              </button>
+              </Link>
               <button
                 className="relative group flex items-center transition-colors"
                 style={{ color: "var(--texted)" }}

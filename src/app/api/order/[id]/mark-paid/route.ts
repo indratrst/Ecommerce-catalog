@@ -62,8 +62,9 @@ export async function POST(
         where: { id },
         data: {
           fulfillmentStatus: isPickUp ? "PENDING_PICKUP" : "NOT_APPLICABLE",
-          status: OrderStatus.SETTLEMENT,
-          stockReduced: true,
+          status: OrderStatus,
+          stockReduced:
+            OrderStatus === OrderStatus.SETTLEMENT ? true : order.stockReduced,
           externalId: transaction_id || order.externalId,
           paymentMethod: payment_type || order.paymentMethod,
         },

@@ -18,6 +18,7 @@ model User {
   name      String
   email     String   @unique
   password  String
+  image     String?
   role      Role     @default(USER)
   orders    Order[]
   createdAt DateTime @default(now())

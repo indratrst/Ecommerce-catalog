@@ -69,6 +69,7 @@ export async function POST(request: Request) {
     // });
 
     await prisma.$transaction(async (tx) => {
+      // 1. Ambil data order beserta items-nya
       const order = await tx.order.findUnique({
         where: { id: order_id },
         include: { items: true },
@@ -77,28 +78,14 @@ export async function POST(request: Request) {
       if (!order) throw new Error("Order not found");
 
       if (["settlement", "capture", "paid"].includes(transaction_status)) {
-        if (!order.stockReduced) {
-          for (const item of order.items) {
-            const updatedVariant = await tx.productVariant.updateMany({
-              where: {
-                id: item.productVariantId,
-                stock: { gte: item.quantity },
-              },
-              data: {
-                stock: { decrement: item.quantity },
-              },
-            });
-
-            if (updatedVariant.count === 0) {
-              throw new Error(
-                `Stok untuk varian ${item.productVariantId} tidak mencukupi`,
-              );
-            }
-          }
-        }
-
-        await tx.order.update({
-          where: { id: order_id },
+        // 2. KUNCI UTAMA: Coba update status order TERLEBIH DAHULU dengan syarat stockReduced harus masih false.
+        // Kita gunakan updateMany karena updateMany mengembalikan 'count'.
+        // Jika count === 0, berarti order ini SUDAH diproses oleh request lain yang masuk duluan.
+        const orderUpdate = await tx.order.updateMany({
+          where: {
+            id: order_id,
+            stockReduced: false, // Ini benteng pertahanan kita dari request ganda
+          },
           data: {
             status: OrderStatus.SETTLEMENT,
             stockReduced: true,
@@ -106,6 +93,32 @@ export async function POST(request: Request) {
             paymentMethod: body.payment_type,
           },
         });
+
+        // Jika count 0, artinya request lain sudah mengubah stockReduced menjadi true dalam milidetik yang sama.
+        // Kita langsung stop proses di sini agar tidak terjadi double-decrement stok.
+        if (orderUpdate.count === 0) {
+          return; // Keluar dengan aman tanpa melempar error (idempotent)
+        }
+
+        // 3. Jika berhasil mengunci order, baru kurangi stok produk
+        for (const item of order.items) {
+          const updatedVariant = await tx.productVariant.updateMany({
+            where: {
+              id: item.productVariantId,
+              stock: { gte: item.quantity },
+            },
+            data: {
+              stock: { decrement: item.quantity },
+            },
+          });
+
+          if (updatedVariant.count === 0) {
+            // Jika stok tidak cukup, transaksi akan rollback otomatis (status order batal berubah)
+            throw new Error(
+              `Stok untuk varian ${item.productVariantId} tidak mencukupi`,
+            );
+          }
+        }
       } else if (
         ["expire", "cancel", "deny", "failure"].includes(transaction_status)
       ) {

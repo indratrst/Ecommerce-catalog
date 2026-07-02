@@ -10,7 +10,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -47,34 +47,34 @@ function SuccessContent() {
     return map[type] || type || "—";
   };
 
-  const markOrderAsPaid = useCallback(async () => {
-    if (!orderId) return;
-    try {
-      const res = await fetch(`/api/order/${orderId}/mark-paid`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          payment_type: paymentType,
-          transaction_id: searchParams.get("transaction_id"),
-        }),
-      });
+  // const markOrderAsPaid = useCallback(async () => {
+  //   if (!orderId) return;
+  //   try {
+  //     const res = await fetch(`/api/order/${orderId}/mark-paid`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         payment_type: paymentType,
+  //         transaction_id: searchParams.get("transaction_id"),
+  //       }),
+  //     });
 
-      if (res.ok) {
-        console.log("Order marked as paid successfully");
-      } else {
-        console.warn("Failed to mark order as paid");
-      }
-    } catch (err) {
-      console.error("Error marking order as paid:", err);
-    }
-  }, [orderId, paymentType, searchParams]);
+  //     if (res.ok) {
+  //       console.log("Order marked as paid successfully");
+  //     } else {
+  //       console.warn("Failed to mark order as paid");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error marking order as paid:", err);
+  //   }
+  // }, [orderId, paymentType, searchParams]);
 
   const fetchOrder = useCallback(async () => {
     try {
       const res = await fetch(`/api/order/${orderId}`);
       const data = await res.json();
 
-      console.log("Fetched Order:", data);
+      // console.log("Fetched Order:", data);
 
       setOrder(data);
       setStatus(data.status);
@@ -83,42 +83,42 @@ function SuccessContent() {
     }
   }, [orderId]);
 
-  useEffect(() => {
-    if (!orderId) return;
+  // useEffect(() => {
+  //   if (!orderId) return;
 
-    let markPaidTimer: NodeJS.Timeout;
-    let pollInterval: NodeJS.Timeout;
+  //   // let markPaidTimer: NodeJS.Timeout;
+  //   // let pollInterval: NodeJS.Timeout;
 
-    const setupPolling = async () => {
-      // Fetch order pertama kali
-      await fetchOrder();
+  //   // const setupPolling = async () => {
+  //   //   // Fetch order pertama kali
+  //   //   await fetchOrder();
 
-      // Setelah 2 detik, jika status masih PENDING, coba mark as paid
-      markPaidTimer = setTimeout(() => {
-        setOrder((prevOrder: typeof order) => {
-          if (prevOrder?.status === "PENDING") {
-            console.log(
-              "Status masih PENDING, triggering mark-paid endpoint...",
-            );
-            markOrderAsPaid();
-          }
-          return prevOrder;
-        });
-      }, 2000);
+  //     // Setelah 2 detik, jika status masih PENDING, coba mark as paid
+  //     // markPaidTimer = setTimeout(() => {
+  //     //   setOrder((prevOrder: typeof order) => {
+  //     //     if (prevOrder?.status === "PENDING") {
+  //     //       console.log(
+  //     //         "Status masih PENDING, triggering mark-paid endpoint...",
+  //     //       );
+  //     //       markOrderAsPaid();
+  //     //     }
+  //     //     return prevOrder;
+  //     //   });
+  //     // }, 2000);
 
-      // Poll status setiap 3 detik
-      pollInterval = setInterval(() => {
-        fetchOrder();
-      }, 3000);
-    };
+  //     // Poll status setiap 3 detik
+  //     // pollInterval = setInterval(() => {
+  //     //   fetchOrder();
+  //     // }, 3000);
+  //   };
 
-    setupPolling();
+  //   // setupPolling();
 
-    return () => {
-      clearTimeout(markPaidTimer);
-      clearInterval(pollInterval);
-    };
-  }, [orderId, paymentType, searchParams, fetchOrder, markOrderAsPaid]);
+  //   return () => {
+  //     // clearTimeout(markPaidTimer);
+  //     // clearInterval(pollInterval);
+  //   };
+  // }, [orderId, paymentType, searchParams, fetchOrder, markOrderAsPaid]);
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 text-center py-20">
