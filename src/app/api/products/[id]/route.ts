@@ -49,7 +49,15 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { title, price, description, image, categoryId, variants } = body;
+    const {
+      title,
+      originalPrice,
+      price,
+      description,
+      image,
+      categoryId,
+      variants,
+    } = body;
 
     console.log("Received variants:", JSON.stringify(variants, null, 2));
 
@@ -79,13 +87,6 @@ export async function PUT(
     }
 
     const product = await prisma.$transaction(async (tx) => {
-      // 🔥 ambil semua variant lama
-      // const existingVariants = await tx.productVariant.findMany({
-      //   where: { productId: id },
-      // });
-
-      // const existingMap = new Map(existingVariants.map((v) => [v.id, v]));
-
       const incomingIds = variants
         .filter((v: VariantResponse) => v.id)
         .map((v: VariantResponse) => v.id);
@@ -150,7 +151,8 @@ export async function PUT(
         where: { id },
         data: {
           title,
-          price: parseInt(price), // ✅ FIX INT
+          originalPrice: originalPrice ? Number(originalPrice) : null,
+          price: parseInt(price),
           description,
           image,
           categoryId,

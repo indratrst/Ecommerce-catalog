@@ -24,7 +24,6 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
     (v: VariantResponse) => v.size === selectedSize && v.isActive,
   );
 
-  console.log(selectedVariant);
   const currentStock = selectedVariant ? selectedVariant.stock : totalStock;
   const cartItem = cart.find(
     (item) =>
@@ -61,6 +60,8 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
     if (currentStock < 5) return `Only ${currentStock} left!`; // Optional: untuk currentStock 2-4
     return `${currentStock} in stock`;
   };
+
+  console.log("ProductCard - product:", product);
 
   return (
     <motion.div initial={false} whileHover="hover" className="group">
@@ -185,44 +186,35 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
             </h3>
           </Link>
 
-          {/* footer */}
+          {/* CONTENT AREA - BAGIAN FOOTER / HARGA */}
           <div className="flex items-center justify-between">
             <div>
-              <p
-                className="
-                  text-xl
-                  font-bold
-                  tracking-tight
-                  text-deep-space-900
-                "
-              >
-                Rp {product.price.toLocaleString("id-ID")}
+              {/* Harga Jual Aktual */}
+              <p className="text-xl font-bold tracking-tight text-deep-space-900">
+                Rp {product.price?.toLocaleString("id-ID")}
               </p>
 
-              <p
-                className="
-                  text-sm
-                  text-cool-steel-400
-                  line-through
-                "
-              >
-                Rp {(product.price * 1.25).toLocaleString("id-ID")}
-              </p>
+              {/* Menampilkan Harga Coret HANYA JIKA originalPrice ada dan lebih besar dari price */}
+              {product.originalPrice &&
+                product.originalPrice > product.price && (
+                  <p className="text-sm text-cool-steel-400 line-through">
+                    Rp {product.originalPrice.toLocaleString("id-ID")}
+                  </p>
+                )}
             </div>
 
-            <div
-              className="
-                rounded-full
-                bg-green-50
-                px-3
-                py-1
-                text-xs
-                font-medium
-                text-steel-blue-600
-              "
-            >
-              -20%
-            </div>
+            {/* Menampilkan Badge Diskon Dinamis */}
+            {product.originalPrice && product.originalPrice > product.price && (
+              <div className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-steel-blue-600">
+                -
+                {Math.round(
+                  ((product.originalPrice - product.price) /
+                    product.originalPrice) *
+                    100,
+                )}
+                %
+              </div>
+            )}
           </div>
           <div className="flex gap-2 mt-4">
             {product?.variants

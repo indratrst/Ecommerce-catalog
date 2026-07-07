@@ -5,7 +5,6 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { Loader2, Plus, ArrowLeft, Trash2, Box, Info } from "lucide-react";
 import Link from "next/link";
 import { ImageUpload } from "./ImageUpload";
-// import { ProductBaseSchema } from "@/types";
 import { CategoryResponse } from "@/lib/validation/category.schema";
 import type { FieldErrors } from "react-hook-form";
 import {
@@ -21,6 +20,7 @@ interface ProductFormProps {
   initialData?: {
     title?: string;
     price?: number;
+    originalPrice?: number | null; // MENAMBAHKAN: Handle tipe originalPrice
     description?: string;
     image?: string;
     categoryId?: string | number;
@@ -50,6 +50,7 @@ export function ProductForm({
     ) as import("react-hook-form").Resolver<CreateProduct>,
     defaultValues: {
       title: initialData?.title || "",
+      originalPrice: initialData?.originalPrice || null, // MENAMBAHKAN: default value harga coret
       price: initialData?.price || 0,
       description: initialData?.description || "",
       image: initialData?.image || "",
@@ -75,8 +76,8 @@ export function ProductForm({
     if (
       categories &&
       categories.length > 0 &&
-      !initialData && // Only for new product
-      !watchedCategoryId // Only if not already set
+      !initialData &&
+      !watchedCategoryId
     ) {
       setValue("categoryId", String(categories[0].id));
     }
@@ -103,18 +104,14 @@ export function ProductForm({
   const removeVariant = (index: number) => {
     const current = watchedVariants[index];
     if (current?.id) {
-      // Variant lama (ada di DB) → soft delete
       setValue(`variants.${index}.isDeleted`, true);
     } else {
-      // Variant baru → hard remove
       remove(index);
     }
   };
 
-  // Count visible (non-deleted) variants
   const visibleCount = watchedVariants.filter((v) => !v.isDeleted).length;
 
-  // ── Submit Handler ───────────────────────────────────────
   const onFormSubmit = (data: CreateProduct) => {
     onSubmit(data);
   };
@@ -168,11 +165,11 @@ export function ProductForm({
               )}
             </div>
 
-            {/* Price + Category */}
+            {/* MODIFIKASI: Section Harga Jual vs Harga Coret (Diskon) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight">
-                  Price (IDR)
+                  Selling Price (IDR)
                 </label>
                 <input
                   {...register("price", { valueAsNumber: true })}
@@ -189,37 +186,63 @@ export function ProductForm({
                 )}
               </div>
 
+              {/* MENAMBAHKAN: Input Field untuk Original Price (Harga Coret) */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight">
-                  Category
-                </label>
-                <select
-                  {...register("categoryId")}
-                  value={watchedCategoryId || ""}
-                  onChange={(e) => setValue("categoryId", e.target.value)}
-                  className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border rounded-xl text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all appearance-none ${
-                    errors.categoryId
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight">
+                    Original Price / Strike Price (IDR)
+                  </label>
+                  <span className="text-[10px] text-slate-400 font-medium lowercase italic">
+                    Opsional
+                  </span>
+                </div>
+                <input
+                  {...register("originalPrice", { valueAsNumber: true })}
+                  type="number"
+                  placeholder="e.g. 150000 (Biarkan kosong jika tidak diskon)"
+                  className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border rounded-xl text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all ${
+                    errors.originalPrice
                       ? "border-red-500 focus:ring-red-500"
                       : "border-slate-200 dark:border-slate-700"
                   }`}
-                >
-                  <option value="" disabled>
-                    {!categories
-                      ? "Loading categories..."
-                      : "Select a category"}
-                  </option>
-                  {categories?.map((cat) => (
-                    <option key={cat.id} value={String(cat.id)}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.categoryId && (
+                />
+                {errors.originalPrice && (
                   <p className="text-xs text-red-500">
-                    {errors.categoryId.message}
+                    {errors.originalPrice.message}
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* MODIFIKASI: Dropdown Kategori dipindah ke bawah baris harga */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight">
+                Category
+              </label>
+              <select
+                {...register("categoryId")}
+                value={watchedCategoryId || ""}
+                onChange={(e) => setValue("categoryId", e.target.value)}
+                className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border rounded-xl text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all appearance-none ${
+                  errors.categoryId
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-slate-200 dark:border-slate-700"
+                }`}
+              >
+                <option value="" disabled>
+                  {!categories ? "Loading categories..." : "Select a category"}
+                </option>
+                {categories?.map((cat) => (
+                  <option key={cat.id} value={String(cat.id)}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              {errors.categoryId && (
+                <p className="text-xs text-red-500">
+                  {errors.categoryId.message}
+                </p>
+              )}
             </div>
 
             {/* Description */}
@@ -262,7 +285,6 @@ export function ProductForm({
               </button>
             </div>
 
-            {/* Variant-level error (e.g. "minimal 1 variant") */}
             {errors.variants?.root && (
               <p className="text-xs text-red-500">
                 {errors.variants.root.message}
@@ -271,7 +293,6 @@ export function ProductForm({
 
             <div className="space-y-4">
               {fields.map((field, index) => {
-                // Skip soft-deleted variants
                 if (watchedVariants[index]?.isDeleted) return null;
 
                 return (
@@ -279,7 +300,6 @@ export function ProductForm({
                     key={field.id}
                     className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 relative group"
                   >
-                    {/* Hidden field for DB id */}
                     <input
                       type="hidden"
                       {...register(`variants.${index}.id`)}

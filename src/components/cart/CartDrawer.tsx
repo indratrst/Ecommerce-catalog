@@ -6,7 +6,6 @@ import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
-// import { getItemStock } from "@/lib/cart";
 
 export function CartDrawer() {
   const {
@@ -17,8 +16,6 @@ export function CartDrawer() {
     updateQuantity,
     cartTotal,
   } = useCart();
-
-  // const stock = getItemStock(cart);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -126,18 +123,33 @@ export function CartDrawer() {
                             {item.product.title}
                           </h3>
 
-                          <p className="text-xs text-muted-foreground uppercase tracking-widest py-1">
-                            Size: {item.variant.size}
-                          </p>
-                          {/* <p className="text-xs text-muted-foreground uppercase tracking-widest">
-                            Stock: {item.variant.stock}
-                          </p> */}
-                          <p
-                            className="mt-1 text-sm font-medium"
-                            style={{ color: "var(--foreground)" }}
-                          >
-                            Rp {item.product.price.toLocaleString("id-ID")}
-                          </p>
+                          {item.variant && (
+                            <p className="text-xs text-muted-foreground uppercase tracking-widest py-1">
+                              Size: {item.variant.size}
+                            </p>
+                          )}
+
+                          {/* MODIFIKASI: Layout Harga Dinamis di Cart Item */}
+                          <div className="mt-1 flex items-baseline gap-2">
+                            <p
+                              className="text-sm font-bold"
+                              style={{ color: "var(--foreground)" }}
+                            >
+                              Rp {item.product.price.toLocaleString("id-ID")}
+                            </p>
+
+                            {/* Tampilkan Harga Coret Kecil jika produk sedang diskon */}
+                            {item.product.originalPrice &&
+                              item.product.originalPrice >
+                                item.product.price && (
+                                <p className="text-xs text-cool-steel-400 line-through">
+                                  Rp{" "}
+                                  {item.product.originalPrice.toLocaleString(
+                                    "id-ID",
+                                  )}
+                                </p>
+                              )}
+                          </div>
                         </div>
                         <button
                           onClick={() => removeFromCart(itemKey)}
@@ -171,11 +183,13 @@ export function CartDrawer() {
                           </span>
                           <button
                             className="px-2 py-1 hover:opacity-70 transition-opacity"
-                            disabled={item.quantity === item.variant?.stock}
+                            disabled={
+                              item.quantity === (item.variant?.stock ?? 0)
+                            }
                             onClick={() =>
                               updateQuantity(
                                 itemKey,
-                                item.quantity < item.variant?.stock
+                                item.quantity < (item.variant?.stock ?? 0)
                                   ? item.quantity + 1
                                   : item.quantity,
                               )
@@ -184,6 +198,8 @@ export function CartDrawer() {
                             <Plus className="h-3 w-3" />
                           </button>
                         </div>
+
+                        {/* Menampilkan total harga akumulasi kuantitas (Harga bersih setelah diskon * quantity) */}
                         <div
                           className="ml-auto font-bold text-sm"
                           style={{ color: "var(--foreground)" }}
@@ -200,62 +216,6 @@ export function CartDrawer() {
               })}
             </ul>
           )}
-
-          {/* Recommended Section inline with the scrollable area */}
-          {/* <div
-            className="mt-6 pt-6 border-t"
-            style={{ borderColor: "var(--surface-border)" }}
-          >
-            <h3
-              className="text-sm font-bold uppercase tracking-widest mb-4"
-              style={{ color: "var(--foreground)" }}
-            >
-              You may also like
-            </h3>
-            <div className="flex overflow-x-auto gap-4 pb-4 snap-x">
-              {recommendedProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="min-w-[140px] snap-start flex flex-col group gap-2"
-                >
-                  <Link
-                    href={`/product/${product.id}`}
-                    className="block relative aspect-[3/4] overflow-hidden"
-                    onClick={() => setIsCartOpen(false)}
-                  >
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </Link>
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div>
-                      <h4
-                        className="text-xs font-semibold uppercase line-clamp-1"
-                        style={{ color: "var(--foreground)" }}
-                      >
-                        {product.title}
-                      </h4>
-                      <p className="text-xs" style={{ color: "var(--muted)" }}>
-                        Rp {product.price.toLocaleString("id-ID")}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="mt-2 text-xs font-bold uppercase flex items-center justify-center gap-1 py-1 border transition-colors hover:bg-deep-space-blue-900 hover:text-white"
-                      style={{
-                        borderColor: "var(--foreground)",
-                        color: "var(--foreground)",
-                      }}
-                    >
-                      <PlusCircle className="h-3 w-3" /> Add
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div> */}
         </div>
 
         {cart.length > 0 && (
@@ -275,13 +235,6 @@ export function CartDrawer() {
             </div>
             <div className="space-y-3">
               <div className="group relative h-12 bg-deep-space-blue-900 text-center rounded-[0.45em] font-arial transition-colors duration-300 hover:bg-deep-space-blue-900">
-                {/* <div className="absolute w-[90px] h-[35px] bg-[#555] text-[0.9rem] text-white rounded-[0.25em] leading-[35px] bottom-[calc(35px+18px+10px)] left-[calc(50%-45px)] opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:bottom-[calc(35px+18px)] transition-all duration-500 pointer-events-none">
-                  Price:-$20
-                </div>
-
-                <div className="absolute w-0 h-0 border-[10px] border-transparent border-t-[#555] left-[calc(50%-10px)] bottom-[calc(100%+18px-10px)] opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:bottom-[calc(35px+18px-20px)] transition-all duration-500 pointer-events-none"></div> */}
-
-                {/* Button Content */}
                 <Link href="/cart">
                   <button
                     onClick={() => setIsCartOpen(false)}
@@ -315,6 +268,3 @@ export function CartDrawer() {
     </>
   );
 }
-
-
-

@@ -103,8 +103,15 @@ export async function POST(request: Request) {
     const validatedData = CreateProductSchema.parse(body);
     // console.log("✅ Validated data:", validatedData); // Debug
 
-    const { title, price, description, image, categoryId, variants } =
-      validatedData;
+    const {
+      title,
+      price,
+      originalPrice,
+      description,
+      image,
+      categoryId,
+      variants,
+    } = validatedData;
 
     // Cek category
     const categoryExists = await prisma.category.findUnique({
@@ -125,6 +132,7 @@ export async function POST(request: Request) {
         data: {
           title,
           price,
+          originalPrice,
           description: description || "",
           image: image || null,
           categoryId,

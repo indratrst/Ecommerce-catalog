@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 import { ShippingSelector } from "@/components/checkout/ShippingSelector";
-// import { PaymentSelector } from "@/components/checkout/PaymentSelector";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { BillingAddress, ShippingRate } from "@/types/checkout";
 import { useRouter } from "next/navigation";
@@ -18,7 +17,6 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [billingData, setBillingData] = useState<Partial<BillingAddress>>({});
   const [shippingRate, setShippingRate] = useState<ShippingRate | null>(null);
-  // const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">(
     "shipping",
   );
@@ -36,7 +34,6 @@ export default function CheckoutPage() {
     (deliveryMethod === "pickup" ||
       (billingData.areaId && billingData.address)) &&
     (deliveryMethod === "pickup" || shippingRate);
-  // paymentMethod;
 
   const handleConfirmPayment = async () => {
     setIsSubmitting(true);
@@ -44,20 +41,23 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
-    // if (!isFormValid) return;
-
     try {
-      // Step 1: Get Midtrans Snap token from our API
+      // MODIFIKASI: Payload API disesuaikan agar backend mudah memetakan ke field DB baru
       const res = await fetch("/api/payment/midtrans", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: cart,
           billingData,
-          shippingRate,
-          subtotal: cartTotal,
           shippingCost,
+          subtotal: cartTotal,
           total: totalAmount,
+          // Menyerasikan tipe pengiriman dengan enum ShippingMethod di Prisma
+          shippingMethod:
+            deliveryMethod === "pickup" ? "PICKUP_STORE" : "EKSPEDISI",
+          // Parsing detail logistik RajaOngkir secara eksplisit untuk disimpan di DB Order
+          shippingCourier: shippingRate?.courier_code || null,
+          shippingService: shippingRate?.courier_service_code || null,
         }),
       });
 
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
           />
 
           <div
-            className="grid  md:grid-cols-1 gap-8 pt-8 border-t"
+            className="grid md:grid-cols-1 gap-8 pt-8 border-t"
             style={{ borderColor: "var(--surface-border)" }}
           >
             {deliveryMethod === "shipping" ? (
@@ -212,7 +212,7 @@ export default function CheckoutPage() {
           {/* Error Message */}
           {errorMsg && (
             <div className="bg-brick-ember-50 border border-brick-ember-200 text-brick-ember-700 p-4 text-sm rounded-lg font-medium">
-              ?? {errorMsg}
+              ⚠️ {errorMsg}
             </div>
           )}
         </div>
@@ -224,26 +224,6 @@ export default function CheckoutPage() {
             subtotal={cartTotal}
             shippingRate={shippingRate}
           />
-
-          {/* <button
-            id="place-order-btn"
-            onClick={handleConfirmPayment}
-            disabled={!isFormValid}
-            className={`w-full mt-6 py-4 uppercase font-bold tracking-widest transition-all shadow-md flex items-center justify-center gap-2 ${
-              isFormValid
-                ? "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700 dark:bg-card-bg dark:text-deep-space-blue-950 dark:hover:bg-cool-steel-100 scale-[1.02]"
-                : "bg-cool-steel-100 text-muted-foreground opacity-60 cursor-not-allowed border border-dashed border-cool-steel-300"
-            }`}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" /> Menyiapkan
-                pembayaran...
-              </>
-            ) : (
-              "Bayar Sekarang"
-            )}
-          </button> */}
 
           <button
             id="place-order-btn"

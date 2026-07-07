@@ -20,6 +20,7 @@ export function ProductGrid({ products }: { products: ProductCardSchema[] }) {
       id: p.id,
       title: p.title,
       price: p.price,
+      originalPrice: p.originalPrice,
       description: p.description,
       category: p.category,
       image: p.image ?? null,

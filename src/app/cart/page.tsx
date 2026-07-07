@@ -158,7 +158,7 @@ export default function CartPage() {
                   </div>
 
                   <div
-                    className="md:text-center w-full flex justify-between md:block font-medium"
+                    className="md:text-center w-full flex justify-between md:flex-col md:items-center font-medium"
                     style={{ color: "var(--foreground)" }}
                   >
                     <span
@@ -167,7 +167,18 @@ export default function CartPage() {
                     >
                       Price:{" "}
                     </span>
-                    Rp {item.product.price.toLocaleString("id-ID")}
+                    <div className="flex flex-col items-end md:items-center gap-0.5">
+                      <span>
+                        Rp {item.product.price.toLocaleString("id-ID")}
+                      </span>
+                      {item.product.originalPrice &&
+                        item.product.originalPrice > item.product.price && (
+                          <span className="text-xs text-cool-steel-400 line-through font-normal">
+                            Rp{" "}
+                            {item.product.originalPrice.toLocaleString("id-ID")}
+                          </span>
+                        )}
+                    </div>
                   </div>
 
                   <div className="flex justify-between md:justify-center w-full">
@@ -334,6 +345,3 @@ export default function CartPage() {
     </div>
   );
 }
-
-
-

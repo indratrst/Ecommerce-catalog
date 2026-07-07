@@ -39,7 +39,8 @@ model Category {
 model Product {
   id          String           @id @default(uuid())
   title       String
-  price       Int
+  price        Int              // Harga Jual (Harga Final setelah diskon)
+  originalPrice Int?            // MENAMBAHKAN: Harga Asli/Coret (Opsional)
   description String
   image       String?
   ratingRate  Float?           @default(0)
@@ -115,10 +116,18 @@ model OrderItem {
   @@index([productVariantId])
 }
 
+enum ShippingMethod {
+  PICKUP_STORE
+  EKSPEDISI
+}
+
 enum OrderStatus {
   PENDING
-  SETTLEMENT // Berhasil
-  EXPIRED // Gagal/Kadaluarsa
-  CANCEL // Dibatalkan
+  SETTLEMENT    // Pembayaran Berhasil (Setara dengan "Paid")
+  PROCESSING    // Admin sedang menyiapkan/membungkus barang
+  SHIPPED       // Resi sudah diinput, barang dalam perjalanan
+  DELIVERED     // Barang sudah diterima pembeli
+  EXPIRED       // Gagal/Kadaluarsa
+  CANCEL        // Dibatalkan
   FAILED
 }

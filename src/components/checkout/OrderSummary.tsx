@@ -25,7 +25,6 @@ export function OrderSummary({
       <h2 className="text-xl font-bold uppercase tracking-wider mb-6 flex items-center gap-2">
         <ShoppingBag className="h-5 w-5" /> Your Order
       </h2>
-
       <div className="space-y-4 max-h-[40vh] overflow-y-auto mb-6 pr-2 custom-scrollbar">
         {items.map((item) => {
           const itemKey = getCartItemKey(
@@ -33,9 +32,10 @@ export function OrderSummary({
             item.productVariantId,
           );
           return (
-            <div key={itemKey} className="flex gap-4 items-start">
+            <div key={itemKey} className="flex gap-4 items-start py-1">
+              {/* IMAGE AREA */}
               <div
-                className="h-48 w-36 bg-deep-space-blue-900 rounded overflow-hidden shrink-0 border"
+                className="h-24 w-20 bg-cool-steel-100 rounded-lg overflow-hidden shrink-0 border"
                 style={{ borderColor: "var(--surface-border)" }}
               >
                 {item.product.image ? (
@@ -43,27 +43,45 @@ export function OrderSummary({
                     src={item.product.image}
                     alt={item.product.title}
                     className="h-full w-full object-cover"
-                    width={500}
-                    height={500}
+                    width={160}
+                    height={200}
                   />
                 ) : (
                   <div className="h-full w-full bg-deep-space-blue-900" />
                 )}
               </div>
-              <div className="flex-1">
-                <h4 className="text-xs font-bold uppercase line-clamp-1">
+
+              {/* DETAILS AREA */}
+              <div className="flex-1 space-y-1">
+                {/* Judul Produk - Dinaikkan ke text-sm & semi-bold agar dominan */}
+                <h4 className="text-sm font-semibold uppercase tracking-tight line-clamp-2 text-slate-900 ">
                   {item.product.title}
                 </h4>
+
                 {item.variant?.size && (
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                  <p className="text-[11px] text-cool-steel-500 uppercase tracking-wider font-medium">
                     Size: {item.variant.size}
                   </p>
                 )}
-                <p className="text-xs text-muted-foreground">
-                  {item.quantity} x Rp{" "}
-                  {item.product.price.toLocaleString("id-ID")}
-                </p>
-                <p className="text-xs font-bold mt-1">
+
+                {/* Breakdown Harga - text-xs dengan warna medium agar tidak tabrakan */}
+                <div className="text-xs text-cool-steel-500 font-medium flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span>
+                    {item.quantity} x Rp{" "}
+                    {item.product.price.toLocaleString("id-ID")}
+                  </span>
+
+                  {item.product.originalPrice &&
+                    item.product.originalPrice > item.product.price && (
+                      <span className="text-[11px] text-cool-steel-400 line-through font-normal">
+                        (Rp {item.product.originalPrice.toLocaleString("id-ID")}
+                        )
+                      </span>
+                    )}
+                </div>
+
+                {/* Subtotal Item - Dibuat text-sm & bold sebagai kesimpulan harga item */}
+                <p className="text-sm font-bold text-deep-space-blue-950  pt-1">
                   Rp{" "}
                   {(item.product.price * item.quantity).toLocaleString("id-ID")}
                 </p>
@@ -72,7 +90,6 @@ export function OrderSummary({
           );
         })}
       </div>
-
       <div
         className="space-y-3 border-t pt-4"
         style={{ borderColor: "var(--surface-border)" }}
@@ -90,10 +107,11 @@ export function OrderSummary({
             Shipping
           </span>
           <span
-            className={`font-bold ${shippingRate?.price === 0
+            className={`font-bold ${
+              shippingRate?.price === 0
                 ? "line-through text-muted-foreground"
                 : ""
-              }`}
+            }`}
           >
             {shippingRate
               ? `Rp ${shippingRate.price.toLocaleString("id-ID")}`
@@ -119,5 +137,3 @@ export function OrderSummary({
     </div>
   );
 }
-
-

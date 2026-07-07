@@ -9,6 +9,7 @@ import {
   VariantResponse,
 } from "@/lib/validation/products.schema";
 import Image from "next/image";
+
 type ProductWithCategory = ProductResponse & {
   category?: {
     id: string;
@@ -35,7 +36,7 @@ export default function ProductDetailClient({
     (v: VariantResponse) => v.size === selectedSize && v.isActive,
   );
   const currentStock = selectedVariant ? selectedVariant.stock : totalStock;
-  // Cari item di cart dengan productId + variantId yang sama
+
   const cartItem = cart.find(
     (item) =>
       item.product.id === product.id &&
@@ -59,6 +60,7 @@ export default function ProductDetailClient({
       currentStock,
     );
   };
+
   const getStockColor = (currentStock: number) => {
     if (currentStock === 0) return "text-brick-ember-600";
     if (currentStock < 5) return "text-amber-flame-700";
@@ -68,7 +70,7 @@ export default function ProductDetailClient({
   const getStockMessage = (currentStock: number) => {
     if (currentStock === 0) return "Out of Stock";
     if (currentStock === 1) return `Only 1 left!`;
-    if (currentStock < 5) return `Only ${currentStock} left!`; // Optional: untuk currentStock 2-4
+    if (currentStock < 5) return `Only ${currentStock} left!`;
     return `${currentStock} in stock`;
   };
 
@@ -124,12 +126,32 @@ export default function ProductDetailClient({
             {product.title}
           </h1>
 
-          <p
-            className="text-2xl font-medium mb-8"
-            style={{ color: "var(--foreground)" }}
-          >
-            Rp {product.price.toLocaleString("id-ID")}
-          </p>
+          {/* MODIFIKASI: Section Harga Dinamis (Harga Aktif + Harga Coret + Badge Diskon) */}
+          <div className="flex items-baseline gap-4 mb-8">
+            <p
+              className="text-2xl md:text-3xl font-bold tracking-tight"
+              style={{ color: "var(--foreground)" }}
+            >
+              Rp {product.price.toLocaleString("id-ID")}
+            </p>
+
+            {product.originalPrice && product.originalPrice > product.price && (
+              <>
+                <p className="text-md md:text-lg text-cool-steel-400 line-through">
+                  Rp {product.originalPrice.toLocaleString("id-ID")}
+                </p>
+                <div className="rounded-md bg-green-50 px-2 py-1 text-xs font-bold text-steel-blue-600">
+                  -
+                  {Math.round(
+                    ((product.originalPrice - product.price) /
+                      product.originalPrice) *
+                      100,
+                  )}
+                  % OFF
+                </div>
+              </>
+            )}
+          </div>
 
           <div
             className="text-sm leading-relaxed mb-10 space-y-3"
@@ -162,34 +184,28 @@ export default function ProductDetailClient({
                   <button
                     key={variant.id}
                     onClick={() => setSelectedSize(variant.size)}
-                    className={`px-4 py-2 border-2 text-sm font-bold uppercase tracking-wide transition-all duration-200 ${selectedSize === variant.size
+                    className={`px-4 py-2 border-2 text-sm font-bold uppercase tracking-wide transition-all duration-200 ${
+                      selectedSize === variant.size
                         ? "bg-deep-space-blue-900 text-white border-deep-space-blue-900"
                         : variant.stock === 0
                           ? "border-cool-steel-200 text-cool-steel-300 cursor-not-allowed line-through"
                           : "border-cool-steel-300 hover:border-deep-space-blue-900"
-                      }`}
+                    }`}
                     style={
                       selectedSize === variant.size
                         ? {}
                         : {
-                          color:
-                            variant.stock === 0
-                              ? undefined
-                              : "var(--foreground)",
-                        }
+                            color:
+                              variant.stock === 0
+                                ? undefined
+                                : "var(--foreground)",
+                          }
                     }
                   >
                     {variant.size}
                   </button>
                 ))}
               </div>
-              {/* {selectedVariant &&
-                selectedVariant.stock <= 5 &&
-                selectedVariant.stock > 0 && (
-                  <p className="text-xs text-brick-ember-600 mt-2 font-medium">
-                    Only {selectedVariant.stock} left in stock!
-                  </p>
-                )} */}
             </div>
           )}
 
@@ -233,10 +249,11 @@ export default function ProductDetailClient({
           <button
             onClick={handleAddToCart}
             disabled={currentStock === 0 || cartQuantity === currentStock}
-            className={`w-full py-4 px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors ${currentStock === 0
+            className={`w-full py-4 px-8 uppercase font-bold tracking-widest flex items-center justify-center gap-3 shadow-lg transition-colors ${
+              currentStock === 0
                 ? "bg-cool-steel-200 text-cool-steel-500 cursor-not-allowed"
                 : "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700"
-              }`}
+            }`}
           >
             <ShoppingBag className="h-6 w-6" />
             {currentStock === 0
@@ -250,5 +267,3 @@ export default function ProductDetailClient({
     </div>
   );
 }
-
-
