@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
     // Mengabaikan error typescript saat dev agar compile super cepat
     ignoreBuildErrors: true,
   },
-  // allowedDevOrigins: ["third-pts-cameron-mariah.trycloudflare.com"],
+  allowedDevOrigins: ["bestsellers-wyoming-browse-male.trycloudflare.com"],
 };
 
 export default nextConfig;

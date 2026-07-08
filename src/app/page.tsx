@@ -283,7 +283,7 @@ to-transparent"
               },
               {
                 title: "Free Shipping",
-                desc: "Shopping with no extra charges – savor the liberty of complimentary shipping on every order.",
+                desc: "Shopping with no extra charges – savor the liberty of complimentary SHIPPING on every order.",
                 icon: <Truck className="w-8 h-8" strokeWidth={1.5} />,
               },
               {

@@ -19,7 +19,7 @@ export default function OrdersDetailPage() {
   // Menentukan target status berikutnya yang akan dikirim ke API
   const getNextStatus = () => {
     if (!orders) return null;
-    if (orders.fulfillmentStatus === "PENDING_PICKUP") return "READY_TO_PICKUP";
+    if (orders.fulfillmentStatus === "PROCESSING") return "READY_TO_PICKUP";
     if (orders.fulfillmentStatus === "READY_TO_PICKUP") return "PICKED_UP";
     return null;
   };
@@ -58,7 +58,7 @@ export default function OrdersDetailPage() {
         </div>
 
         <Link
-          href="/admin/orderss"
+          href="/admin/orders"
           className="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-100 shadow-sm transition hover:bg-slate-800"
         >
           Kembali ke daftar orders
@@ -153,7 +153,7 @@ export default function OrdersDetailPage() {
                 {orders.fulfillmentStatus === "PICKED_UP" && "Sudah Diambil"}
                 {orders.fulfillmentStatus === "READY_TO_PICKUP" &&
                   "Siap Diambil (Ready)"}
-                {orders.fulfillmentStatus === "PENDING_PICKUP" &&
+                {orders.fulfillmentStatus === "PROCESSING" &&
                   "Menunggu Disiapkan"}
                 {orders.fulfillmentStatus === "NOT_APPLICABLE" &&
                   "Reguler / Kurir"}
@@ -215,7 +215,7 @@ export default function OrdersDetailPage() {
               orders.fulfillmentStatus === "PICKED_UP" ||
               orders.fulfillmentStatus === "NOT_APPLICABLE"
                 ? "bg-slate-800 border border-slate-700 cursor-not-allowed shadow-none"
-                : orders.fulfillmentStatus === "PENDING_PICKUP"
+                : orders.fulfillmentStatus === "PROCESSING"
                   ? "bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-900/20"
                   : "bg-green-600 hover:bg-green-700 shadow-md shadow-green-900/20"
             }`}
@@ -234,7 +234,7 @@ export default function OrdersDetailPage() {
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   Memproses...
                 </span>
-              ) : orders.fulfillmentStatus === "PENDING_PICKUP" ? (
+              ) : orders.fulfillmentStatus === "PROCESSING" ? (
                 "📦 Siapkan & Kirim Email Notifikasi"
               ) : orders.fulfillmentStatus === "READY_TO_PICKUP" ? (
                 "🤝 Konfirmasi Pengambilan Produk"
@@ -311,7 +311,7 @@ export default function OrdersDetailPage() {
             <div className="mt-4 space-y-3 text-sm text-slate-200">
               <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
                 <p className="font-semibold text-slate-100">Status</p>
-                <p className="text-slate-100">{orders.status}</p>
+                <p className="text-slate-100">{orders.paymentStatus}</p>
               </div>
               <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
                 <p className="font-semibold text-slate-100">Stock Reduced</p>
@@ -342,7 +342,7 @@ export default function OrdersDetailPage() {
               Konfirmasi Perubahan Status
             </h3>
             <p className="mt-3 text-sm text-slate-300 leading-relaxed">
-              {orders.fulfillmentStatus === "PENDING_PICKUP" ? (
+              {orders.fulfillmentStatus === "PROCESSING" ? (
                 <>
                   Apakah Anda yakin pesanan{" "}
                   <span className="font-mono text-blue-400 font-semibold">
@@ -372,7 +372,7 @@ export default function OrdersDetailPage() {
               <button
                 onClick={handleConfirmAction}
                 className={`rounded-lg px-4 py-2 text-sm font-semibold text-white transition ${
-                  orders.fulfillmentStatus === "PENDING_PICKUP"
+                  orders.fulfillmentStatus === "PROCESSING"
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-green-600 hover:bg-green-700"
                 }`}

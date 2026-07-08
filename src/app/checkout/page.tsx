@@ -11,15 +11,18 @@ import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { PaymentConfirmationModal } from "@/components/checkout/PaymentConfirmationModal";
 import { toast } from "sonner";
+import axios from "axios";
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
   const router = useRouter();
   const [billingData, setBillingData] = useState<Partial<BillingAddress>>({});
   const [shippingRate, setShippingRate] = useState<ShippingRate | null>(null);
-  const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">(
-    "shipping",
-  );
+
+  // 💡 Menggunakan tipe literal yang sesuai dengan Enum ShippingMethod di Prisma
+  const [deliveryMethod, setDeliveryMethod] = useState<
+    "SHIPPING" | "PICKUP_STORE"
+  >("SHIPPING");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -31,49 +34,43 @@ export default function CheckoutPage() {
     billingData.lastName &&
     billingData.email &&
     billingData.phone &&
-    (deliveryMethod === "pickup" ||
+    (deliveryMethod === "PICKUP_STORE" ||
       (billingData.areaId && billingData.address)) &&
-    (deliveryMethod === "pickup" || shippingRate);
+    (deliveryMethod === "PICKUP_STORE" || shippingRate);
 
-  const handleConfirmPayment = async () => {
-    setIsSubmitting(true);
+  // Memicu modal konfirmasi muncul
+  const handleConfirmPayment = () => {
     setErrorMsg(null);
+    setIsSubmitting(true);
   };
 
+  // Dipanggil dari dalam PaymentConfirmationModal setelah user klik konfirmasi final
   const handlePlaceOrder = async () => {
     try {
-      // MODIFIKASI: Payload API disesuaikan agar backend mudah memetakan ke field DB baru
-      const res = await fetch("/api/payment/midtrans", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: cart,
-          billingData,
-          shippingCost,
-          subtotal: cartTotal,
-          total: totalAmount,
-          // Menyerasikan tipe pengiriman dengan enum ShippingMethod di Prisma
-          shippingMethod:
-            deliveryMethod === "pickup" ? "PICKUP_STORE" : "EKSPEDISI",
-          // Parsing detail logistik RajaOngkir secara eksplisit untuk disimpan di DB Order
-          shippingCourier: shippingRate?.courier_code || null,
-          shippingService: shippingRate?.courier_service_code || null,
-        }),
+      // 💡 Menggunakan axios untuk mengirim payload ke backend
+      const response = await axios.post("/api/payment/midtrans", {
+        items: cart,
+        billingData,
+        shippingCost,
+        subtotal: cartTotal,
+        total: totalAmount,
+        shippingMethod: deliveryMethod,
+        shippingCourier: shippingRate?.courier_code || null,
+        shippingService: shippingRate?.courier_service_code || null,
       });
 
-      const data = await res.json();
+      // Axios secara otomatis melakukan parsing JSON, jadi langsung ambil dari response.data
+      const data = response.data;
 
-      if (!res.ok || !data.token) {
-        const msg = Array.isArray(data.error)
-          ? data.error.join(", ")
-          : data.error || "Gagal membuat transaksi. Coba lagi.";
-        setErrorMsg(msg);
+      if (!data.token) {
+        setErrorMsg("Gagal membuat transaksi. Token tidak ditemukan.");
+        setIsSubmitting(false);
         return;
       }
 
       const { token, order_id } = data;
 
-      // Step 2: Open Midtrans Snap popup
+      // Jalankan pop-up Midtrans Snap
       window.snap.pay(token, {
         onSuccess(result) {
           clearCart();
@@ -90,6 +87,7 @@ export default function CheckoutPage() {
         onError(result) {
           console.error("Midtrans payment error:", result);
           setErrorMsg("Pembayaran gagal. Silakan coba metode lain.");
+          setIsSubmitting(false);
         },
         onClose() {
           clearCart();
@@ -97,13 +95,20 @@ export default function CheckoutPage() {
         },
       });
     } catch (error) {
-      if (error instanceof Error) {
-        toast(error.message);
+      setIsSubmitting(false);
+
+      // 💡 Menangani error catch khusus untuk Axios
+      if (axios.isAxiosError(error) && error.response) {
+        const data = error.response.data;
+        const msg = Array.isArray(data.error)
+          ? data.error.join(", ")
+          : data.error || "Gagal membuat transaksi. Coba lagi.";
+        setErrorMsg(msg);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
       } else {
         console.error("An unexpected error occurred", error);
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -144,11 +149,11 @@ export default function CheckoutPage() {
           <div className="flex gap-4">
             <button
               onClick={() => {
-                setDeliveryMethod("shipping");
+                setDeliveryMethod("SHIPPING");
                 setShippingRate(null);
               }}
               className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${
-                deliveryMethod === "shipping"
+                deliveryMethod === "SHIPPING"
                   ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white"
                   : "border-cool-steel-200 text-muted-foreground"
               }`}
@@ -157,7 +162,7 @@ export default function CheckoutPage() {
             </button>
             <button
               onClick={() => {
-                setDeliveryMethod("pickup");
+                setDeliveryMethod("PICKUP_STORE");
                 setShippingRate({
                   courier_name: "Store Pickup",
                   courier_code: "PICKUP",
@@ -168,7 +173,7 @@ export default function CheckoutPage() {
                 });
               }}
               className={`flex-1 py-4 border-2 font-bold uppercase transition-all ${
-                deliveryMethod === "pickup"
+                deliveryMethod === "PICKUP_STORE"
                   ? "border-deep-space-blue-900 bg-deep-space-blue-900 text-white"
                   : "border-cool-steel-200 text-muted-foreground"
               }`}
@@ -188,7 +193,7 @@ export default function CheckoutPage() {
             className="grid md:grid-cols-1 gap-8 pt-8 border-t"
             style={{ borderColor: "var(--surface-border)" }}
           >
-            {deliveryMethod === "shipping" ? (
+            {deliveryMethod === "SHIPPING" ? (
               <ShippingSelector
                 billingData={billingData}
                 items={cart}
@@ -201,7 +206,7 @@ export default function CheckoutPage() {
               >
                 <p className="text-sm font-bold uppercase">Store Location</p>
                 <p className="text-xs text-muted-foreground">
-                  Wellborn Flagship Store
+                  BITEWORKS Flagship Store
                   <br />
                   Jl. Sultan Agung No. 24, Bandung
                 </p>
@@ -228,9 +233,9 @@ export default function CheckoutPage() {
           <button
             id="place-order-btn"
             onClick={handleConfirmPayment}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isSubmitting}
             className={`w-full mt-6 py-4 uppercase font-bold tracking-widest transition-all shadow-md flex items-center justify-center gap-2 ${
-              isFormValid
+              isFormValid && !isSubmitting
                 ? "bg-deep-space-blue-900 text-white hover:bg-steel-blue-700 dark:bg-card-bg dark:text-deep-space-blue-950 dark:hover:bg-cool-steel-100 scale-[1.02]"
                 : "bg-cool-steel-100 text-muted-foreground opacity-60 cursor-not-allowed border border-dashed border-cool-steel-300"
             }`}

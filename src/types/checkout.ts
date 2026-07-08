@@ -98,25 +98,51 @@ export interface OrderItemDetail {
 
 export interface OrderDataNew {
   id: string;
-  userId?: string; // Optional, if user is not null
+  userId?: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  shippingAddress?: string; // Optional
+  shippingAddress?: string | null;
   totalAmount: number;
-  status: "PENDING" | "SETTLEMENT" | "EXPIRED" | "CANCEL" | "FAILED";
-  fulfillmentStatus:
-    | "NOT_APPLICABLE"
-    | "PENDING_PICKUP"
-    | "READY_TO_PICKUP"
-    | "PICKED_UP";
-  snapToken?: string;
-  snapRedirectUrl?: string;
-  paymentMethod?: string;
-  externalId?: string;
+
+  // Murni untuk status pembayaran Midtrans
+  paymentStatus: PaymentStatus;
+
+  // Murni untuk progress fisik/operasional barang dan pengiriman
+  fulfillmentStatus: FulfillmentStatus;
+
+  // Data Logistik Jalur 1
+  shippingMethod: "PICKUP_STORE" | "SHIPPING";
+  shippingCourier: string | null;
+  shippingService: string | null;
+  shippingCost: number;
+  trackingNumber: string | null; // Diinput manual oleh Admin saat status berubah jadi SHIPPED
+  trackingToken: string;
+
+  snapToken?: string | null;
+  snapRedirectUrl?: string | null;
+  paymentMethod?: string | null;
+  externalId?: string | null;
   stockReduced: boolean;
   items: OrderItemDetail[];
-  user: { name: string };
+  user?: { name: string } | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+enum PaymentStatus {
+  PENDING,
+  SETTLEMENT,
+  EXPIRED,
+  CANCEL,
+  FAILED,
+}
+
+enum FulfillmentStatus {
+  NOT_APPLICABLE = "NOT_APPLICABLE",
+  PROCESSING = "PROCESSING",
+  READY_TO_PICKUP = "READY_TO_PICKUP",
+  PICKED_UP = "PICKED_UP",
+  SHIPPED = "SHIPPED",
+  DELIVERED = "DELIVERED",
 }

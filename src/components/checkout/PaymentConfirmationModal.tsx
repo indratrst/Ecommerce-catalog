@@ -11,7 +11,7 @@ interface PaymentConfirmationModalProps {
   onClose: () => void;
   onConfirm: () => void;
   items: CartItem[];
-  deliveryMethod: "shipping" | "pickup";
+  deliveryMethod: "SHIPPING" | "PICKUP_STORE";
   shippingRate: ShippingRate | null;
   total: number;
 }
@@ -154,5 +154,3 @@ export function PaymentConfirmationModal({
     </div>
   );
 }
-
-

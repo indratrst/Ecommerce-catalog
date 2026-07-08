@@ -6,23 +6,16 @@ datasource db {
   provider = "postgresql"
 }
 
-
-enum Role {
-  SUPERUSER
-  ADMIN
-  USER
-}
-
 model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
-  image     String?
   role      Role     @default(USER)
-  orders    Order[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  image     String?
+  orders    Order[]
 }
 
 model Category {
@@ -30,104 +23,108 @@ model Category {
   name        String
   slug        String    @unique
   description String?
-  image       String?
-  products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  image       String?
+  products    Product[]
 }
 
 model Product {
-  id          String           @id @default(uuid())
-  title       String
-  price        Int              // Harga Jual (Harga Final setelah diskon)
-  originalPrice Int?            // MENAMBAHKAN: Harga Asli/Coret (Opsional)
-  description String
-  image       String?
-  ratingRate  Float?           @default(0)
-  ratingCount Int?             @default(0)
-  categoryId  String
-  category    Category         @relation(fields: [categoryId], references: [id])
-  variants    ProductVariant[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id            String           @id @default(uuid())
+  title         String
+  price         Int
+  description   String
+  image         String?
+  ratingRate    Float?           @default(0)
+  ratingCount   Int?             @default(0)
+  categoryId    String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  originalPrice Int?
+  category      Category         @relation(fields: [categoryId], references: [id])
+  variants      ProductVariant[]
+
   @@index([id])
 }
 
 model ProductVariant {
   id         String      @id @default(uuid())
   productId  String
-  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  size       String // e.g., "S", "M", "L", "XL", "One Size"
-  color      String? // Optional, if you want color support later
+  size       String
+  color      String?
   stock      Int         @default(0)
-  isActive   Boolean      @default(true)
-  orderItems OrderItem[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
-@@index([productId])
-}
+  isActive   Boolean     @default(true)
+  orderItems OrderItem[]
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-enum FulfillmentStatus {
-  NOT_APPLICABLE  // Default untuk pengiriman reguler (jika ada alamat)
-  PENDING_PICKUP  // Customer memilih "Pick up", sudah bayar, tapi belum disiapkan pesanannya oleh admin
-  READY_TO_PICKUP  // Customer memilih "Pick up", sudah bayar, sudah siap untuk diambil
-  PICKED_UP       // Barang sudah diambil oleh customer di offline store
+  @@index([productId])
 }
 
 model Order {
-  id              String      @id @default(uuid())
-  // Dibuat opsional agar Guest bisa checkout tanpa harus membuat akun
-  userId          String?
-  user            User?        @relation(fields: [userId], references: [id])
-  // Tambahkan field untuk informasi Guest
-  customerName    String      // Gabungan first & last name
-  customerEmail   String
-  customerPhone   String
-  shippingAddress String?     // Opsional, jika butuh alamat
-  totalAmount     Int
-  status          OrderStatus @default(PENDING)
+  id                String            @id @default(uuid())
+  userId            String?
+  customerName      String
+  customerEmail     String
+  customerPhone     String
+  shippingAddress   String?
+  shippingMethod    ShippingMethod
+  totalAmount       Int
+  paymentStatus     PaymentStatus     @default(PENDING)
+  snapToken         String?
+  snapRedirectUrl   String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  externalId        String?           @unique
+  paymentMethod     String?
+  stockReduced      Boolean           @default(false)
   fulfillmentStatus FulfillmentStatus @default(NOT_APPLICABLE)
+  user              User?             @relation(fields: [userId], references: [id])
+  items             OrderItem[]
 
- // Midtrans Related
-  snapToken       String? 
-  snapRedirectUrl String? 
-  paymentMethod   String?     // Contoh: "qris", "bank_transfer"
-  externalId      String?     @unique // ID dari Midtrans
-  
-  // Stock Control
-  stockReduced    Boolean     @default(false) // Flag krusial untuk Atomic Update
-  items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
   @@index([userId])
-@@index([externalId])
+  @@index([externalId])
 }
 
 model OrderItem {
   id               String         @id @default(uuid())
   orderId          String
-  order            Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productVariantId String
-  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
   quantity         Int
-  priceAtPurchase  Int // Menyimpan harga saat dibeli (antisipasi perubahan harga produk)
-  variantSnapshot Json?
+  priceAtPurchase  Int
+  variantSnapshot  Json?
+  order            Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+
   @@index([orderId])
   @@index([productVariantId])
 }
 
-enum ShippingMethod {
-  PICKUP_STORE
-  EKSPEDISI
+enum Role {
+  SUPERUSER
+  ADMIN
+  USER
 }
 
-enum OrderStatus {
+enum ShippingMethod {
+  PICKUP_STORE
+  SHIPPING
+}
+
+enum PaymentStatus {
   PENDING
-  SETTLEMENT    // Pembayaran Berhasil (Setara dengan "Paid")
-  PROCESSING    // Admin sedang menyiapkan/membungkus barang
-  SHIPPED       // Resi sudah diinput, barang dalam perjalanan
-  DELIVERED     // Barang sudah diterima pembeli
-  EXPIRED       // Gagal/Kadaluarsa
-  CANCEL        // Dibatalkan
+  SETTLEMENT
+  EXPIRED
+  CANCEL
   FAILED
+}
+
+enum FulfillmentStatus {
+  NOT_APPLICABLE   // Untuk orderan yang belum dibayar / gagal
+  PROCESSING       // Sudah dibayar, sedang dipacking oleh admin
+  READY_TO_PICKUP  // Khusus PICKUP_STORE: barang siap diambil pelanggan
+  PICKED_UP        // Khusus PICKUP_STORE: barang sudah diambil
+  SHIPPED          // Khusus SHIPPING: barang sudah diserahkan ke kurir
+  DELIVERED        // Khusus SHIPPING: barang sudah sampai di tujuan
 }

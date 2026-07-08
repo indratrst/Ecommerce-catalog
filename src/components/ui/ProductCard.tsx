@@ -61,8 +61,6 @@ export function ProductCard({ product }: { product: ProductCardSchema }) {
     return `${currentStock} in stock`;
   };
 
-  console.log("ProductCard - product:", product);
-
   return (
     <motion.div initial={false} whileHover="hover" className="group">
       <motion.div

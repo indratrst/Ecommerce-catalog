@@ -35,19 +35,19 @@ export default function OrdersPage() {
       ),
     },
     {
-      key: "status",
-      label: "Status",
-      render: (status) => (
+      key: "paymentStatus",
+      label: "Payment Status",
+      render: (paymentStatus) => (
         <span
           className={`text-xs font-bold px-2 py-0.5 rounded-full inline-block w-fit  capitalize ${
-            status === "PENDING"
+            paymentStatus === "PENDING"
               ? "bg-amber-100 text-amber-700"
-              : status === "SETTLEMENT"
+              : paymentStatus === "SETTLEMENT"
                 ? "bg-emerald-100 text-emerald-700"
                 : ""
           }`}
         >
-          {status}
+          {paymentStatus}
         </span>
       ),
     },
@@ -61,7 +61,7 @@ export default function OrdersPage() {
               ? "bg-red-100 text-amber-900"
               : fulfillmentStatus === "PICKED_UP"
                 ? "bg-emerald-100 text-emerald-700"
-                : fulfillmentStatus === "PENDING_PICKUP"
+                : fulfillmentStatus === "PROCESSING"
                   ? "bg-orange-200 text-red-900"
                   : ""
           }`}

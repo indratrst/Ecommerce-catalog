@@ -37,7 +37,10 @@ export async function GET(request: NextRequest) {
       console.error("Response body:", text.substring(0, 200));
       return NextResponse.json(
         {
-          meta: { code: response.status, message: "RajaOngkir API error" },
+          meta: {
+            code: response.status,
+            message: "RajaOngkir API error",
+          },
           data: null,
         },
         { status: response.status },
@@ -97,7 +100,10 @@ export async function POST(request: NextRequest) {
       console.error("RajaOngkir response error:", errorText);
       return NextResponse.json(
         {
-          meta: { code: response.status, message: "RajaOngkir API error" },
+          meta: {
+            code: response.status,
+            message: "RajaOngkir API error",
+          },
           data: null,
         },
         { status: response.status },

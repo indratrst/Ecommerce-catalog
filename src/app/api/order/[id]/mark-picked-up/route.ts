@@ -17,7 +17,9 @@ export async function PUT(
     // 1. Validasi apakah order tersebut ada di database
     const existingOrder = await prisma.order.findUnique({
       where: { id },
-      include: { items: { include: { productVariant: { include: { product: true } } } } },
+      include: {
+        items: { include: { productVariant: { include: { product: true } } } },
+      },
     });
 
     if (!existingOrder) {
@@ -45,10 +47,10 @@ export async function PUT(
         fulfillmentStatus: fulfillmentStatus || "PICKED_UP",
       },
     });
-    // 4. LOGIKA EMAIL: Kirim email jika status berubah dari PENDING_PICKUP ke READY_TO_PICKUP
+    // 4. LOGIKA EMAIL: Kirim email jika status berubah dari PROCESSING ke READY_TO_PICKUP
     // ================= TRIGGER EMAIL 1: READY TO PICKUP =================
     if (
-      existingOrder.fulfillmentStatus === "PENDING_PICKUP" &&
+      existingOrder.fulfillmentStatus === "PROCESSING" &&
       updatedOrder.fulfillmentStatus === "READY_TO_PICKUP"
     ) {
       if (existingOrder.customerEmail) {
@@ -78,7 +80,7 @@ export async function PUT(
       }
     }
 
-    // 5. TRIGGER EMAIL: Hanya jika status berubah dari PENDING_PICKUP ke READY_TO_PICKUP
+    // 5. TRIGGER EMAIL: Hanya jika status berubah dari PROCESSING ke READY_TO_PICKUP
     return NextResponse.json({
       message: "Status pengambilan berhasil diperbarui",
       order: updatedOrder,

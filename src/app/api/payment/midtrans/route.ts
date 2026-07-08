@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
+import {
+  FulfillmentStatus,
+  PaymentStatus,
+  ShippingMethod,
+} from "@prisma/client";
 
 const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY!;
 // const IS_PRODUCTION = process.env.NODE_ENV === "production";
@@ -14,13 +19,18 @@ const MIDTRANS_BASE_URL =
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { items, billingData, shippingRate, shippingCost, total } = body;
+    const {
+      items,
+      billingData,
+      shippingRate,
+      shippingCost,
+      total,
+      shippingMethod,
+    } = body;
 
     const orderId = `ORDER-${uuidv4().split("-")[0].toUpperCase()}-${Date.now()}`;
     // Cek apakah opsi pengiriman adalah Pickup
-    const isPickup =
-      String(billingData.address).toLowerCase().trim() === "Pickup" ||
-      !billingData.address;
+    const isPickup = shippingMethod === "PICKUP_STORE" || !billingData.address;
 
     await prisma.$transaction(async (tx) => {
       const orderItems = [] as Array<{
@@ -64,10 +74,11 @@ export async function POST(request: Request) {
           customerName: `${billingData.firstName} ${billingData.lastName}`,
           customerEmail: billingData.email,
           customerPhone: billingData.phone,
-          shippingAddress: billingData.address || "Pickup",
+          shippingAddress: billingData.address,
           totalAmount: total,
-          status: "PENDING",
-          fulfillmentStatus: "NOT_APPLICABLE",
+          paymentStatus: PaymentStatus.PENDING,
+          shippingMethod: shippingMethod as ShippingMethod,
+          fulfillmentStatus: FulfillmentStatus.NOT_APPLICABLE,
           items: {
             create: orderItems,
           },
@@ -134,6 +145,11 @@ export async function POST(request: Request) {
       notification_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/payment/midtrans/notification`,
     };
 
+    console.log("[Midtrans Transaction] Creating with:", {
+      order_id: transactionPayload.transaction_details.order_id,
+      notification_url: transactionPayload.notification_url,
+    });
+
     const encodedKey = Buffer.from(MIDTRANS_SERVER_KEY + ":").toString(
       "base64",
     );
@@ -171,6 +187,22 @@ export async function POST(request: Request) {
       redirect_url: data.redirect_url,
       order_id: orderId,
     });
+  } catch (error: unknown) {
+    console.error("Midtrans route error:", error);
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const body = await request.json();
+    console.log("Midtrans notification received", body);
+    return NextResponse.json({});
   } catch (error: unknown) {
     console.error("Midtrans route error:", error);
     return NextResponse.json(

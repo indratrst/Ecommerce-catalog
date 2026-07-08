@@ -311,7 +311,7 @@ export default function CartPage() {
               className="text-center text-sm mt-4"
               style={{ color: "var(--muted)" }}
             >
-              Taxes and shipping calculated at checkout
+              Taxes and SHIPPING calculated at checkout
             </p>
           </div>
         </div>

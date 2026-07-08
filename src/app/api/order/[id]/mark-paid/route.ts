@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { OrderStatus } from "@prisma/client";
+import { FulfillmentStatus, PaymentStatus } from "@prisma/client";
 
 export async function POST(
   request: Request,
@@ -23,16 +23,21 @@ export async function POST(
       }
 
       // Jika sudah SETTLEMENT atau stock sudah dikurangi, return early
-      if (order.status === OrderStatus.SETTLEMENT || order.stockReduced) {
+      if (
+        order.paymentStatus === PaymentStatus.SETTLEMENT ||
+        order.stockReduced
+      ) {
         console.log(
-          `Order ${id} already processed. Status: ${order.status}, StockReduced: ${order.stockReduced}`,
+          `Order ${id} already processed. paymentStatus: ${order.paymentStatus}, StockReduced: ${order.stockReduced}`,
         );
         return { alreadyProcessed: true };
       }
 
       // Hanya lakukan jika masih PENDING
-      if (order.status !== "PENDING") {
-        console.log(`Order ${id} status is ${order.status}, not PENDING`);
+      if (order.paymentStatus !== "PENDING") {
+        console.log(
+          `Order ${id} paymentStatus is ${order.paymentStatus}, not PENDING`,
+        );
         return { alreadyProcessed: true };
       }
 
@@ -55,16 +60,15 @@ export async function POST(
         }
       }
 
-      const isPickUp = order.shippingAddress === "Pickup";
+      // const isPickUp = order.shippingMethod === ShippingMethod.PICKUP_STORE;
 
-      // Update order status menjadi SETTLEMENT
+      // Update order paymentStatus menjadi SETTLEMENT
       const updatedOrder = await tx.order.update({
         where: { id },
         data: {
-          fulfillmentStatus: isPickUp ? "PENDING_PICKUP" : "NOT_APPLICABLE",
-          status: OrderStatus,
-          stockReduced:
-            OrderStatus === OrderStatus.SETTLEMENT ? true : order.stockReduced,
+          fulfillmentStatus: FulfillmentStatus.PROCESSING,
+          paymentStatus: PaymentStatus.SETTLEMENT,
+          stockReduced: true,
           externalId: transaction_id || order.externalId,
           paymentMethod: payment_type || order.paymentMethod,
         },
@@ -77,7 +81,7 @@ export async function POST(
       success: true,
       message: result.alreadyProcessed
         ? "Order already processed"
-        : "Order status updated to SETTLEMENT",
+        : "Order paymentStatus updated to SETTLEMENT",
       ...result,
     });
   } catch (error: unknown) {

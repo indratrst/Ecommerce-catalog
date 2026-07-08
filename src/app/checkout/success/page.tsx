@@ -10,7 +10,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -70,55 +70,36 @@ function SuccessContent() {
   // }, [orderId, paymentType, searchParams]);
 
   const fetchOrder = useCallback(async () => {
+    if (!orderId) return;
     try {
       const res = await fetch(`/api/order/${orderId}`);
       const data = await res.json();
-
-      // console.log("Fetched Order:", data);
-
       setOrder(data);
-      setStatus(data.status);
+      setStatus(data.paymentStatus);
     } catch (err) {
       console.error(err);
     }
   }, [orderId]);
 
-  // useEffect(() => {
-  //   if (!orderId) return;
+  // Automatically fetch on mount, and poll if the order is still PENDING
+  useEffect(() => {
+    if (!orderId) return;
 
-  //   // let markPaidTimer: NodeJS.Timeout;
-  //   // let pollInterval: NodeJS.Timeout;
+    fetchOrder();
 
-  //   // const setupPolling = async () => {
-  //   //   // Fetch order pertama kali
-  //   //   await fetchOrder();
+    let intervalId: NodeJS.Timeout;
+    if (status === "PENDING") {
+      intervalId = setInterval(() => {
+        fetchOrder();
+      }, 3000);
+    }
 
-  //     // Setelah 2 detik, jika status masih PENDING, coba mark as paid
-  //     // markPaidTimer = setTimeout(() => {
-  //     //   setOrder((prevOrder: typeof order) => {
-  //     //     if (prevOrder?.status === "PENDING") {
-  //     //       console.log(
-  //     //         "Status masih PENDING, triggering mark-paid endpoint...",
-  //     //       );
-  //     //       markOrderAsPaid();
-  //     //     }
-  //     //     return prevOrder;
-  //     //   });
-  //     // }, 2000);
-
-  //     // Poll status setiap 3 detik
-  //     // pollInterval = setInterval(() => {
-  //     //   fetchOrder();
-  //     // }, 3000);
-  //   };
-
-  //   // setupPolling();
-
-  //   return () => {
-  //     // clearTimeout(markPaidTimer);
-  //     // clearInterval(pollInterval);
-  //   };
-  // }, [orderId, paymentType, searchParams, fetchOrder, markOrderAsPaid]);
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [orderId, status, fetchOrder]);
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 text-center py-20">
@@ -189,7 +170,7 @@ function SuccessContent() {
           </div>
         )}
 
-        {order?.status === "PENDING" && (
+        {order?.paymentStatus === "PENDING" && (
           <>
             <p className="text-amber-flame-700 font-medium">
               Silakan selesaikan pembayaran kamu

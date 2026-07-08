@@ -7,7 +7,7 @@ import { searchLocations } from "@/services/rajaongkir/client";
 import { LocationResult } from "@/types/rajaongkir";
 
 interface CheckoutFormProps {
-  deliveryMethod: "shipping" | "pickup";
+  deliveryMethod: "SHIPPING" | "PICKUP_STORE";
   onChange: (data: Partial<BillingAddress>) => void;
 }
 
@@ -75,7 +75,6 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
     setSearchQuery(location.label);
     setShowDropdown(false);
 
-    // Format area name based on available data
     const areaName = location.label;
     const provinceName = location.province_name;
     const cityName = location.city_name;
@@ -88,7 +87,8 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
       province_name: provinceName,
       city_name: cityName,
       district_name: districtName,
-      zip_code: location.zip_code,
+      postcode: location.zip_code || "",
+      zip_code: location.zip_code || "",
     };
 
     setFormData(newData);
@@ -107,6 +107,7 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
       province_name: undefined,
       city_name: undefined,
       district_name: undefined,
+      postcode: undefined,
       zip_code: undefined,
     };
 
@@ -123,7 +124,6 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
     onChange(newData);
   };
 
-  // Get location type badge
   const getLocationBadge = (type: LocationResult["type"]) => {
     switch (type) {
       case "province":
@@ -168,6 +168,7 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
             <input
               type="text"
               name="firstName"
+              value={formData.firstName || ""}
               required
               className="w-full bg-surface border-none p-3 pl-10 text-sm focus:ring-1 focus:ring-foreground"
               style={{
@@ -188,6 +189,7 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
             <input
               type="text"
               name="lastName"
+              value={formData.lastName || ""}
               required
               className="w-full bg-surface border-none p-3 pl-10 text-sm focus:ring-1 focus:ring-foreground"
               style={{
@@ -211,6 +213,7 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
             <input
               type="email"
               name="email"
+              value={formData.email || ""}
               required
               className="w-full bg-surface border-none p-3 pl-10 text-sm focus:ring-1 focus:ring-foreground"
               style={{
@@ -231,6 +234,7 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
             <input
               type="tel"
               name="phone"
+              value={formData.phone || ""}
               required
               className="w-full bg-surface border-none p-3 pl-10 text-sm focus:ring-1 focus:ring-foreground"
               style={{
@@ -244,7 +248,7 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
         </div>
       </div>
 
-      {deliveryMethod === "shipping" && (
+      {deliveryMethod === "SHIPPING" && (
         <>
           {/* Location Search - Autocomplete */}
           <div className="space-y-2" ref={searchRef}>
@@ -271,8 +275,9 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
               />
               {searchQuery && selectedLocation && (
                 <button
+                  type="button"
                   onClick={handleClearLocation}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 z-10"
                 >
                   <X className="h-4 w-4 opacity-40 hover:opacity-100" />
                 </button>
@@ -295,9 +300,10 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
               >
                 {searchResults.map((result) => (
                   <button
+                    type="button"
                     key={result.id}
                     onClick={() => handleLocationSelect(result)}
-                    className="w-full  text-left p-3 hover:bg-surface-hover transition-colors border-b last:border-b-0"
+                    className="w-full text-left p-3 hover:bg-surface-hover transition-colors border-b last:border-b-0"
                     style={{
                       borderBottomColor: "var(--surface-border)",
                     }}
@@ -339,7 +345,6 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
                 </div>
               )}
 
-            {/* Helper text */}
             <p className="text-xs opacity-50 mt-1">
               Type at least 2 characters to search for your city or district
             </p>
@@ -370,6 +375,7 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
             </label>
             <textarea
               name="address"
+              value={formData.address || ""}
               required
               rows={3}
               className="w-full bg-surface border-none p-3 text-sm focus:ring-1 focus:ring-foreground"

@@ -1,4 +1,8 @@
 "use client";
+import {
+  shipOrderAction,
+  updatePickupStatusAction,
+} from "@/app/actions/orders";
 import api from "@/lib/axios";
 import { CreateOrderData, Order } from "@/lib/validation/order.schema";
 import { ErrorSchema } from "@/types";
@@ -8,6 +12,12 @@ import { useRouter } from "next/navigation";
 interface ConfirmPickupPayload {
   id: string;
   fulfillmentStatus: "READY_TO_PICKUP" | "PICKED_UP";
+}
+
+interface ShipOrderPayload {
+  orderId: string;
+  trackingNumber: string;
+  shippingCourier?: string;
 }
 // Query hook
 export function useOrders() {
@@ -100,12 +110,14 @@ export function useUpdateOrderStatus() {
   return useMutation({
     mutationFn: async ({
       id,
-      status,
+      paymentStatus,
     }: {
       id: string;
-      status: "PENDING" | "SETTLEMENT" | "EXPIRED" | "CANCEL" | "FAILED";
+      paymentStatus: "PENDING" | "SETTLEMENT" | "EXPIRED" | "CANCEL" | "FAILED";
     }) => {
-      const res = await api.put(`/order/${id}/status`, { status });
+      const res = await api.put(`/order/${id}/status`, {
+        paymentStatus,
+      });
       return res.data;
     },
     onSuccess: (_, variables) => {
@@ -119,29 +131,67 @@ export function useUpdateOrderStatus() {
 }
 
 // BARU: Mutation hook - Khusus Admin mengonfirmasi pengambilan barang (Pick Up)
+// export function useConfirmPickup() {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     // 1. Ubah parameter mutationFn agar menerima objek dinamis { id, fulfillmentStatus }
+//     mutationFn: async ({ id, fulfillmentStatus }: ConfirmPickupPayload) => {
+//       // 2. Kirim fulfillmentStatus yang dinamis dari komponen ke request body API
+//       const res = await api.put(`/order/${id}/mark-picked-up`, {
+//         fulfillmentStatus: fulfillmentStatus,
+//       });
+//       return res.data;
+//     },
+//     // 3. Sesuaikan parameter onSuccess karena payload mutasinya sekarang berupa objek
+//     onSuccess: (_, variables) => {
+//       // variables berisi data { id, fulfillmentStatus } yang dikirim saat mutasi sukses
+//       queryClient.invalidateQueries({ queryKey: ["orders"] });
+//       queryClient.invalidateQueries({ queryKey: ["orders", variables.id] });
+//     },
+//     onError: (error: ErrorSchema) => {
+//       alert(
+//         error.message ??
+//           "Gagal memperbarui status pengemasan/pengambilan barang",
+//       );
+//     },
+//   });
+// }
+
+// Menggunakan Server Action eksternal secara aman di dalam React Query Mutation
 export function useConfirmPickup() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // 1. Ubah parameter mutationFn agar menerima objek dinamis { id, fulfillmentStatus }
-    mutationFn: async ({ id, fulfillmentStatus }: ConfirmPickupPayload) => {
-      // 2. Kirim fulfillmentStatus yang dinamis dari komponen ke request body API
-      const res = await api.put(`/order/${id}/mark-picked-up`, {
-        fulfillmentStatus: fulfillmentStatus,
-      });
-      return res.data;
-    },
-    // 3. Sesuaikan parameter onSuccess karena payload mutasinya sekarang berupa objek
+    mutationFn: (variables: ConfirmPickupPayload) =>
+      updatePickupStatusAction(variables),
     onSuccess: (_, variables) => {
-      // variables berisi data { id, fulfillmentStatus } yang dikirim saat mutasi sukses
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["orders", variables.id] });
     },
     onError: (error: ErrorSchema) => {
       alert(
-        error.message ??
+        error.message ||
           "Gagal memperbarui status pengemasan/pengambilan barang",
       );
+    },
+  });
+}
+
+// Menggunakan Server Action eksternal secara aman di dalam React Query Mutation
+export function useShipOrder() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: ShipOrderPayload) => shipOrderAction(variables),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({
+        queryKey: ["orders", variables.orderId],
+      });
+    },
+    onError: (error: ErrorSchema) => {
+      alert(error.message || "Gagal menyimpan nomor resi fisik kurir");
     },
   });
 }
