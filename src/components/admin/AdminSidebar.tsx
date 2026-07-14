@@ -10,6 +10,7 @@ import {
   LogOut,
   ShoppingBag,
   ExternalLink,
+  BanknoteArrowUp,
 } from "lucide-react";
 import { Role } from "@prisma/client";
 
@@ -43,7 +44,7 @@ export function AdminSidebar({ role, userName }: SidebarProps) {
     },
     {
       name: "Orders",
-      icon: Tag,
+      icon: BanknoteArrowUp,
       href: "/admin/orders",
       roles: ["SUPERUSER", "ADMIN"],
     },

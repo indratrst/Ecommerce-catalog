@@ -6,6 +6,7 @@ import {
   ShoppingBag,
   ArrowUpRight,
   Plus,
+  BanknoteArrowUp,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +15,7 @@ export default async function AdminDashboard() {
   const productCount = await prisma.product.count();
   const categoryCount = await prisma.category.count();
   const userCount = await prisma.user.count();
+  const orderCount = await prisma.order.count();
   const recentProducts = await prisma.product.findMany({
     take: 5,
     orderBy: { createdAt: "desc" },
@@ -42,6 +44,13 @@ export default async function AdminDashboard() {
       color: "text-indigo-500",
       bg: "bg-indigo-500/10",
     },
+    {
+      name: "Total Orders",
+      value: orderCount,
+      icon: BanknoteArrowUp,
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+    }
   ];
 
   return (
@@ -56,7 +65,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {stats.map((stat) => (
           <div
             key={stat.name}
