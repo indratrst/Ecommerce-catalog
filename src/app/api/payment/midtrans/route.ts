@@ -26,6 +26,8 @@ export async function POST(request: Request) {
       shippingCost,
       total,
       shippingMethod,
+      shippingCourier,
+      shippingService,
     } = body;
 
     const orderId = `ORDER-${uuidv4().split("-")[0].toUpperCase()}-${Date.now()}`;
@@ -79,6 +81,8 @@ export async function POST(request: Request) {
           paymentStatus: PaymentStatus.PENDING,
           shippingMethod: shippingMethod as ShippingMethod,
           fulfillmentStatus: FulfillmentStatus.NOT_APPLICABLE,
+          shippingCourier: shippingCourier || shippingRate?.courier_code || null,
+          trackingNumber: null,
           items: {
             create: orderItems,
           },

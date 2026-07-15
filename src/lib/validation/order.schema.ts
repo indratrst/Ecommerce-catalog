@@ -30,6 +30,8 @@ const OrderBaseSchema = {
   externalId: z.string().uuid("Invalid UUID").optional(),
   userId: z.string().uuid("Invalid UUID").optional(),
   stockReduced: z.boolean().default(false),
+  shippingCourier: z.string().optional().nullable(),
+  trackingNumber: z.string().optional().nullable(),
 };
 
 // CREATE schema

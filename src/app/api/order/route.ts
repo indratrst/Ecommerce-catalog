@@ -9,7 +9,7 @@ export async function GET() {
         //   select: { customerNam: true },
         // },
       },
-      orderBy: { id: "asc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json(orders);

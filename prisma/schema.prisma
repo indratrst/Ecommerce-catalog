@@ -80,6 +80,8 @@ model Order {
   paymentMethod     String?
   stockReduced      Boolean           @default(false)
   fulfillmentStatus FulfillmentStatus @default(NOT_APPLICABLE)
+  shippingCourier   String?
+  trackingNumber    String?
   user              User?             @relation(fields: [userId], references: [id])
   items             OrderItem[]
 

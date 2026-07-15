@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import crypto from "crypto";
-import { PaymentStatus } from "@prisma/client";
+import { FulfillmentStatus, PaymentStatus } from "@prisma/client";
 
 const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY!;
 
@@ -97,24 +97,25 @@ export async function POST(request: Request) {
 
       if (["settlement", "capture", "paid"].includes(transaction_status)) {
         console.log(`[Midtrans Webhook] Handling settlement status for ${order_id}...`);
-        
-        const orderUpdate = await tx.order.updateMany({
-          where: {
-            id: order_id,
-            stockReduced: false,
-          },
+
+        const shouldSyncFulfillmentStatus =
+          order.fulfillmentStatus === FulfillmentStatus.NOT_APPLICABLE;
+
+        await tx.order.update({
+          where: { id: order_id },
           data: {
-            paymentStatus: 'SETTLEMENT',
+            paymentStatus: PaymentStatus.SETTLEMENT,
+            fulfillmentStatus: shouldSyncFulfillmentStatus
+              ? FulfillmentStatus.PROCESSING
+              : order.fulfillmentStatus,
             stockReduced: true,
             externalId: body.transaction_id,
             paymentMethod: body.payment_type,
           },
         });
 
-        console.log(`[Midtrans Webhook] Order update status count: ${orderUpdate.count}`);
-
-        if (orderUpdate.count === 0) {
-          console.log("[Midtrans Webhook] Order updateMany updated 0 records (likely already processed). Returning.");
+        if (order.stockReduced) {
+          console.log("[Midtrans Webhook] Order already had stockReduced=true, skipping stock decrement.");
           resultMsg = "Order already processed (stockReduced was true)";
           return;
         }

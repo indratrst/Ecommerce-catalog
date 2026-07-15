@@ -10,17 +10,19 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order_id");
+  const transactionId = searchParams.get("transaction_id") || "";
   const [status, setStatus] = useState("PENDING");
   const paymentType = searchParams.get("payment_type") || "";
   const [copied, setCopied] = useState(false);
   const [order, setOrder] = useState<Record<string, unknown> | null>(null);
+  const hasSyncedOrderRef = useRef(false);
 
   // const isPending = status === "pending";
 
@@ -47,27 +49,35 @@ function SuccessContent() {
     return map[type] || type || "—";
   };
 
-  // const markOrderAsPaid = useCallback(async () => {
-  //   if (!orderId) return;
-  //   try {
-  //     const res = await fetch(`/api/order/${orderId}/mark-paid`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         payment_type: paymentType,
-  //         transaction_id: searchParams.get("transaction_id"),
-  //       }),
-  //     });
+  const markOrderAsPaid = useCallback(async () => {
+    if (!orderId || hasSyncedOrderRef.current) return;
 
-  //     if (res.ok) {
-  //       console.log("Order marked as paid successfully");
-  //     } else {
-  //       console.warn("Failed to mark order as paid");
-  //     }
-  //   } catch (err) {
-  //     console.error("Error marking order as paid:", err);
-  //   }
-  // }, [orderId, paymentType, searchParams]);
+    hasSyncedOrderRef.current = true;
+
+    try {
+      const res = await fetch(`/api/order/${orderId}/mark-paid`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          payment_type: paymentType,
+          transaction_id: transactionId,
+        }),
+      });
+
+      const result = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        console.warn("Failed to mark order as paid", result);
+        hasSyncedOrderRef.current = false;
+        return;
+      }
+
+      console.log("Order marked as paid successfully", result);
+    } catch (err) {
+      console.error("Error marking order as paid:", err);
+      hasSyncedOrderRef.current = false;
+    }
+  }, [orderId, paymentType, transactionId]);
 
   const fetchOrder = useCallback(async () => {
     if (!orderId) return;
@@ -81,16 +91,17 @@ function SuccessContent() {
     }
   }, [orderId]);
 
-  // Automatically fetch on mount, and poll if the order is still PENDING
+  // Automatically fetch on mount, sync payment state, and poll if the order is still PENDING
   useEffect(() => {
     if (!orderId) return;
 
-    fetchOrder();
+    void markOrderAsPaid();
+    void fetchOrder();
 
     let intervalId: NodeJS.Timeout;
     if (status === "PENDING") {
       intervalId = setInterval(() => {
-        fetchOrder();
+        void fetchOrder();
       }, 3000);
     }
 
@@ -99,7 +110,7 @@ function SuccessContent() {
         clearInterval(intervalId);
       }
     };
-  }, [orderId, status, fetchOrder]);
+  }, [orderId, status, fetchOrder, markOrderAsPaid]);
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 text-center py-20">

@@ -4,7 +4,7 @@ import { FulfillmentStatus, PaymentStatus } from "@prisma/client";
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
@@ -22,11 +22,26 @@ export async function POST(
         throw new Error("Order not found");
       }
 
-      // Jika sudah SETTLEMENT atau stock sudah dikurangi, return early
-      if (
-        order.paymentStatus === PaymentStatus.SETTLEMENT ||
-        order.stockReduced
-      ) {
+      if (order.paymentStatus === PaymentStatus.SETTLEMENT) {
+        const targetFulfillmentStatus =
+          order.fulfillmentStatus === FulfillmentStatus.NOT_APPLICABLE
+            ? FulfillmentStatus.PROCESSING
+            : order.fulfillmentStatus;
+
+        const updatedOrder = await tx.order.update({
+          where: { id },
+          data: {
+            fulfillmentStatus: targetFulfillmentStatus,
+          },
+        });
+
+        console.log(
+          `Order ${id} already settled. Ensured fulfillmentStatus is ${updatedOrder.fulfillmentStatus}.`,
+        );
+        return { alreadyProcessed: true, order: updatedOrder };
+      }
+
+      if (order.stockReduced) {
         console.log(
           `Order ${id} already processed. paymentStatus: ${order.paymentStatus}, StockReduced: ${order.stockReduced}`,
         );
@@ -73,6 +88,8 @@ export async function POST(
           paymentMethod: payment_type || order.paymentMethod,
         },
       });
+
+      console.log(updatedOrder);
 
       return { alreadyProcessed: false, order: updatedOrder };
     });
