@@ -27,7 +27,6 @@ export async function POST(request: Request) {
       total,
       shippingMethod,
       shippingCourier,
-      shippingService,
     } = body;
 
     const orderId = `ORDER-${uuidv4().split("-")[0].toUpperCase()}-${Date.now()}`;
@@ -76,7 +75,7 @@ export async function POST(request: Request) {
           customerName: `${billingData.firstName} ${billingData.lastName}`,
           customerEmail: billingData.email,
           customerPhone: billingData.phone,
-          shippingAddress: billingData.address,
+          shippingAddress: `${billingData.address} ${billingData.areaName || ""} ${billingData.postcode || ""}`,
           totalAmount: total,
           paymentStatus: PaymentStatus.PENDING,
           shippingMethod: shippingMethod as ShippingMethod,

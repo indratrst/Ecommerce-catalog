@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { FulfillmentStatus, PaymentStatus } from "@prisma/client";
+import { FulfillmentStatus, PaymentStatus, ShippingMethod } from "@prisma/client";
+import { faker } from "@faker-js/faker";
+import { sendShippingEmail } from "@/lib/nodemailer";
 
 export async function POST(
   request: Request,
@@ -11,6 +13,9 @@ export async function POST(
   try {
     const body = await request.json();
     const { payment_type, transaction_id } = body;
+
+    console.log("[mark-paid] request body:", body);
+    console.log("[mark-paid] order id:", id);
 
     const result = await prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
@@ -28,15 +33,54 @@ export async function POST(
             ? FulfillmentStatus.PROCESSING
             : order.fulfillmentStatus;
 
+        // Generate tracking number jika belum ada dan method adalah SHIPPING
+        const needsTrackingNumber =
+          !order.trackingNumber && order.shippingMethod === ShippingMethod.SHIPPING;
+
+        const trackingNumber = needsTrackingNumber
+          ? `${faker.string.alphanumeric(4).toUpperCase()}-${faker.string.numeric(10)}`
+          : order.trackingNumber;
+
         const updatedOrder = await tx.order.update({
           where: { id },
           data: {
             fulfillmentStatus: targetFulfillmentStatus,
+            trackingNumber,
           },
         });
 
+        // Kirim email jika tracking number baru saja digenerate
+        if (needsTrackingNumber) {
+          const orderWithItems = await tx.order.findUnique({
+            where: { id },
+            include: {
+              items: {
+                include: {
+                  productVariant: {
+                    include: {
+                      product: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          if (orderWithItems) {
+            console.log("[mark-paid] sending shipping email for already settled order", orderWithItems.customerEmail);
+            await sendShippingEmail({
+              to: orderWithItems.customerEmail,
+              orderId: orderWithItems.id,
+              customerName: orderWithItems.customerName,
+              items: orderWithItems.items,
+              totalAmount: orderWithItems.totalAmount,
+              trackingNumber: trackingNumber,
+            });
+          }
+        }
+
         console.log(
-          `Order ${id} already settled. Ensured fulfillmentStatus is ${updatedOrder.fulfillmentStatus}.`,
+          `Order ${id} already settled. Ensured fulfillmentStatus is ${updatedOrder.fulfillmentStatus}. Tracking: ${trackingNumber}`,
         );
         return { alreadyProcessed: true, order: updatedOrder };
       }
@@ -75,7 +119,11 @@ export async function POST(
         }
       }
 
-      // const isPickUp = order.shippingMethod === ShippingMethod.PICKUP_STORE;
+      // Generate tracking number jika SHIPPING
+      const trackingNumber =
+        order.shippingMethod === ShippingMethod.SHIPPING
+          ? `${faker.string.alphanumeric(4).toUpperCase()}-${faker.string.numeric(10)}`
+          : null;
 
       // Update order paymentStatus menjadi SETTLEMENT
       const updatedOrder = await tx.order.update({
@@ -86,8 +134,43 @@ export async function POST(
           stockReduced: true,
           externalId: transaction_id || order.externalId,
           paymentMethod: payment_type || order.paymentMethod,
+          trackingNumber,
         },
       });
+
+      // Fetch items untuk email
+      const orderWithItems = await tx.order.findUnique({
+        where: { id },
+        include: {
+          items: {
+            include: {
+              productVariant: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Send email notification
+      if (orderWithItems) {
+        console.log("[mark-paid] orderWithItems fetched. shippingMethod", order.shippingMethod, "customerEmail", orderWithItems.customerEmail);
+        if (order.shippingMethod === ShippingMethod.SHIPPING) {
+          console.log("[mark-paid] sending shipping email for newly settled order", orderWithItems.customerEmail);
+          await sendShippingEmail({
+            to: orderWithItems.customerEmail,
+            orderId: orderWithItems.id,
+            customerName: orderWithItems.customerName,
+            items: orderWithItems.items,
+            totalAmount: orderWithItems.totalAmount,
+            trackingNumber: trackingNumber,
+          });
+        } else {
+          console.log("[mark-paid] not sending shipping email because shippingMethod is not SHIPPING");
+        }
+      }
 
       console.log(updatedOrder);
 

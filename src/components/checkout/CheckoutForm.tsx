@@ -14,6 +14,8 @@ interface CheckoutFormProps {
 export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
   const [formData, setFormData] = useState<Partial<BillingAddress>>({});
 
+  console.log(formData,'tt')
+
   // State untuk autocomplete
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<LocationResult[]>([]);
@@ -120,6 +122,8 @@ export function CheckoutForm({ deliveryMethod, onChange }: CheckoutFormProps) {
   ) => {
     const { name, value } = e.target;
     const newData = { ...formData, [name]: value };
+
+    console.log(newData,'ss')
     setFormData(newData);
     onChange(newData);
   };

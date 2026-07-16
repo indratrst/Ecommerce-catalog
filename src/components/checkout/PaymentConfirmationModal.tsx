@@ -116,7 +116,7 @@ export function PaymentConfirmationModal({
                 <p
                   className={`text-xl font-black ${shippingRate?.price === 0 ? "line-through opacity-60" : ""}`}
                 >
-                  {shippingRate?.price === 0
+                  {shippingRate?.price !== 0
                     ? `Rp ${shippingRate?.price.toLocaleString("id-ID")}`
                     : "Free"}
                 </p>

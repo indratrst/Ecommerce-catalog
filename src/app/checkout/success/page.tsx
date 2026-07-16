@@ -50,12 +50,18 @@ function SuccessContent() {
   };
 
   const markOrderAsPaid = useCallback(async () => {
-    if (!orderId || hasSyncedOrderRef.current) return;
+    console.log("[success] markOrderAsPaid start", { orderId, paymentType, transactionId, hasSynced: hasSyncedOrderRef.current });
+    if (!orderId || hasSyncedOrderRef.current) {
+      console.log("[success] markOrderAsPaid skipped", { orderId, hasSynced: hasSyncedOrderRef.current });
+      return;
+    }
 
     hasSyncedOrderRef.current = true;
 
     try {
-      const res = await fetch(`/api/order/${orderId}/mark-paid`, {
+      const endpoint = `/api/order/${orderId}/mark-paid`;
+      console.log("[success] calling mark-paid", { endpoint, body: { payment_type: paymentType, transaction_id: transactionId } });
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -65,6 +71,7 @@ function SuccessContent() {
       });
 
       const result = await res.json().catch(() => null);
+      console.log("[success] mark-paid response", { status: res.status, ok: res.ok, result });
 
       if (!res.ok) {
         console.warn("Failed to mark order as paid", result);
@@ -93,6 +100,7 @@ function SuccessContent() {
 
   // Automatically fetch on mount, sync payment state, and poll if the order is still PENDING
   useEffect(() => {
+    console.log("[success] useEffect run", { orderId, status });
     if (!orderId) return;
 
     void markOrderAsPaid();
@@ -163,6 +171,20 @@ function SuccessContent() {
                   <Copy className="h-3.5 w-3.5 text-muted-foreground" />
                 )}
               </button>
+            </div>
+          </div>
+        )}
+
+        {(order?.trackingNumber || order?.shippingMethod === "SHIPPING") && (
+          <div>
+            <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">
+              Nomor Resi / Tracking
+            </p>
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+              <p className="text-sm font-mono font-bold text-green-800">
+                {String(order?.trackingNumber || "—")}
+              </p>
             </div>
           </div>
         )}

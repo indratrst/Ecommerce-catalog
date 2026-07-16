@@ -94,6 +94,20 @@ export default function OrdersPage() {
         </span>
       ),
     },
+     {
+      key: "shippingMethod",
+      label: "Shipping Method",
+      render: (shippingMethod) => (
+        <span
+          className={`text-xs font-bold px-2 py-0.5 rounded-full inline-block w-fit  capitalize ${
+            shippingMethod === "PICKUP_STORE"
+              ? "bg-cyan-100 text-black" : "bg-lime-300 text-red-700"
+          }`}
+        >
+          {shippingMethod}
+        </span>
+      ),
+    },
     {
       key: "createdAt",
       label: "Created At",

@@ -79,10 +79,26 @@ export async function PUT(
         });
       }
     }
+ // ================= 4. BARU: TRIGGER EMAIL 3: SHIPPED (KURIR) =================
+    // if (
+    //   existingOrder.fulfillmentStatus === "PROCESSING" &&
+    //   updatedOrder.fulfillmentStatus === "SHIPPED"
+    // ) {
+    //   if (existingOrder.customerEmail) {
+    //     await sendShippingEmail({
+    //       to: existingOrder.customerEmail,
+    //       orderId: id,
+    //       customerName: existingOrder.customerName || "Customer",
+    //       items: existingOrder.items,
+    //       totalAmount: existingOrder.totalAmount || 0,
+    //       // Ambil resi dari request body jika ada, jika tidak ada ambil resi tiruan / fallback dari database
+    //       trackingNumber: trackingNumber,
+    //     });
+    //   }
+    // }
 
-    // 5. TRIGGER EMAIL: Hanya jika status berubah dari PROCESSING ke READY_TO_PICKUP
     return NextResponse.json({
-      message: "Status pengambilan berhasil diperbarui",
+      message: "Status pemenuhan order berhasil diperbarui",
       order: updatedOrder,
     });
   } catch (error: unknown) {
